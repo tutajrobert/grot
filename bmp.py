@@ -59,6 +59,7 @@ bc_list = 	{
 
 n = prep.nodes()
 e = prep.elements(n.store())
+c = prep.constraints()
 
 for i in range(height):
     for j in range(width):
@@ -98,7 +99,10 @@ for i in range(height):
             e.add(elist[0], elist[1], elist[2], elist[3])
 			
             if (matched_color is not "white") and (matched_color is not "cyan"):
-                bc_list[matched_color].append([i, j])      
+                bc_list[matched_color].append(n.check(j % width, i))
+                bc_list[matched_color].append(n.check((j % width) + 1, i))
+                bc_list[matched_color].append(n.check((j % width) + 1, i + 1))
+                bc_list[matched_color].append(n.check(j % width, i + 1))
 n.info()
 e.info()				
-#print(bc_list)
+print(bc_list)
