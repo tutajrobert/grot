@@ -61,8 +61,13 @@ n = prep.nodes()
 
 for i in range(height):
     for j in range(width):
+        elist = []
         matched_color = color_check(im_array[i][j], lab_colors)
         if matched_color is not "white":
+            if n.check(j % width, i) -- None:
+                n.add(j % width, i)
+            else:
+                elist.append(n)
             ###n.addlist[(i, j), (i + 1, j), (i + 1, j + 1), (i, j + 1)]
             if matched_color is not "cyan":
                 bc_list[matched_color].append([i, j])
