@@ -13,8 +13,8 @@ class nodes():
     self.nnum += 1
     self.ndict[self.nnum] = [x, y]
     #ndict = self.ndict 
-    return self.ndict
-    
+    return self.nnum
+	
   def addlist(self, nlist):
   #Adds a list of nodes the same manner as add function above
     for n in nlist:
@@ -23,12 +23,15 @@ class nodes():
     #ndict = self.ndict
     return self.ndict
 
-  def check(self, coord):
+  def check(self, x, y):
     for n in self.ndict:
-      if self.ndict[n] == coord
+      if self.ndict[n] == [x, y]:
         return n
-      else:
-        return None
+    else:
+      return None
+		
+  def store(self):
+    return self.ndict
 
   def info(self):
   #Prints number of nodes and nodes dict
@@ -70,6 +73,9 @@ class elements():
     
   def infoall(self):
     print(self.edict)
+	
+  def update(self, ndict):
+    self.ndict = ndict
 
 class materials():
   def __init__(self, edict):

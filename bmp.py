@@ -58,18 +58,47 @@ bc_list = 	{
     }
 
 n = prep.nodes()
+e = prep.elements(n.store())
 
 for i in range(height):
     for j in range(width):
         elist = []
         matched_color = color_check(im_array[i][j], lab_colors)
         if matched_color is not "white":
-            if n.check(j % width, i) -- None:
-                n.add(j % width, i)
+
+            n1 = n.check(j % width, i)
+            if n1 == None:
+                e1 = n.add(j % width, i)
+                elist.append(e1)
             else:
-                elist.append(n)
-            ###n.addlist[(i, j), (i + 1, j), (i + 1, j + 1), (i, j + 1)]
-            if matched_color is not "cyan":
-                bc_list[matched_color].append([i, j])
-                
-print(bc_list)
+                elist.append(n1)
+
+            n2 = n.check((j % width) + 1, i)
+            if n2 == None:
+                e2 = n.add((j % width) + 1, i)
+                elist.append(e2)
+            else:
+                elist.append(n2)
+				
+            n3 = n.check((j % width) + 1, i + 1)
+            if n3 == None:
+                e3 = n.add((j % width) + 1, i + 1)
+                elist.append(e3)
+            else:
+                elist.append(n3)
+				
+            n4 = n.check(j % width, i + 1)
+            if n4 == None:
+                e4 = n.add(j % width, i + 1)
+                elist.append(e4)
+            else:
+                elist.append(n4)
+			
+            e.update(n.store())
+            e.add(elist[0], elist[1], elist[2], elist[3])
+			
+            if (matched_color is not "white") and (matched_color is not "cyan"):
+                bc_list[matched_color].append([i, j])      
+n.info()
+e.info()				
+#print(bc_list)
