@@ -41,8 +41,9 @@ class build():
       dofs = [dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1]      
       
       p = (E * h) / (12 * (1 - (v ** 2)))
-      
-      k11 = p * 2 * (3 - v)
+      q = (E * h) / (1 - v)
+        
+      """k11 = p * 2 * (3 - v)
       k22, k33, k44, k55, k66, k77, k88 = k11, k11, k11, k11, k11, k11, k11
       k15 = p * 1.5 * (1 - v)
       k27, k36, k48, k72, k63, k84, k51 = k15, k15, k15, k15, k15, k15, k15
@@ -63,6 +64,29 @@ class build():
       k57 = p * 2 * v
       k75, k68, k86 = k57, k57, k57
       k58 = p * (-3 + v)
+      k85, k67, k76 = k58, k58, k58"""
+    
+      k11 = p * 2 * (3 - v)
+      k22, k33, k44, k55, k66, k77, k88 = k11, k11, k11, k11, k11, k11, k11
+      k15 = p * (-3 + v)
+      k27, k36, k48, k72, k63, k84, k51 = k15, k15, k15, k15, k15, k15, k15
+      k16 = q / (-8)
+      k28, k35, k47, k82, k53, k74, k61 = k16, k16, k16, k16, k16, k16, k16
+      k17 = p * 2 * v
+      k25, k38, k46, k52, k83, k64, k71 = k17, k17, k17, k17, k17, k17, k17
+      k18 = p * 1.5 * (1 - (3 * v))
+      k26, k37, k45, k62, k73, k54, k81 = k18, k18, k18, k18, k18, k18, k18
+      k12 = q / 8
+      k34, k21, k43 = k12, k12, k12
+      k13 = p * (-3 - v)
+      k31, k24, k42 = k13, k13, k13
+      k14 = p * 1.5 * (-1 + (3 * v))
+      k41, k23, k32 = k14, k14, k14
+      k56 = q / 8
+      k65, k78, k87 = k56, k56, k56
+      k57 = p * (-3 - v)
+      k75, k68, k86 = k57, k57, k57
+      k58 = p * 1.5 * (-1 + (3 * v))
       k85, k67, k76 = k58, k58, k58
       
       klist = [[k11, k12, k13, k14, k15, k16, k17, k18],
@@ -77,7 +101,7 @@ class build():
       for i in range(8):
         for j in range(8):
           self.gklist[dofs[i]][dofs[j]] += klist[i][j]
-  
+    #print(self.gklist)
     for c in self.cons:
       if self.cons[c] != 0:
         self.clist[c] = self.cons[c]

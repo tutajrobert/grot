@@ -62,58 +62,60 @@ n = prep.nodes()
 e = prep.elements(n.store())
 c = prep.constraints()
 
-for i in range(height):
-    for j in range(width):
-        elist = []
-        matched_color = color_check(im_array[i][j], lab_colors)
-        if matched_color is not "white":
+def create_geom():
+    for i in range(height):
+        for j in range(width):
+            elist = []
+            matched_color = color_check(im_array[i][j], lab_colors)
+            if matched_color is not "white":
 
-            n1 = n.check(j % width, i)
-            if n1 == None:
-                e1 = n.add(j % width, i)
-                elist.append(e1)
-            else:
-                elist.append(n1)
+                n1 = n.check(j % width, i)
+                if n1 == None:
+                    e1 = n.add(j % width, i)
+                    elist.append(e1)
+                else:
+                    elist.append(n1)
 
-            n2 = n.check((j % width) + 1, i)
-            if n2 == None:
-                e2 = n.add((j % width) + 1, i)
-                elist.append(e2)
-            else:
-                elist.append(n2)
-				
-            n3 = n.check((j % width) + 1, i + 1)
-            if n3 == None:
-                e3 = n.add((j % width) + 1, i + 1)
-                elist.append(e3)
-            else:
-                elist.append(n3)
-				
-            n4 = n.check(j % width, i + 1)
-            if n4 == None:
-                e4 = n.add(j % width, i + 1)
-                elist.append(e4)
-            else:
-                elist.append(n4)
-			
-            e.update(n.store())
-            e.add(elist[0], elist[1], elist[2], elist[3])
-			
-            if (matched_color is not "white") and (matched_color is not "cyan"):
-                bc_dict[matched_color].append(n.check(j % width, i))
-                bc_dict[matched_color].append(n.check((j % width) + 1, i))
-                bc_dict[matched_color].append(n.check((j % width) + 1, i + 1))
-                bc_dict[matched_color].append(n.check(j % width, i + 1))
+                n2 = n.check((j % width) + 1, i)
+                if n2 == None:
+                    e2 = n.add((j % width) + 1, i)
+                    elist.append(e2)
+                else:
+                    elist.append(n2)
 
-print(bc_dict)                
-                
-c.support(bc_dict["blue"])
-c.support(bc_dict["red"], 0, 1)
-c.support(bc_dict["green"], 1, 0)
+                n3 = n.check((j % width) + 1, i + 1)
+                if n3 == None:
+                    e3 = n.add((j % width) + 1, i + 1)
+                    elist.append(e3)
+                else:
+                    elist.append(n3)
 
-c.load(bc_dict["magenta"], 1)
-                
-n.info()
+                n4 = n.check(j % width, i + 1)
+                if n4 == None:
+                    e4 = n.add(j % width, i + 1)
+                    elist.append(e4)
+                else:
+                    elist.append(n4)
+
+                e.update(n.store())
+                e.add(elist[0], elist[1], elist[2], elist[3])
+
+                if (matched_color is not "white") and (matched_color is not "cyan"):
+                    bc_dict[matched_color].append(n.check(j % width, i))
+                    bc_dict[matched_color].append(n.check((j % width) + 1, i))
+                    bc_dict[matched_color].append(n.check((j % width) + 1, i + 1))
+                    bc_dict[matched_color].append(n.check(j % width, i + 1))
+
+    #print(bc_dict)                
+
+    c.support(bc_dict["blue"])
+    c.support(bc_dict["red"], 0, 1)
+    c.support(bc_dict["green"], 1, 0)
+
+    return [n, e, c, bc_dict]
+    #c.load(bc_dict["magenta"], 1)
+
+"""n.info()
 e.info()
 c.info()
 
@@ -134,4 +136,4 @@ h.info()
 d = solver.build(nodes, eles, cons)
 sol = d.gauss_linear()
 
-print(sol)
+print(sol)"""

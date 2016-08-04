@@ -14,14 +14,6 @@ class nodes():
     self.ndict[self.nnum] = [x, y]
     #ndict = self.ndict 
     return self.nnum
-	
-  def addlist(self, nlist):
-  #Adds a list of nodes the same manner as add function above
-    for n in nlist:
-      self.nnum += 1
-      self.ndict[self.nnum] = [n[0], n[1]]
-    #ndict = self.ndict
-    return self.ndict
 
   def check(self, x, y):
     for n in self.ndict:
@@ -55,13 +47,6 @@ class elements():
     self.edict[self.enum] = [self.ndict[n1], self.ndict[n2], self.ndict[n3], self.ndict[4], n1, n2, n3, n4]
     return self.edict
     
-  def addlist(self, elist):
-  #Adds a list of elements the same manner as add function above
-    for e in elist:
-      self.enum += 1
-      self.edict[self.enum] = [self.ndict[e[0]], self.ndict[e[1]], self.ndict[e[2]], self.ndict[e[3]], e[0], e[1], e[2], e[3]]
-    return self.edict
-    
   def info(self):
   #Prints number of elements and elements list
     print("# ELEMENTS info")
@@ -70,9 +55,6 @@ class elements():
     for e in self.edict:
       print("e" + str(e), ":", self.edict[e][4:8])
     print("")
-    
-  def infoall(self):
-    print(self.edict)
 	
   def update(self, ndict):
     self.ndict = ndict
@@ -124,10 +106,6 @@ class thicks():
   def assignall(self, hnum):
     for e in self.edict:
       self.edict[e].append(self.hdict[hnum][0])
-    return self.edict
-   
-  def assignsingle(self, enum, hnum):
-    self.edict[enum].append(self.hdict[hnum][0])
     return self.edict
     
   def assignlist(self, elist, hnum):
