@@ -77,6 +77,9 @@ class elements():
   def update(self, ndict):
     self.ndict = ndict
 
+  def store(self):
+    return self.edict
+
 class materials():
   def __init__(self, edict):
     #Class contains materials data and element to which materials are assigned
@@ -162,6 +165,9 @@ class constraints():
       if y != 0:
         self.loads[(n * 2) - 1] = y
     self.cdict.update(self.loads)
+    return self.cdict
+
+  def store(self):
     return self.cdict
     
   def info(self):

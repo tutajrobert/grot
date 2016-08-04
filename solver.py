@@ -1,4 +1,4 @@
-import gauss
+import gauss, numpy
 
 class build():
   def __init__(self, nodes, elements, constraints):
@@ -90,13 +90,13 @@ class build():
     #self.clist = numpy.array(self.clist)  
 
   def gauss_linear(self):
-    for i in range(len(self.clist)):
+    """for i in range(len(self.clist)):
       self.gklist[i].append(self.clist[i])
     self.dlist = gauss.eliminate(self.gklist)
-    return self.dlist
-    """self.dlist = numpy.linalg.solve(self.gklist, self.clist)        
+    return self.dlist"""
+    self.dlist = numpy.linalg.solve(self.gklist, self.clist)        
     if numpy.allclose(numpy.dot(self.gklist, self.dlist), self.clist) == True:
-      return self.dlist"""
+      return self.dlist
 
   """def least_squares(self):           
     self.dlist = numpy.linalg.lstsq(self.gklist, self.clist)        

@@ -3,13 +3,11 @@ import prep, tools, solver
 t = tools.timer()
 
 n = prep.nodes()
-nodes = n.addlist([(0, 0), (4, 0), (4, 4), (0, 4), (8, 0), (8, 4), (12, 0), (12, 4)])
+nodes = n.addlist([(0, 0), (1, 0), (1, 1), (0, 1), (2, 0), (2, 1), (3, 0), (3, 1), (4, 0), (4, 1)])
 n.info()
 
-n.check([0, 0])
-
 e = prep.elements(nodes)
-elements = e.addlist([(1, 2, 3, 4), (3, 5, 6, 4), (5, 7, 8, 6)])
+elements = e.addlist([(1, 2, 3, 4), (3, 5, 6, 4), (5, 7, 8, 6), (7, 9, 10, 8)])
 e.info()
 
 m = prep.materials(elements)
@@ -18,13 +16,13 @@ elements = m.assignall(1)
 m.info()
 
 h = prep.thicks(elements)
-h.add(0.05)
+h.add(1)
 elements = h.assignall(1)
 h.info()
 
 c = prep.constraints()
-c.load([8], x = 0, y = -1e8)
-cons = c.support([1, 4])
+c.load([7, 9, 10, 8], x = 1, y = 0)
+cons = c.support([1, 2, 3, 4])
 c.info()
 
 d = solver.build(nodes, elements, cons)

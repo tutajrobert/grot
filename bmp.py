@@ -2,6 +2,7 @@ from PIL import Image, ImageCms
 import numpy
 import math
 import prep
+import solver
 
 im = Image.open("im.bmp")
 width = im.size[0]
@@ -48,7 +49,7 @@ def color_check(color, lab_colors):
         color_list.append(i)
     return color_list[dist_list.index(min(dist_list))]
 	
-bc_list = 	{
+bc_dict = 	{
     "black" : [],
 	"red" : [],
 	"green" : [],
@@ -99,10 +100,38 @@ for i in range(height):
             e.add(elist[0], elist[1], elist[2], elist[3])
 			
             if (matched_color is not "white") and (matched_color is not "cyan"):
-                bc_list[matched_color].append(n.check(j % width, i))
-                bc_list[matched_color].append(n.check((j % width) + 1, i))
-                bc_list[matched_color].append(n.check((j % width) + 1, i + 1))
-                bc_list[matched_color].append(n.check(j % width, i + 1))
+                bc_dict[matched_color].append(n.check(j % width, i))
+                bc_dict[matched_color].append(n.check((j % width) + 1, i))
+                bc_dict[matched_color].append(n.check((j % width) + 1, i + 1))
+                bc_dict[matched_color].append(n.check(j % width, i + 1))
+
+print(bc_dict)                
+                
+c.support(bc_dict["blue"])
+c.support(bc_dict["red"], 0, 1)
+c.support(bc_dict["green"], 1, 0)
+
+c.load(bc_dict["magenta"], 1)
+                
 n.info()
-e.info()				
-print(bc_list)
+e.info()
+c.info()
+
+nodes = n.store()
+eles = e.store()
+cons = c.store()
+
+m = prep.materials(eles)
+m.add("steel")
+elements = m.assignall(1)
+m.info()
+
+h = prep.thicks(eles)
+h.add(1)
+elements = h.assignall(1)
+h.info()
+
+d = solver.build(nodes, eles, cons)
+sol = d.gauss_linear()
+
+print(sol)
