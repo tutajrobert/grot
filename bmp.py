@@ -98,7 +98,7 @@ def create_geom():
                     elist.append(n4)
 
                 e.update(n.store())
-                e.add(elist[0], elist[1], elist[2], elist[3])
+                e.add(elist[3], elist[2], elist[1], elist[0])
 
                 if (matched_color is not "white") and (matched_color is not "cyan"):
                     bc_dict[matched_color].append(n.check(j % width, i))
