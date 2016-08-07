@@ -102,7 +102,7 @@ class build():
       for i in range(8):
         for j in range(8):
           self.gklist[dofs[i]][dofs[j]] += klist[i][j]
-    print(self.gklist[6])
+    #print(self.gklist[6])
     for c in self.cons:
       if self.cons[c] != 0:
         self.clist[c] = self.cons[c]
@@ -119,10 +119,11 @@ class build():
       self.gklist[i].append(self.clist[i])
     self.dlist = gauss.eliminate(self.gklist)
     return self.dlist"""
+    
     self.dlist = numpy.linalg.solve(self.gklist, self.clist)        
     if numpy.allclose(numpy.dot(self.gklist, self.dlist), self.clist) == True:
       return self.dlist
 
-  """def least_squares(self):           
+  def least_squares(self):           
     self.dlist = numpy.linalg.lstsq(self.gklist, self.clist)        
-    return self.dlist[0]"""
+    return self.dlist[0]

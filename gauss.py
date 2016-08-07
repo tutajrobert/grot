@@ -8,6 +8,7 @@ def eliminate(m):
     ans = []
     m.reverse() #makes it easier to backsolve
     for sol in range(len(m)):
+            print(m/len(m))
             if sol == 0:
                 ans.append(m[sol][-1] / m[sol][-2])
             else:

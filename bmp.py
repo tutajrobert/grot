@@ -96,16 +96,16 @@ def create_geom():
                     elist.append(e4)
                 else:
                     elist.append(n4)
-
+                print(n.store()[elist[0]])
                 e.update(n.store())
                 e.add(elist[3], elist[2], elist[1], elist[0])
-
+                print(elist)
                 if (matched_color is not "white") and (matched_color is not "cyan"):
                     bc_dict[matched_color].append(n.check(j % width, i))
                     bc_dict[matched_color].append(n.check((j % width) + 1, i))
                     bc_dict[matched_color].append(n.check((j % width) + 1, i + 1))
                     bc_dict[matched_color].append(n.check(j % width, i + 1))
-
+    print(e.store())
     #print(bc_dict)                
 
     c.support(bc_dict["blue"])
@@ -113,27 +113,3 @@ def create_geom():
     c.support(bc_dict["green"], 1, 0)
 
     return [n, e, c, bc_dict]
-    #c.load(bc_dict["magenta"], 1)
-
-"""n.info()
-e.info()
-c.info()
-
-nodes = n.store()
-eles = e.store()
-cons = c.store()
-
-m = prep.materials(eles)
-m.add("steel")
-elements = m.assignall(1)
-m.info()
-
-h = prep.thicks(eles)
-h.add(1)
-elements = h.assignall(1)
-h.info()
-
-d = solver.build(nodes, eles, cons)
-sol = d.gauss_linear()
-
-print(sol)"""

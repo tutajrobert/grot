@@ -44,7 +44,7 @@ class elements():
   def add(self, n1, n2, n3, n4):
   #Adds four nodes rectangle element. Takes nodes dictionaries and nodes elements
     self.enum += 1
-    self.edict[self.enum] = [self.ndict[n1], self.ndict[n2], self.ndict[n3], self.ndict[4], n1, n2, n3, n4]
+    self.edict[self.enum] = [self.ndict[n1], self.ndict[n2], self.ndict[n3], self.ndict[n4], n1, n2, n3, n4]
     return self.edict
     
   def info(self):
