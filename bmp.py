@@ -96,16 +96,16 @@ def create_geom():
                     elist.append(e4)
                 else:
                     elist.append(n4)
-                print(n.store()[elist[0]])
+                #print(n.store()[elist[0]])
                 e.update(n.store())
                 e.add(elist[3], elist[2], elist[1], elist[0])
-                print(elist)
+                #print(elist)
                 if (matched_color is not "white") and (matched_color is not "cyan"):
                     bc_dict[matched_color].append(n.check(j % width, i))
                     bc_dict[matched_color].append(n.check((j % width) + 1, i))
                     bc_dict[matched_color].append(n.check((j % width) + 1, i + 1))
                     bc_dict[matched_color].append(n.check(j % width, i + 1))
-    print(e.store())
+    #print(e.store())
     #print(bc_dict)                
 
     c.support(bc_dict["blue"])

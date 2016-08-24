@@ -4,15 +4,16 @@ import matplotlib.cm as cm
 from matplotlib.collections import PatchCollection
 import math
 import numpy
-import scipy.interpolate
 
 class prepare():
     def __init__(self, nodes, elements, results):
         self.nodes = nodes
         self.eles = elements
         self.res = results
+        print(self.res[0])
     
     def nod_disp(self):
+        colors = []
         xs = [self.nodes[i][0] for i in self.nodes]
         ys = [-self.nodes[i][1] for i in self.nodes]
         zs = []
@@ -39,7 +40,16 @@ class prepare():
                     1.0
                     )
                 )
-        colors = 100*numpy.random.rand(len(patch_list))
+            
+            dof1 = (self.eles[i][4] * 2) - 2
+            dof2 = (self.eles[i][5] * 2) - 2
+            dof3 = (self.eles[i][6] * 2) - 2
+            dof4 = (self.eles[i][7] * 2) - 2
+            dofs = [dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1]
+            
+            colors.append((self.res[dofs[0]] + self.res[dofs[2]] + self.res[dofs[4]] + self.res[dofs[6]]) / 4)
+            
+        #colors = 100*numpy.random.rand(len(patch_list))
         p = PatchCollection(patch_list, cmap=cm.jet, alpha=0.4)
         p.set_array(numpy.array(colors))
         ax.add_collection(p)
