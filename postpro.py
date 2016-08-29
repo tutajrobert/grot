@@ -4,13 +4,15 @@ import matplotlib.cm as cm
 from matplotlib.collections import PatchCollection
 import math
 import numpy
+import tools
 
 class prepare():
     def __init__(self, nodes, elements, results):
         self.nodes = nodes
         self.eles = elements
         self.res = results
-        print(self.res[0])
+    
+    min_x, min_y, max_x, max_y = 0, 0, 0, 0 
     
     def nod_disp(self):
         colors = []
@@ -22,7 +24,10 @@ class prepare():
         
         fig, ax = plt.subplots()
         patch_list = []
-        print(self.eles)
+        
+        min_x, min_y = self.eles[1][0][0], -self.eles[1][0][1]
+        max_x, max_y = min_x, min_y
+        
         for i in self.eles:
             xlist, ylist = [], []
             xlist.append(self.eles[i][0][0])
@@ -37,9 +42,14 @@ class prepare():
                 patches.Rectangle(
                     (min(xlist), -min(ylist)),   # (x,y)
                     1.0,          # width
-                    1.0
+                    -1.0
                     )
                 )
+            
+            min_x = tools.min_search(min(xlist), min_x)
+            min_y = tools.min_search(-max(ylist), min_y)            
+            max_x = tools.max_search(max(xlist), max_x)
+            max_y = tools.max_search(-min(ylist), max_y)
             
             dof1 = (self.eles[i][4] * 2) - 2
             dof2 = (self.eles[i][5] * 2) - 2
@@ -48,11 +58,25 @@ class prepare():
             dofs = [dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1]
             
             colors.append((self.res[dofs[0]] + self.res[dofs[2]] + self.res[dofs[4]] + self.res[dofs[6]]) / 4)
-            
-        #colors = 100*numpy.random.rand(len(patch_list))
-        p = PatchCollection(patch_list, cmap=cm.jet, alpha=0.4)
+        
+        diff_x = max_x - min_x
+        diff_y = max_y - min_y
+        sum_x = max_x + min_x
+        sum_y = max_y + min_y
+
+        if diff_x > diff_y:
+         		max_y = (sum_y / 2) + (diff_x / 2)
+         		min_y = (sum_y / 2) - (diff_x / 2)
+         		
+        else:
+         		max_x = (sum_x / 2) + (diff_y / 2)
+         		min_x = (sum_x / 2) - (diff_y / 2)
+
+        p = PatchCollection(patch_list, cmap=cm.jet, alpha=0.5)
         p.set_array(numpy.array(colors))
         ax.add_collection(p)
         plt.colorbar(p)
-        plt.plot([0,10],[0,-10])
+        plt.xlim(min_x - 1, max_x + 1)
+        plt.ylim(min_y - 1, max_y + 1)
+        plt.grid()
         plt.show()

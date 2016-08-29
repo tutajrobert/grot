@@ -96,20 +96,19 @@ def create_geom():
                     elist.append(e4)
                 else:
                     elist.append(n4)
-                #print(n.store()[elist[0]])
+
                 e.update(n.store())
                 e.add(elist[3], elist[2], elist[1], elist[0])
-                #print(elist)
+
                 if (matched_color is not "white") and (matched_color is not "cyan"):
                     bc_dict[matched_color].append(n.check(j % width, i))
                     bc_dict[matched_color].append(n.check((j % width) + 1, i))
                     bc_dict[matched_color].append(n.check((j % width) + 1, i + 1))
-                    bc_dict[matched_color].append(n.check(j % width, i + 1))
-    #print(e.store())
-    #print(bc_dict)                
+                    bc_dict[matched_color].append(n.check(j % width, i + 1))             
 
     c.support(bc_dict["blue"])
     c.support(bc_dict["red"], 0, 1)
     c.support(bc_dict["green"], 1, 0)
-
+    
+    print("Bitmap to finite elements model conversion... Done")
     return [n, e, c, bc_dict]
