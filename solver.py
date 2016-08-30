@@ -1,14 +1,15 @@
-import gauss, numpy
+import numpy.linalg
 
 class build():
     def __init__(self, nodes, elements, constraints):
         self.nodes = nodes
         self.eles = elements
         self.cons = constraints
-        self.gklist = []
-        self.clist = []
-        self.flist = []
+        self.gklist = [] #global stiffnes matrix
+        self.clist = [] #constraints list
+        self.flist = [] #forces matrix (right)
 
+        #Preparing global stiffnes matrix initially filled with zeros
         zerolist = []
         for i in range(len(self.nodes) * 2):
             zerolist.append(0)
@@ -16,6 +17,12 @@ class build():
             self.gklist.append(list(zerolist))
             self.clist.append(0)
     
+        """
+        For every element of model calculating:
+        kirchhoff modulus G
+        ele stiffnes matrix klist      
+        """
+        
         for e in self.eles:
             ele = self.eles[e]  
       
@@ -25,15 +32,16 @@ class build():
       
             G = E / (2 * (1 + v))
       
+            #Degree of freedoms are in unknown order, thus needed lines below
             dof1 = (ele[4] * 2) - 2
             dof2 = (ele[5] * 2) - 2
             dof3 = (ele[6] * 2) - 2
             dof4 = (ele[7] * 2) - 2
             dofs = [dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1]      
       
+            #Global stiffness element preparation
             p = (E * h) / (12 * (1 - (v ** 2)))
             q = (E * h) / (1 - v)
-        
     
             k11 = p * 2 * (3 - v)
             k22, k33, k44, k55, k66, k77, k88 = k11, k11, k11, k11, k11, k11, k11
@@ -68,10 +76,21 @@ class build():
                      [k71, k72, k73, k74, k75, k76, k77, k78],
                      [k81, k82, k83, k84, k85, k86, k87, k88]]
       
+            #Aggregation of global stiffnes matrix gklist
             for i in range(8):
                 for j in range(8):
                     self.gklist[dofs[i]][dofs[j]] += klist[i][j]
-
+        
+        """
+        Application of constraints:
+        for forces (value != 0) direct entry into forces matrix
+        for supports (value == 0) apply procedure of installation of the homogeneous bc
+            set row c in gklist to 0
+            set column c in gklist to 0
+            set diagonal elements c in gklist to 1
+            set element c in flist to 0
+        """
+        
         for c in self.cons:
             if self.cons[c] != 0:
                 self.clist[c] = self.cons[c]
@@ -82,9 +101,11 @@ class build():
                 self.gklist[c][c] = 1
 
     def gauss_linear(self):
+    #Solve linear equations system built above with direct elimination method
         self.dlist = numpy.linalg.solve(self.gklist, self.clist)        
         return self.dlist
 
-    def least_squares(self):           
+    def least_squares(self):
+    #Solve linear equations system built above with iterative least squares method
         self.dlist = numpy.linalg.lstsq(self.gklist, self.clist)        
         return self.dlist[0]

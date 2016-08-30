@@ -1,26 +1,34 @@
 import time
 
 class timer():
-		def __init__(self):
-				self.t = time.time()
     
-		def stop(self):
-				return time.time() - self.t
+    """
+    Just timer class for nice looking solving time printing
+    Can be used like a timer for measuring midtimes
+    """
+
+    def __init__(self):
+        self.t = time.time()
     
-		def check(self):
-				return str(round(self.stop() * 1e3, 2)) + " ms"
+    def stop(self):
+        return time.time() - self.t
+    
+    def check(self):
+        return str(round(self.stop() * 1e3, 2)) + " ms"
 
 def max_search(value, max):
-		if value > max:
-				max = value
-		else:
-				pass
-		return max
+#For iterative search of maximum value
+    if value > max:
+        max = value
+    else:
+        pass
+    return max
     
 def min_search(value, min):
-		if value < min:
-				min = value
-		else:
-				pass
-		return min
+#For iterative search of minimum value
+    if value < min:
+        min = value
+    else:
+        pass
+    return min
 		

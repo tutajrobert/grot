@@ -1,6 +1,4 @@
-from mlib import *
-
-ndict = {}
+import mlib
 	
 class nodes():
 #Class contains total number of nodes in nnum and node properties dict ndict
@@ -21,16 +19,22 @@ class nodes():
                 return n
 		
     def store(self):
-		#Just returns dict of nodes
+    #Just returns dict of nodes
         return self.ndict
 
     def info(self):
-        #Prints number of nodes and nodes dict
-        print("# NODES info")
-        print("Total number of nodes: " + str(self.nnum))
+    #Prints number of nodes and nodes dict
+        print("# nodes info")
+        print("number of nodes: " + str(self.nnum))
         print("nnum", ":", "[xcoord, ycoord]")
         for n in self.ndict:
             print("n" + str(n), ":", self.ndict[n])
+        print("")
+        
+    def short_info(self):
+    #Prints only nodes number
+        print("# nodes info")
+        print("number of nodes: " + str(self.nnum))
         print("")
 
 class elements():
@@ -48,8 +52,8 @@ class elements():
     
     def info(self):
     #Prints number of elements and elements list
-        print("# ELEMENTS info")
-        print("Total number of elements: " + str(self.enum))
+        print("# elements info")
+        print("number of elements: " + str(self.enum))
         print("enum", ":", "[n1, n2, n3, n4]")
         for e in self.edict:
             print("e" + str(e), ":", self.edict[e][4:8])
@@ -60,9 +64,15 @@ class elements():
         self.ndict = ndict
 
     def store(self):
-		#Just returns dict of elements
+    #Just returns dict of elements
         return self.edict
-
+    
+    def short_info(self):
+    #Prints only elements number
+        print("# elements info")
+        print("number of elements: " + str(self.enum))
+        print("")
+        
 class materials():
 #Class contains materials data and element to which materials are assigned  
     def __init__(self, edict):
@@ -74,7 +84,7 @@ class materials():
     def add(self, name):
     #Adds material by name to prep from mlib.py
         self.mnum += 1
-        self.mat[self.mnum] = mdict()[name]
+        self.mat[self.mnum] = mlib.mdict()[name]
         self.mnames[self.mnum] = name
   
     def assignall(self, mnum):
@@ -86,11 +96,11 @@ class materials():
     
     def info(self):
     #Prints material list
-        print("# MATERIALS info")
-        print("mnum mname", ":", "E, v")
+        print("# materials info")
+        #print("mnum mname", ":", "E, v")
         for m in self.mat:
-            print("m" + str(m), self.mnames[m], ":", round(self.mat[m][0] / 1e9, 2), "e+9,", round(self.mat[m][1], 2))  
-        print("")
+            print("m" + str(m), self.mnames[m], ":", str(int(self.mat[m][0] / 1e9)) + "e+9,", round(self.mat[m][1], 2))  
+        print("") 
 
 class thicks():
 #Class contains elements thicknesses
@@ -98,29 +108,31 @@ class thicks():
         self.edict = edict
         self.hnum = 0
         self.hdict = {}
-    
-    #Add thickness and property number  
+     
     def add(self, thickness):
+    #Add thickness and property number 
         self.hnum += 1
         self.hdict[self.hnum] = [thickness]
     
     def assignall(self, hnum):
+    #Assign prevoiusly added thickness property to all elements
         for e in self.edict:
             self.edict[e].append(self.hdict[hnum][0])
         return self.edict
     
     def assignlist(self, elist, hnum):
+    #Assign prevoiusly added thickness property to list of elements
         for e in elist:
             self.edict[e].append(self.hdict[hnum])
         return self.edict
     
     def info(self):
     #Prints thickness list
-        print("# THICKNESSES info")
-        print("hnum", ":", "value")
+        print("# thicknesses info")
+        #print("hnum", ":", "value")
         for h in self.hdict:
             print("h" + str(h), ":", self.hdict[h])  
-        print("")    
+        print("")
 
 class constraints():
     def __init__(self):
@@ -129,6 +141,7 @@ class constraints():
         self.cdict = {}
   
     def support(self, nlist, x = 0, y = 0):
+    #Add a constraint in node
         for n in nlist:
             if x == 0:
                 self.supports[(n * 2) - 2] = 0
@@ -138,6 +151,7 @@ class constraints():
         return self.cdict  
       
     def load(self, nlist, x = 0, y = 0):
+    #Add nodal load
         for n in nlist:
             if x != 0:
                 self.loads[(n * 2) - 2] = x
@@ -147,6 +161,7 @@ class constraints():
         return self.cdict
 
     def store(self):
+    #Just returns dict of constraints dict
         return self.cdict
     
     def info(self):
@@ -154,4 +169,7 @@ class constraints():
         print("# BOUNDARY CONDITIONS info")
         print("{dof : value, ...}")
         print(self.cdict) 
-        print("")            
+        print("")
+        
+    def short_info():
+        pass

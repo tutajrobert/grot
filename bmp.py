@@ -4,6 +4,9 @@ import math
 import prep
 import solver
 
+
+#Image opening and size check
+
 im = Image.open("im.bmp")
 width = im.size[0]
 height = im.size[1]
@@ -17,13 +20,14 @@ rgb2lab_transform = ImageCms.buildTransformFromOpenProfiles(
     srgb_profile, lab_profile, "RGB", "LAB"
 	)
 
-im_lab = ImageCms.applyTransform(
-    im, rgb2lab_transform
-	)
+im_lab = ImageCms.applyTransform(im, rgb2lab_transform)
 
 im_array = numpy.array(im_lab, dtype='int64')
 
-#dictionary of reference Lab colors
+"""
+Dictionary of reference Lab colors
+these below are hardcoded
+"""
 
 lab_colors = {
     "white" : [255, 0, 0],
@@ -37,18 +41,24 @@ lab_colors = {
 	}
 	
 def color_distance(color, ref_color):
-    #euclidean distance
+    #Euclidean distance in Lab color space
     return math.sqrt(((color[0] - ref_color[0]) ** 2) + ((color[1] - ref_color[1]) ** 2) + ((color[2] - ref_color[2]) ** 2))
 
 def color_check(color, lab_colors):
-    #check which reference color in colors dictionary is the closest to given
+    #Check which reference color in colors dictionary is the closest to given
     dist_list = []
     color_list = []
     for i in lab_colors:
         dist_list.append(color_distance(color, lab_colors[i]))
         color_list.append(i)
     return color_list[dist_list.index(min(dist_list))]
-	
+
+"""
+Colors used as boundary conditions
+Just need to know that "cyan" is used as model body
+and "white" is used for background
+"""
+
 bc_dict = 	{
     "black" : [],
 	"red" : [],
@@ -57,6 +67,8 @@ bc_dict = 	{
 	"magenta" : [],
 	"brown" : []
     }
+
+#Starting BMP to fem model translation
 
 n = prep.nodes()
 e = prep.elements(n.store())
@@ -100,15 +112,30 @@ def create_geom():
                 e.update(n.store())
                 e.add(elist[3], elist[2], elist[1], elist[0])
 
+                #Checking which element should go to bc list
                 if (matched_color is not "white") and (matched_color is not "cyan"):
                     bc_dict[matched_color].append(n.check(j % width, i))
                     bc_dict[matched_color].append(n.check((j % width) + 1, i))
                     bc_dict[matched_color].append(n.check((j % width) + 1, i + 1))
                     bc_dict[matched_color].append(n.check(j % width, i + 1))             
 
+    """
+    Hardcoded colors for supports
+    Red     support in X direction
+    Green   support in Y direction
+    Blue    support in Z (in-plane) direction
+    Nice and simple pattern, don't you think so?
+    """
+    
     c.support(bc_dict["blue"])
     c.support(bc_dict["red"], 0, 1)
     c.support(bc_dict["green"], 1, 0)
     
+    #Rest of colors: black, magenta and brown can be used for different bc or property assignment
+    
+    print("")
     print("Bitmap to finite elements model conversion... Done")
+    print("")
+    
+    #Nodes, eles, constraints and boundaries
     return [n, e, c, bc_dict]

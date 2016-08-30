@@ -12,9 +12,13 @@ class prepare():
         self.eles = elements
         self.res = results
     
-    min_x, min_y, max_x, max_y = 0, 0, 0, 0 
+    def disp_tot(self):
+        
+        """
+        Matplotlib script for resultant displacement view
+        One element == one colour, so element solution
+        """
     
-    def nod_disp(self):
         colors = []
         xs = [self.nodes[i][0] for i in self.nodes]
         ys = [-self.nodes[i][1] for i in self.nodes]
@@ -38,13 +42,9 @@ class prepare():
             ylist.append(self.eles[i][1][1])
             ylist.append(self.eles[i][2][1])
             ylist.append(self.eles[i][3][1])
-            patch_list.append(
-                patches.Rectangle(
-                    (min(xlist), -min(ylist)),   # (x,y)
-                    1.0,          # width
-                    -1.0
-                    )
-                )
+    
+            #Rectangle of vertex in (x, y) and given width and height
+            patch_list.append(patches.Rectangle((min(xlist), -min(ylist)), 1.0, -1.0))
             
             min_x = tools.min_search(min(xlist), min_x)
             min_y = tools.min_search(-max(ylist), min_y)            
