@@ -112,7 +112,7 @@ def create_geom():
                 e.update(n.store())
                 e.add(elist[3], elist[2], elist[1], elist[0])
 
-                #Checking which element should go to bc list
+                #Checking which node should go to bc list
                 if (matched_color is not "white") and (matched_color is not "cyan"):
                     bc_dict[matched_color].append(n.check(j % width, i))
                     bc_dict[matched_color].append(n.check((j % width) + 1, i))
@@ -135,6 +135,17 @@ def create_geom():
     
     print("")
     print("Bitmap to finite elements model conversion... Done")
+    print("")
+    
+    n.short_info()
+    e.short_info()
+    
+    #Boundary conditions summary echo
+    
+    print("# boundaries info")
+    for color in bc_dict:
+        if len(bc_dict[color]) > 0:
+            print(color, ":", len(bc_dict[color]), "eles")
     print("")
     
     #Nodes, eles, constraints and boundaries

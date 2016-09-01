@@ -131,7 +131,7 @@ class thicks():
         print("# thicknesses info")
         #print("hnum", ":", "value")
         for h in self.hdict:
-            print("h" + str(h), ":", self.hdict[h])  
+            print("h" + str(h), ":", self.hdict[h][0])  
         print("")
 
 class constraints():
@@ -161,15 +161,16 @@ class constraints():
         return self.cdict
 
     def store(self):
-    #Just returns dict of constraints dict
+    #Just returns dict of constraints
         return self.cdict
     
     def info(self):
     #Prints constraints dict
-        print("# BOUNDARY CONDITIONS info")
+        print("# boundary conditions info")
         print("{dof : value, ...}")
         print(self.cdict) 
         print("")
         
-    def short_info():
-        pass
+    def short_info(self):
+        print("# boundary conditions info")
+        print(self.cdict) 

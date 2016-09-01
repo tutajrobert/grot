@@ -4,9 +4,6 @@ t = tools.timer()
 
 geom = bmp.create_geom()
 
-geom[0].short_info()
-geom[1].short_info()
-
 nodes = geom[0].store()
 eles = geom[1].store()
 c = geom[2]
@@ -32,6 +29,6 @@ sol = solver.build(nodes, eles, cons)
 res = sol.gauss_linear()
 
 post = postpro.prepare(nodes, eles, res)
-post.disp_tot()
+post.show_results("disp_mag")
 
 print("Solving time:", t.check())
