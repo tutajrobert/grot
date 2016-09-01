@@ -21,7 +21,7 @@ class prepare():
         self.eles = elements
         self.res = results
     
-    def show_results(self, results):
+    def save_results(self, results):
         
         """
         Matplotlib script for results viewing
@@ -101,14 +101,21 @@ class prepare():
          		min_x = (sum_x / 2) - (diff_y / 2)
 
         #Matplotlib functions
-        col_map = cm.get_cmap("coolwarm", 10)
-        p = PatchCollection(patch_list, cmap=col_map, alpha=0.5)
+        col_map = cm.get_cmap("coolwarm")
+        p = PatchCollection(patch_list, cmap=col_map)
         p.set_array(numpy.array(colors))
         ax.add_collection(p)
         plt.colorbar(p)
         plt.xlim(min_x - 1, max_x + 1)
         plt.ylim(min_y - 1, max_y + 1)
-        ax.axes.xaxis.set_ticklabels([])
-        ax.axes.yaxis.set_ticklabels([])
+        #ax.axes.xaxis.set_ticks([i for i in range(int(min_x - 1), int(max_x + 1))])
+        #ax.axes.yaxis.set_ticks([i for i in range(int(min_y - 1), int(max_y + 1))])
+        #ax.axes.xaxis.set_ticklabels([])
+        #ax.axes.yaxis.set_ticklabels([])
+        ax.axes.xaxis.set_ticks([])
+        ax.axes.yaxis.set_ticks([])
         plt.grid()
-        plt.show()
+        #plt.show()
+        plt.savefig(results + ".png", DPI = 600)
+        
+        print("Saved results file", "[" + results + ".png]")

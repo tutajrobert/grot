@@ -4,25 +4,32 @@ import math
 import prep
 import solver
 
+def open(im_name):
+    #Image opening and size check
+    
+    #Welcome message
+    print("")
+    print("GRoT> ver. 0.1")
+    print("FEM 2d plates solver operating on bitmap files")
+    
+    im = Image.open(im_name)
+    width = im.size[0]
+    height = im.size[1]
 
-#Image opening and size check
+    #RGB to Lab conversion
 
-im = Image.open("im.bmp")
-width = im.size[0]
-height = im.size[1]
+    srgb_profile = ImageCms.createProfile("sRGB")
+    lab_profile  = ImageCms.createProfile("LAB")
 
-#RGB to Lab conversion
+    rgb2lab_transform = ImageCms.buildTransformFromOpenProfiles(
+        srgb_profile, lab_profile, "RGB", "LAB"
+	    )
 
-srgb_profile = ImageCms.createProfile("sRGB")
-lab_profile  = ImageCms.createProfile("LAB")
+    im_lab = ImageCms.applyTransform(im, rgb2lab_transform)
 
-rgb2lab_transform = ImageCms.buildTransformFromOpenProfiles(
-    srgb_profile, lab_profile, "RGB", "LAB"
-	)
-
-im_lab = ImageCms.applyTransform(im, rgb2lab_transform)
-
-im_array = numpy.array(im_lab, dtype='int64')
+    im_array = numpy.array(im_lab, dtype='int64')
+    
+    return[im_array, width, height]
 
 """
 Dictionary of reference Lab colors
@@ -30,7 +37,7 @@ these below are hardcoded
 """
 
 lab_colors = {
-    "white" : [255, 0, 0],
+  "white" : [255, 0, 0],
 	"black" : [0, 0, 0],
 	"red" : [138, 81, 70],
 	"green" : [224, 177, 81],
@@ -74,7 +81,8 @@ n = prep.nodes()
 e = prep.elements(n.store())
 c = prep.constraints()
 
-def create_geom():
+def create_geom(im_data):
+    im_array, width, height = im_data[0], im_data[1], im_data[2]
     for i in range(height):
         for j in range(width):
             elist = []
@@ -134,19 +142,22 @@ def create_geom():
     #Rest of colors: black, magenta and brown can be used for different bc or property assignment
     
     print("")
-    print("Bitmap to finite elements model conversion... Done")
-    print("")
+    print("Bitmap to finite elements model translated")
+    #print("")
     
     n.short_info()
     e.short_info()
     
     #Boundary conditions summary echo
     
-    print("# boundaries info")
+    #print("# boundaries info")
+    print_list = ""
     for color in bc_dict:
         if len(bc_dict[color]) > 0:
-            print(color, ":", len(bc_dict[color]), "eles")
-    print("")
+            print_list += "[" + str(color) + " : " + str(len(bc_dict[color])) + "] "
+    print("Prepared following boundaries:" + print_list)
+            #print(color, ":", len(bc_dict[color]), "eles")
+    #print("")
     
     #Nodes, eles, constraints and boundaries
     return [n, e, c, bc_dict]

@@ -1,4 +1,11 @@
 import mlib
+
+units = {"nm" : 1e-9,
+         "um" : 1e-6,
+         "mm" : 1e-3,
+         "cm" : 1e-2,
+         "dm" : 1e-1,
+         "km" : 1e3}
 	
 class nodes():
 #Class contains total number of nodes in nnum and node properties dict ndict
@@ -33,9 +40,9 @@ class nodes():
         
     def short_info(self):
     #Prints only nodes number
-        print("# nodes info")
-        print("number of nodes: " + str(self.nnum))
-        print("")
+        #print("# nodes info")
+        print("Created [" + str(self.nnum) + "] nodes")
+        #print("")
 
 class elements():
 #Class contains total number of elements in enum and element properties dict edict
@@ -47,7 +54,12 @@ class elements():
     def add(self, n1, n2, n3, n4):
     #Adds four nodes rectangle element. Takes nodes dictionaries and nodes elements
         self.enum += 1
-        self.edict[self.enum] = [self.ndict[n1], self.ndict[n2], self.ndict[n3], self.ndict[n4], n1, n2, n3, n4]
+        self.edict[self.enum] = [self.ndict[n1], 
+                                 self.ndict[n2], 
+                                 self.ndict[n3], 
+                                 self.ndict[n4], 
+                                 n1, n2, n3, n4,
+                                 0, 0, 0]
         return self.edict
     
     def info(self):
@@ -69,9 +81,9 @@ class elements():
     
     def short_info(self):
     #Prints only elements number
-        print("# elements info")
-        print("number of elements: " + str(self.enum))
-        print("")
+        #print("# elements info")
+        print("Created [" + str(self.enum) + "] elements")
+        #print("")
         
 class materials():
 #Class contains materials data and element to which materials are assigned  
@@ -80,6 +92,7 @@ class materials():
         self.mnum = 0
         self.mat = {}
         self.mnames = {}
+        self.unit = ""
   
     def add(self, name):
     #Adds material by name to prep from mlib.py
@@ -90,18 +103,34 @@ class materials():
     def assignall(self, mnum):
     #Assign added material to all elements
         for e in self.edict:
-            self.edict[e].append(self.mat[mnum][0])
-            self.edict[e].append(self.mat[mnum][1])
+            self.edict[e][8] = self.mat[mnum][0]
+            self.edict[e][9] = self.mat[mnum][1]
+        print("Property of all eles set to", "[" + str(self.mnames[mnum]) + "]", 
+              "(" + str(self.mat[mnum][0] / 1e9) + " GPa,",
+              str(self.mat[mnum][1]) + ")")
         return self.edict
     
     def info(self):
     #Prints material list
         print("# materials info")
-        #print("mnum mname", ":", "E, v")
         for m in self.mat:
-            print("m" + str(m), self.mnames[m], ":", str(int(self.mat[m][0] / 1e9)) + "e+9,", round(self.mat[m][1], 2))  
+            print("m" + str(m), self.mnames[m], ":", 
+                   str(int(self.mat[m][0] / 1e9)) + "e+9 GPa,", 
+                   round(self.mat[m][1], 2))  
         print("") 
+        
+    def set_unit(self, unit):
+    #Scaling nodal dimensions due to E change
+        for e in self.edict:
+            self.edict[e][8] = self.edict[e][8] * (units[unit] ** 2)
+        print("Unit system changed to", "[" + str(unit) + "]")
 
+    def set_scale(self, scale):
+    #Scaling nodal dimensions due to E change
+        for e in self.edict:
+            self.edict[e][8] = self.edict[e][8] / (scale ** 2)
+        print("Standard nodal dimension set to", "[" + str(scale) + "]")
+        
 class thicks():
 #Class contains elements thicknesses
     def __init__(self, edict):
@@ -117,13 +146,15 @@ class thicks():
     def assignall(self, hnum):
     #Assign prevoiusly added thickness property to all elements
         for e in self.edict:
-            self.edict[e].append(self.hdict[hnum][0])
+            self.edict[e][10] = self.hdict[hnum][0]
+        print("Thickness of all eles set to", 
+              "[" + str(self.hdict[hnum][0]) + "]")
         return self.edict
     
     def assignlist(self, elist, hnum):
     #Assign prevoiusly added thickness property to list of elements
         for e in elist:
-            self.edict[e].append(self.hdict[hnum])
+            self.edict[e][10] = self.hdict[hnum][0]
         return self.edict
     
     def info(self):
@@ -152,12 +183,20 @@ class constraints():
       
     def load(self, nlist, x = 0, y = 0):
     #Add nodal load
+        force_xcount, force_ycount = 0, 0
         for n in nlist:
             if x != 0:
                 self.loads[(n * 2) - 2] = x
+                force_xcount += 1
             if y != 0:
                 self.loads[(n * 2) - 1] = y
+                force_ycount += 1
         self.cdict.update(self.loads)
+        print("Applied force vector", 
+              (x, y), 
+              "to", 
+              "[" + str(max([force_xcount, force_ycount])) + "]", 
+              "nodes")
         return self.cdict
 
     def store(self):

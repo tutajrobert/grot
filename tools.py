@@ -14,7 +14,7 @@ class timer():
         return time.time() - self.t
     
     def check(self):
-        return str(round(self.stop() * 1e3, 2)) + " ms"
+        return str(round(self.stop() * 1e0, 2)) + " s"
 
 def max_search(value, max):
 #For iterative search of maximum value

@@ -100,9 +100,13 @@ class build():
                     self.gklist[i][c] = 0
                 self.gklist[c][c] = 1
 
-    def gauss_linear(self):
-    #Solve linear equations system built above with direct elimination method
-        self.dlist = numpy.linalg.solve(self.gklist, self.clist)        
+        print("Built", len(self.gklist[0]), "x", 
+              len(self.gklist[0]), "global stiffnes matrix")
+
+    def direct(self):
+    #Solve linear equations system built above with direct method
+        self.dlist = numpy.linalg.solve(self.gklist, self.clist)
+        print("Succesfully calculated nodal displacements")
         return self.dlist
 
     def least_squares(self):
