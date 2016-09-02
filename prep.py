@@ -5,6 +5,7 @@ units = {"nm" : 1e-9,
          "mm" : 1e-3,
          "cm" : 1e-2,
          "dm" : 1e-1,
+         "m"  : 1e0,
          "km" : 1e3}
 	
 class nodes():
@@ -192,8 +193,8 @@ class constraints():
                 self.loads[(n * 2) - 1] = y
                 force_ycount += 1
         self.cdict.update(self.loads)
-        print("Applied force vector", 
-              (x, y), 
+        print("Applied force vector",
+              "(" + "%.1e" % x + " N, " + "%.1e" % y +" N)", 
               "to", 
               "[" + str(max([force_xcount, force_ycount])) + "]", 
               "nodes")

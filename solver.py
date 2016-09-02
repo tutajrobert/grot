@@ -1,4 +1,4 @@
-import numpy.linalg
+import numpy
 
 class build():
     def __init__(self, nodes, elements, constraints):
@@ -101,15 +101,45 @@ class build():
                 self.gklist[c][c] = 1
 
         print("Built", len(self.gklist[0]), "x", 
-              len(self.gklist[0]), "global stiffnes matrix")
-
+              len(self.gklist[0]), "global stiffness matrix")
+        
     def direct(self):
     #Solve linear equations system built above with direct method
         self.dlist = numpy.linalg.solve(self.gklist, self.clist)
-        print("Succesfully calculated nodal displacements")
+        print("Succesfully and directly solved system of linear equations")
         return self.dlist
 
     def least_squares(self):
-    #Solve linear equations system built above with iterative least squares method
-        self.dlist = numpy.linalg.lstsq(self.gklist, self.clist)        
+    #Solve linear equations system built above with iterative least squares method (really long)
+        self.dlist = numpy.linalg.lstsq(self.gklist, self.clist)
+        print("Succesfully calculated nodal displacements with least sqaures method [residual : " + str(self.dlist[1]) + "]")
         return self.dlist[0]
+    
+    def strains_calc(self, disp_res):
+    #Reduced integration for strains
+        blist = [[0.5, 0, -0.5, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0.5, -0.5, 0, 0],
+                 [0.5, -0.5, 0, 0, 0.5, 0, -0.5, 0]]
+        
+        strains = []
+        
+        #Displacement results storing
+        for i in self.eles:
+            dof1 = (self.eles[i][4] * 2) - 2
+            dof2 = (self.eles[i][5] * 2) - 2
+            dof3 = (self.eles[i][6] * 2) - 2
+            dof4 = (self.eles[i][7] * 2) - 2
+            dofs = [dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1]
+            
+            disp_list = [disp_res[dofs[0]],
+                         disp_res[dofs[1]],
+                         disp_res[dofs[2]],
+                         disp_res[dofs[3]],
+                         disp_res[dofs[4]],
+                         disp_res[dofs[5]],
+                         disp_res[dofs[6]],
+                         disp_res[dofs[7]]]
+            
+            strains.append(numpy.dot(blist, numpy.matrix.transpose(numpy.array(disp_list))))
+        print("Succusfully calculated strains tensors (reduced 1-point integration)")
+        return(strains)

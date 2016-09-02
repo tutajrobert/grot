@@ -9,8 +9,12 @@ def open(im_name):
     
     #Welcome message
     print("")
+    print("----------")
     print("GRoT> ver. 0.1")
-    print("FEM 2d plates solver operating on bitmap files")
+    print("Linear FEM software for")
+    print("Lagrange constant strain square plane elements T4")
+    print("creating model obtained from bitmap file")
+    print("----------")
     
     im = Image.open(im_name)
     width = im.size[0]
