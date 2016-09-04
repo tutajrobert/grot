@@ -185,17 +185,18 @@ class constraints():
     def load(self, nlist, x = 0, y = 0):
     #Add nodal load
         force_xcount, force_ycount = 0, 0
+        nlist = list(set(nlist))
         for n in nlist:
             if x != 0:
-                self.loads[(n * 2) - 2] = x
+                self.loads[(n * 2) - 2] = (x / len(nlist))
                 force_xcount += 1
             if y != 0:
-                self.loads[(n * 2) - 1] = y
+                self.loads[(n * 2) - 1] = (y / len(nlist))
                 force_ycount += 1
         self.cdict.update(self.loads)
         print("Applied force vector",
               "(" + "%.1e" % x + " N, " + "%.1e" % y +" N)", 
-              "to", 
+              "uniformly distributed to", 
               "[" + str(max([force_xcount, force_ycount])) + "]", 
               "nodes")
         return self.cdict

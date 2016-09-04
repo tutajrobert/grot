@@ -14,6 +14,7 @@ plt.rcParams["xtick.major.size"] = 0
 plt.rcParams["ytick.major.size"] = 0
 plt.rcParams["text.hinting_factor"] = 1
 plt.rcParams["figure.facecolor"] = "white"
+plt.rcParams["patch.linewidth"] = 0.5
 
 class prepare():
     def __init__(self, nodes, elements, results):
@@ -161,18 +162,39 @@ class prepare():
             max_y = tools.max_search(-min(ylist), max_y)
             
             #Results choosing
-            if results == "strn_x":
-                colors.append(self.res[counter][0])
-                plt.title("Normal XX component of strains tensor")
+            if results == "eps_x":
+                colors.append(self.res[0][counter][0])
+                if counter == 400:
+                    print(self.res[0][counter][0])
+                plt.title("Normal XX component of strain tensor")
 
-            elif results == "strn_y":
-                colors.append(self.res[counter][1])
-                plt.title("Normal YY component of strains tensor")
+            elif results == "eps_y":
+                colors.append(self.res[0][counter][1])
+                if counter == 400:
+                    print(self.res[0][counter][1])
+                plt.title("Normal YY component of strain tensor")
                 
-            elif results == "strn_xy":
-                colors.append(self.res[counter][2])
-                plt.title("Shear XY component of strains tensor")
+            elif results == "gamma_xy":
+                colors.append(self.res[0][counter][2])
+                if counter == 400:
+                    print(self.res[0][counter][2])
+                plt.title("Shear XY component of strain tensor")
+            
+            if results == "sig_x":
+                colors.append(self.res[1][counter][0])
+                plt.title("Normal XX component of stress tensor")
+
+            elif results == "sig_y":
+                colors.append(self.res[1][counter][1])
+                plt.title("Normal YY component of stress tensor")
+                
+            elif results == "tau_xy":
+                colors.append(self.res[1][counter][2])
+                plt.title("Shear XY component of stress tensor")       
         
+            else:
+                pass
+                
         #Axes range
         diff_x = max_x - min_x
         diff_y = max_y - min_y
@@ -188,7 +210,7 @@ class prepare():
          		min_x = (sum_x / 2) - (diff_y / 2)
 
         #Matplotlib functions
-        col_map = cm.get_cmap("coolwarm")
+        col_map = cm.get_cmap("jet")
         p = PatchCollection(patch_list, cmap=col_map)
         p.set_array(numpy.array(colors))
         ax.add_collection(p)

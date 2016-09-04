@@ -117,29 +117,60 @@ class build():
     
     def strains_calc(self, disp_res):
     #Reduced integration for strains
-        blist = [[0.5, 0, -0.5, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0.5, -0.5, 0, 0],
-                 [0.5, -0.5, 0, 0, 0.5, 0, -0.5, 0]]
+    
+        """
+        bc = 0.125
+        blist = [[-bc, 0, bc, 0, bc, 0, -bc, 0],
+                 [0, -bc, 0, -bc, 0, bc, 0, bc],
+                 [-bc, -bc, -bc, bc, bc, bc, bc, -bc]]
+        """
+        
+        blist = [[1, 0, -1, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, -1, 1, 0],
+                 [1, 0, -1, 0, 0, -1, 1, 0]]
         
         strains = []
         
         #Displacement results storing
         for i in self.eles:
+            
             dof1 = (self.eles[i][4] * 2) - 2
             dof2 = (self.eles[i][5] * 2) - 2
             dof3 = (self.eles[i][6] * 2) - 2
             dof4 = (self.eles[i][7] * 2) - 2
             dofs = [dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1]
             
-            disp_list = [disp_res[dofs[0]],
-                         disp_res[dofs[1]],
-                         disp_res[dofs[2]],
-                         disp_res[dofs[3]],
-                         disp_res[dofs[4]],
-                         disp_res[dofs[5]],
+            disp_list = [disp_res[dofs[2]],
+                         disp_res[dofs[0]],
                          disp_res[dofs[6]],
-                         disp_res[dofs[7]]]
+                         disp_res[dofs[4]],
+                         disp_res[dofs[3]],
+                         disp_res[dofs[1]],
+                         disp_res[dofs[7]],
+                         disp_res[dofs[5]]]
             
-            strains.append(numpy.dot(blist, numpy.matrix.transpose(numpy.array(disp_list))))
-        print("Succusfully calculated strains tensors (reduced 1-point integration)")
-        return(strains)
+            strains.append(numpy.dot(blist, 
+                    numpy.matrix.transpose(numpy.array(disp_list)))
+                )
+        print(dofs)
+        print("Succusfully calculated strain tensors (reduced 1-point integration)")
+        
+
+        stresses = []
+        counter = -1
+        
+        for i in self.eles:
+        
+            counter += 1
+            E = self.eles[i][8]
+            v = self.eles[i][9]        
+            fc = E / (1 - (v ** 2))
+            
+            slist = [[fc, fc * v, 0],
+                     [fc * v, fc, 0],
+                     [0, 0, fc * ((1 - v) / 2)]]
+                     
+            stresses.append(numpy.dot(slist, strains[counter]))
+        print("Succusfully calculated stress tensors (reduced 1-point integration)")
+        
+        return(strains, stresses)
