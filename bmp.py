@@ -88,6 +88,7 @@ c = prep.constraints()
 def create_geom(im_data):
     im_array, width, height = im_data[0], im_data[1], im_data[2]
     for i in range(height):
+        print(round((i / height) * 100, 2), "%")
         for j in range(width):
             elist = []
             matched_color = color_check(im_array[i][j], lab_colors)

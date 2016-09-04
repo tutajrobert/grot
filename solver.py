@@ -146,7 +146,6 @@ class build():
             strains.append(numpy.dot(blist, 
                     numpy.matrix.transpose(numpy.array(disp_list)))
                 )
-        print(dofs)
         
         #Reduced integration for stresses
         stresses = []
