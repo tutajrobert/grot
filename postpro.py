@@ -16,6 +16,18 @@ plt.rcParams["text.hinting_factor"] = 1
 plt.rcParams["figure.facecolor"] = "white"
 plt.rcParams["patch.linewidth"] = 0.5
 
+def discrete_cmap(N, base_cmap=None):
+    """Create an N-bin discrete colormap from the specified input map"""
+
+    # Note that if base_cmap is a string or None, you can simply do
+    #    return plt.cm.get_cmap(base_cmap, N)
+    # The following works for string, None, or a colormap instance:
+
+    base = plt.cm.get_cmap(base_cmap)
+    color_list = base(numpy.linspace(0, 1, N))
+    cmap_name = base.name + str(N)
+    return base.from_list(cmap_name, color_list, N)
+
 class prepare():
     def __init__(self, nodes, elements, results):
         self.nodes = nodes
@@ -164,20 +176,14 @@ class prepare():
             #Results choosing
             if results == "eps_x":
                 colors.append(self.res[0][counter][0])
-                if counter == 400:
-                    print(self.res[0][counter][0])
                 plt.title("Normal XX component of strain tensor")
 
             elif results == "eps_y":
                 colors.append(self.res[0][counter][1])
-                if counter == 400:
-                    print(self.res[0][counter][1])
                 plt.title("Normal YY component of strain tensor")
                 
             elif results == "gamma_xy":
                 colors.append(self.res[0][counter][2])
-                if counter == 400:
-                    print(self.res[0][counter][2])
                 plt.title("Shear XY component of strain tensor")
             
             if results == "sig_x":
@@ -210,16 +216,20 @@ class prepare():
          		min_x = (sum_x / 2) - (diff_y / 2)
 
         #Matplotlib functions
-        col_map = cm.get_cmap("jet")
-        p = PatchCollection(patch_list, cmap=col_map)
+        #col_map = cm.get_cmap("jet")
+        dis_cmap = cmap=discrete_cmap(11, "jet")
+        cmap.set_under('gray')
+        p = PatchCollection(patch_list, cmap = dis_cmap)
         p.set_array(numpy.array(colors))
         ax.add_collection(p)
-        plt.colorbar(p)
+        cbar_lim = [numpy.mean(colors) - numpy.std(colors), numpy.mean(colors) + numpy.std(colors)]
+        cbar = plt.colorbar(p, ticks = numpy.linspace(cbar_lim[0], cbar_lim[1], 12), extend='min')
         plt.xlim(min_x - 1, max_x + 1)
         plt.ylim(min_y - 1, max_y + 1)
         ax.axes.xaxis.set_ticks([])
         ax.axes.yaxis.set_ticks([])
         plt.grid()
+        p.set_clim(cbar_lim)
         #plt.show()
         plt.savefig(results + ".png", DPI = 600)
         

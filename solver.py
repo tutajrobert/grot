@@ -118,16 +118,10 @@ class build():
     def strains_calc(self, disp_res):
     #Reduced integration for strains
     
-        """
-        bc = 0.125
-        blist = [[-bc, 0, bc, 0, bc, 0, -bc, 0],
-                 [0, -bc, 0, -bc, 0, bc, 0, bc],
-                 [-bc, -bc, -bc, bc, bc, bc, bc, -bc]]
-        """
-        
-        blist = [[1, 0, -1, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, -1, 1, 0],
-                 [1, 0, -1, 0, 0, -1, 1, 0]]
+
+        blist = [[.5, -.5, -.5, .5, 0, 0, 0, 0],
+                 [0, 0, 0, 0, -.5, -.5, .5, .5],
+                 [-.5, -.5, .5, .5, .5, -.5, -.5, .5]]
         
         strains = []
         
@@ -153,9 +147,8 @@ class build():
                     numpy.matrix.transpose(numpy.array(disp_list)))
                 )
         print(dofs)
-        print("Succusfully calculated strain tensors (reduced 1-point integration)")
         
-
+        #Reduced integration for stresses
         stresses = []
         counter = -1
         
@@ -171,6 +164,6 @@ class build():
                      [0, 0, fc * ((1 - v) / 2)]]
                      
             stresses.append(numpy.dot(slist, strains[counter]))
-        print("Succusfully calculated stress tensors (reduced 1-point integration)")
+        print("Succusfully calculated strain and stress tensors (reduced 1-point integration)")
         
         return(strains, stresses)
