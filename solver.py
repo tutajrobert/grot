@@ -1,4 +1,5 @@
-import numpy, sys
+import numpy
+import sys
 
 class build():
     def __init__(self, nodes, elements, constraints):
@@ -8,6 +9,7 @@ class build():
         self.gklist = [] #global stiffnes matrix
         self.clist = [] #constraints list
         self.flist = [] #forces matrix (right)
+        self.counter = 0
 
         #Preparing global stiffnes matrix initially filled with zeros
         zerolist = []
@@ -23,7 +25,18 @@ class build():
         ele stiffnes matrix klist      
         """
         
+        print("")
+        
         for e in self.eles:
+            self.counter += 1
+        
+            #Progress text in percents
+            sys.stdout.write("\r" + 
+            "Building global stiffnes matrix [" + 
+            str(round(((self.counter) / len(self.eles)) * 100, 2)) + 
+            " %]")
+            sys.stdout.flush()
+        
             ele = self.eles[e]  
       
             E = ele[8]
@@ -100,11 +113,14 @@ class build():
                     self.gklist[i][c] = 0
                 self.gklist[c][c] = 1
 
+        print("")
         print("Built", "[" + str(len(self.gklist[0])), "x", 
-              str(len(self.gklist[0])) + "]", "global stiffness matrix")
+              str(len(self.gklist[0])) + "]", "matrix")
         print("Storing reserved", "[" + str(round((len(self.gklist[0]) ** 2) * (sys.getsizeof(self.gklist[0][0]) / 1e6), 1)) + "]", "Mbytes of memory")
+    
     def direct(self):
     #Solve linear equations system built above with direct method
+        print("Solving... (this may take a while)")
         self.dlist = numpy.linalg.solve(self.gklist, self.clist)
         print("Succesfully and directly solved system of linear equations")
         return self.dlist
@@ -117,7 +133,6 @@ class build():
     
     def strains_calc(self, disp_res):
     #Reduced integration for strains
-    
 
         blist = [[.5, -.5, -.5, .5, 0, 0, 0, 0],
                  [0, 0, 0, 0, -.5, -.5, .5, .5],
@@ -132,7 +147,10 @@ class build():
             dof2 = (self.eles[i][5] * 2) - 2
             dof3 = (self.eles[i][6] * 2) - 2
             dof4 = (self.eles[i][7] * 2) - 2
-            dofs = [dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1]
+            dofs = [dof1, dof1 + 1, 
+                    dof2, dof2 + 1, 
+                    dof3, dof3 + 1, 
+                    dof4, dof4 + 1]
             
             disp_list = [disp_res[dofs[2]],
                          disp_res[dofs[0]],
@@ -149,7 +167,7 @@ class build():
         
         #Reduced integration for stresses
         stresses = []
-        counter = -1
+        counter = -1 #counter for synchronize with strains
         
         for i in self.eles:
         
@@ -164,5 +182,6 @@ class build():
                      
             stresses.append(numpy.dot(slist, strains[counter]))
         print("Calculated strain and stress tensors (reduced 1-point integration)")
+        print("")
         
         return(strains, stresses)

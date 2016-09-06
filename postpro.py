@@ -6,6 +6,7 @@ import math
 import numpy
 import tools
 
+#Matplotlib style functions
 plt.rcParams["font.family"] = "monospace"
 plt.rcParams["font.size"] = 10
 plt.rcParams["font.weight"] = 100
@@ -21,8 +22,13 @@ def discrete_cmap(N, base_cmap=None):
     
     base = plt.cm.get_cmap(base_cmap)
     color_list = base(numpy.linspace(1 - (1 / N), 1 / N, N))
-    """down_up = [base(numpy.linspace(1, 0, N))[0],
-              base(numpy.linspace(1, 0, N))[-1]]"""
+    
+    """
+    For edge colors retrieving
+    down_up = [base(numpy.linspace(1, 0, N))[0],
+              base(numpy.linspace(1, 0, N))[-1]]
+    """
+              
     cmap_name = base.name + str(N)
     return base.from_list(cmap_name, color_list, N)
 
@@ -46,6 +52,7 @@ class prepare():
         ys = [-self.nodes[i][1] for i in self.nodes]
         
         fig, ax = plt.subplots()
+        #ax.set_axis_bgcolor((1, 1, 1))
         patch_list = []
         
         min_x, min_y = self.eles[1][0][0], -self.eles[1][0][1]
@@ -64,8 +71,10 @@ class prepare():
             ylist.append(self.eles[i][3][1])
     
             #Rectangle of vertex in (x, y) and given width and height
-            patch_list.append(patches.Rectangle((min(xlist), -min(ylist)), 1.0, -1.0))
-            
+            patch_list.append(patches.Rectangle((min(xlist), 
+                                                -min(ylist)), 
+                                                1.0, 
+                                                -1.0))
             
             #Axes limits searching
             min_x = tools.min_search(min(xlist), min_x)
@@ -80,7 +89,7 @@ class prepare():
             dof4 = (self.eles[i][7] * 2) - 2
             dofs = [dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1]
             
-            #Results choosing
+            #Results choosing and preparing
             if results == "disp_x":
                 colors.append(0.25 * (self.res[dofs[0]] + 
                                       self.res[dofs[2]] + 
@@ -95,10 +104,14 @@ class prepare():
                 plt.title("Displacement in Y direction")
                 
             elif results == "disp_mag":
-                colors.append(0.25 * (math.sqrt((self.res[dofs[0]] ** 2) + (self.res[dofs[1]] ** 2)) + 
-                                       math.sqrt((self.res[dofs[2]] ** 2) + (self.res[dofs[3]] ** 2)) +
-                                       math.sqrt((self.res[dofs[4]] ** 2) + (self.res[dofs[5]] ** 2)) +
-                                       math.sqrt((self.res[dofs[6]] ** 2) + (self.res[dofs[7]] ** 2))))
+                colors.append(0.25 * (math.sqrt((self.res[dofs[0]] ** 2) + 
+                                                (self.res[dofs[1]] ** 2)) + 
+                                      math.sqrt((self.res[dofs[2]] ** 2) + 
+                                                (self.res[dofs[3]] ** 2)) +
+                                      math.sqrt((self.res[dofs[4]] ** 2) + 
+                                                (self.res[dofs[5]] ** 2)) +
+                                      math.sqrt((self.res[dofs[6]] ** 2) + 
+                                                (self.res[dofs[7]] ** 2))))
                 plt.title("Displacement magnitude")
         
         #Axes range
@@ -124,7 +137,9 @@ class prepare():
         
         cbar_lim = [min(colors), max(colors)]
         cbar = plt.colorbar(p, alpha = 0.8,
-                            ticks = numpy.linspace(cbar_lim[0], cbar_lim[1], 1 + self.ncol), 
+                            ticks = numpy.linspace(cbar_lim[0], 
+                                                   cbar_lim[1], 
+                                                   1 + self.ncol), 
                             )
         p.set_clim(cbar_lim)
         
@@ -134,7 +149,7 @@ class prepare():
         ax.axes.xaxis.set_ticks([])
         ax.axes.yaxis.set_ticks([])
         
-        plt.grid()
+        #plt.grid()
         
         plt.savefig(results + ".png", DPI = 600)
         
@@ -174,7 +189,10 @@ class prepare():
             ylist.append(self.eles[i][3][1])
     
             #Rectangle of vertex in (x, y) and given width and height
-            patch_list.append(patches.Rectangle((min(xlist), -min(ylist)), 1.0, -1.0))
+            patch_list.append(patches.Rectangle((min(xlist), 
+                                                -min(ylist)), 
+                                                1.0, 
+                                                -1.0))
             
             #Axes limits searching
             min_x = tools.min_search(min(xlist), min_x)
@@ -182,7 +200,7 @@ class prepare():
             max_x = tools.max_search(max(xlist), max_x)
             max_y = tools.max_search(-min(ylist), max_y)
             
-            #Results choosing
+            #Results choosing and preparing
             if results == "eps_x":
                 colors.append(self.res[0][counter][0])
                 plt.title("Normal XX component of strain tensor")
@@ -226,6 +244,7 @@ class prepare():
 
         #Matplotlib functions
         dis_cmap = cmap=discrete_cmap(self.ncol, self.init_cmap)
+        #Hardcoded colors of color bar extensions
         cmap.set_over([0.64705884,  0., 0.14901961, 1.])
         cmap.set_under([0.19215687, 0.21176471, 0.58431375, 1.])
         
@@ -236,7 +255,9 @@ class prepare():
         cbar_lim = [numpy.mean(colors) - numpy.std(colors),
                     numpy.mean(colors) + numpy.std(colors)]
         cbar = plt.colorbar(p, alpha = 0.8,
-                            ticks = numpy.linspace(cbar_lim[0], cbar_lim[1], 1 + self.ncol), 
+                            ticks = numpy.linspace(cbar_lim[0], 
+                                                   cbar_lim[1], 
+                                                   1 + self.ncol), 
                             extend='both')
         p.set_clim(cbar_lim)
         
@@ -246,7 +267,7 @@ class prepare():
         ax.axes.xaxis.set_ticks([])
         ax.axes.yaxis.set_ticks([])
         
-        plt.grid()
+        #plt.grid()
         
         plt.savefig(results + ".png", DPI = 600)
         

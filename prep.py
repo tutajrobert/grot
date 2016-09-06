@@ -167,6 +167,7 @@ class thicks():
         print("")
 
 class constraints():
+#Class for creating boundaries
     def __init__(self):
         self.loads = {}
         self.supports = {}
@@ -185,6 +186,7 @@ class constraints():
     def load(self, nlist, x = 0, y = 0):
     #Add nodal load
         force_xcount, force_ycount = 0, 0
+        #Need to create unique entries only list
         nlist = list(set(nlist))
         for n in nlist:
             if x != 0:

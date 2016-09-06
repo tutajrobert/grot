@@ -40,4 +40,21 @@ post2.save_sresults("sig_x")
 post2.save_sresults("sig_y")
 post2.save_sresults("tau_xy")
 
+print("")
 print("Task finished in", t.check())
+
+"""
+NEXT TO DO:
+Huber stress
+reactions in colors
+probe in colors
+reference calc
+principal vectors
+reaction vectors
+tension / compression
+easy prep
+max, min, mean in figures
+matrix printer
+check of code
+comments and docs
+"""
