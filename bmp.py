@@ -85,42 +85,59 @@ n = prep.nodes()
 e = prep.elements(n.store())
 c = prep.constraints()
 
+def node_check(coords, ndict):
+    #Check if node with x, y coordinates is already included in ndict
+    for n in ndict:
+        if ndict[n] == [coords[0], coords[1]]:
+            return n
+
 def create_geom(im_data):
+    old_list = []
+    
     im_array, width, height = im_data[0], im_data[1], im_data[2]
     for i in range(height):
-        print(round((i / height) * 100, 2), "%")
+        old_list.append({})
+        #print(round((i / height) * 100, 2), "%")
         for j in range(width):
             elist = []
             matched_color = color_check(im_array[i][j], lab_colors)
             if matched_color is not "white":
 
-                n1 = n.check(j % width, i)
+                n1 = node_check([j % width, i], {**old_list[i], **old_list[i - 1]})
                 if n1 == None:
                     e1 = n.add(j % width, i)
                     elist.append(e1)
+                    old_list[i][e1] = [j % width, i]
                 else:
                     elist.append(n1)
+                    old_list[i][n1] = [j % width, i]
 
-                n2 = n.check((j % width) + 1, i)
+                n2 = node_check([(j % width) + 1, i], {**old_list[i], **old_list[i - 1]})
                 if n2 == None:
                     e2 = n.add((j % width) + 1, i)
                     elist.append(e2)
+                    old_list[i][e2] = [(j % width) + 1, i]
                 else:
                     elist.append(n2)
+                    old_list[i][n2] = [(j % width) + 1, i]
 
-                n3 = n.check((j % width) + 1, i + 1)
+                n3 = node_check([(j % width) + 1, i + 1], {**old_list[i], **old_list[i - 1]})
                 if n3 == None:
                     e3 = n.add((j % width) + 1, i + 1)
                     elist.append(e3)
+                    old_list[i][e3] = [(j % width) + 1, i + 1]
                 else:
                     elist.append(n3)
+                    old_list[i][n3] = [(j % width) + 1, i + 1]
 
-                n4 = n.check(j % width, i + 1)
+                n4 = node_check([j % width, i + 1], {**old_list[i], **old_list[i - 1]})
                 if n4 == None:
                     e4 = n.add(j % width, i + 1)
                     elist.append(e4)
+                    old_list[i][e4] = [j % width, i + 1]
                 else:
                     elist.append(n4)
+                    old_list[i][n4] = [j % width, i + 1]
 
                 e.update(n.store())
                 e.add(elist[3], elist[2], elist[1], elist[0])
@@ -130,7 +147,7 @@ def create_geom(im_data):
                     bc_dict[matched_color].append(n.check(j % width, i))
                     bc_dict[matched_color].append(n.check((j % width) + 1, i))
                     bc_dict[matched_color].append(n.check((j % width) + 1, i + 1))
-                    bc_dict[matched_color].append(n.check(j % width, i + 1))             
+                    bc_dict[matched_color].append(n.check(j % width, i + 1))
 
     """
     Hardcoded colors for supports
@@ -159,8 +176,8 @@ def create_geom(im_data):
     print_list = ""
     for color in bc_dict:
         if len(bc_dict[color]) > 0:
-            print_list += "[" + str(color) + " : " + str(len(bc_dict[color])) + "] "
-    print("Prepared following boundaries:" + print_list)
+            print_list += "[" + str(color) + " : " + str(int(len(bc_dict[color]) / 4)) + "] "
+    print("Prepared boundaries applied to eles: " + print_list)
             #print(color, ":", len(bc_dict[color]), "eles")
     #print("")
     

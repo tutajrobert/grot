@@ -1,4 +1,4 @@
-import numpy
+import numpy, sys
 
 class build():
     def __init__(self, nodes, elements, constraints):
@@ -100,9 +100,9 @@ class build():
                     self.gklist[i][c] = 0
                 self.gklist[c][c] = 1
 
-        print("Built", len(self.gklist[0]), "x", 
-              len(self.gklist[0]), "global stiffness matrix")
-        
+        print("Built", "[" + str(len(self.gklist[0])), "x", 
+              str(len(self.gklist[0])) + "]", "global stiffness matrix")
+        print("Storing reserved", "[" + str(round((len(self.gklist[0]) ** 2) * (sys.getsizeof(self.gklist[0][0]) / 1e6), 1)) + "]", "Mbytes of memory")
     def direct(self):
     #Solve linear equations system built above with direct method
         self.dlist = numpy.linalg.solve(self.gklist, self.clist)
@@ -163,6 +163,6 @@ class build():
                      [0, 0, fc * ((1 - v) / 2)]]
                      
             stresses.append(numpy.dot(slist, strains[counter]))
-        print("Succusfully calculated strain and stress tensors (reduced 1-point integration)")
+        print("Calculated strain and stress tensors (reduced 1-point integration)")
         
         return(strains, stresses)

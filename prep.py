@@ -196,7 +196,7 @@ class constraints():
         self.cdict.update(self.loads)
         print("Applied force vector",
               "(" + "%.1e" % x + " N, " + "%.1e" % y +" N)", 
-              "uniformly distributed to", 
+              "distributed to", 
               "[" + str(max([force_xcount, force_ycount])) + "]", 
               "nodes")
         return self.cdict
