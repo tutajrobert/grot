@@ -16,6 +16,7 @@ plt.rcParams["ytick.major.size"] = 0
 plt.rcParams["text.hinting_factor"] = 1
 plt.rcParams["figure.facecolor"] = "white"
 plt.rcParams["patch.linewidth"] = 0.5
+plt.rcParams["legend.fontsize"] = 9
 
 def discrete_cmap(N, base_cmap=None):
     #Create an N-bin discrete colormap from the specified input map
@@ -136,7 +137,7 @@ class prepare():
         ax.add_collection(p)
         
         cbar_lim = [min(colors), max(colors)]
-        cbar = plt.colorbar(p, alpha = 0.8,
+        cbar = plt.colorbar(p, alpha = 0.9,
                             ticks = numpy.linspace(cbar_lim[0], 
                                                    cbar_lim[1], 
                                                    1 + self.ncol), 
@@ -223,7 +224,12 @@ class prepare():
                 
             elif results == "tau_xy":
                 colors.append(self.res[1][counter][2])
-                plt.title("Shear XY component of stress tensor")       
+                plt.title("Shear XY component of stress tensor")     
+                
+            elif results == "huber":
+                colors.append(math.sqrt((math.sqrt(self.res[1][counter][0] ** 2 + self.res[1][counter][1] ** 2) ** 2) + 
+                              (3 * (self.res[1][counter][2] ** 2))))
+                plt.title("Huber equivalent stress")
         
             else:
                 pass
@@ -244,6 +250,7 @@ class prepare():
 
         #Matplotlib functions
         dis_cmap = cmap=discrete_cmap(self.ncol, self.init_cmap)
+        
         #Hardcoded colors of color bar extensions
         cmap.set_over([0.64705884,  0., 0.14901961, 1.])
         cmap.set_under([0.19215687, 0.21176471, 0.58431375, 1.])
@@ -252,13 +259,57 @@ class prepare():
         p.set_array(numpy.array(colors))
         ax.add_collection(p)
         
-        cbar_lim = [numpy.mean(colors) - numpy.std(colors),
-                    numpy.mean(colors) + numpy.std(colors)]
-        cbar = plt.colorbar(p, alpha = 0.8,
+        #Min, max plotting
+        max_value = max(colors)
+        max_string = ""
+        max_screator = str(max_value)
+        scounter = 0
+        for i in range(len(max_screator)):
+            if scounter < 4:
+                if ((max_screator[i] == "0") or (max_screator[i] == ".")) and (scounter == 0):
+                    max_string += max_screator[i]
+                elif (max_screator[i] == "0") and (scounter != 0):
+                    max_string += max_screator[i]
+                    scounter += 1
+                elif (max_screator[i] == ".") and (scounter != 0):
+                    max_string += max_screator[i]
+                else:
+                    max_string += max_screator[i]
+                    scounter += 1
+        max_string 
+        max_index = colors.index(max_value)
+        xlist, ylist = [], []
+        xlist.append(self.eles[max_index][0][0])
+        xlist.append(self.eles[max_index][1][0])
+        xlist.append(self.eles[max_index][2][0])
+        xlist.append(self.eles[max_index][3][0])
+        ylist.append(self.eles[max_index][0][1])
+        ylist.append(self.eles[max_index][1][1])
+        ylist.append(self.eles[max_index][2][1])
+        ylist.append(self.eles[max_index][3][1])
+        
+        x_pos = sum(xlist) / 4
+        y_pos = - sum(ylist) / 4
+        
+        plt.scatter(x_pos, y_pos, marker = "^", c = "white", s = 52, label = "max: " + str(max_string))
+        
+        #Color bar limits set to (mean + 2 * standard deviation)
+        cbar_lim = [numpy.mean(colors) -  (2 * numpy.std(colors)),
+                    numpy.mean(colors) + (2 * numpy.std(colors))]
+                
+        cbar = plt.colorbar(p, alpha = 0.9,
                             ticks = numpy.linspace(cbar_lim[0], 
                                                    cbar_lim[1], 
                                                    1 + self.ncol), 
                             extend='both')
+        
+        if results == "huber":
+            cbar_lim = [numpy.mean(colors) -  (2 * numpy.std(colors)),
+                        numpy.mean(colors) + (2 * numpy.std(colors))]
+            if numpy.mean(colors) -  (2 * numpy.std(colors)) < 0:
+                cbar_lim = [0,
+                            numpy.mean(colors) + (2 * numpy.std(colors))]
+                
         p.set_clim(cbar_lim)
         
         plt.xlim(min_x - 1, max_x + 1)
@@ -267,8 +318,11 @@ class prepare():
         ax.axes.xaxis.set_ticks([])
         ax.axes.yaxis.set_ticks([])
         
+        legend = ax.legend(loc = "best", scatterpoints = 1)
+        frame = legend.get_frame()
+        frame.set_edgecolor("white")
         #plt.grid()
         
-        plt.savefig(results + ".png", DPI = 600)
+        plt.savefig(results + ".png", DPI = 1200)
         
         print("Saved results file", "[" + results + ".png]")
