@@ -53,7 +53,7 @@ class prepare():
         ys = [-self.nodes[i][1] for i in self.nodes]
         
         fig, ax = plt.subplots()
-        #ax.set_axis_bgcolor((1, 1, 1))
+        #ax.set_axis_bgcolor((0.96, 0.96, 0.96))
         patch_list = []
         
         min_x, min_y = self.eles[1][0][0], -self.eles[1][0][1]
@@ -132,12 +132,12 @@ class prepare():
         #Matplotlib functions
         dis_cmap = cmap=discrete_cmap(self.ncol, self.init_cmap)
         
-        p = PatchCollection(patch_list, cmap = dis_cmap)
+        p = PatchCollection(patch_list, cmap = dis_cmap, alpha = 0.9)
         p.set_array(numpy.array(colors))
         ax.add_collection(p)
         
         cbar_lim = [min(colors), max(colors)]
-        cbar = plt.colorbar(p, alpha = 0.9,
+        cbar = plt.colorbar(p,
                             ticks = numpy.linspace(cbar_lim[0], 
                                                    cbar_lim[1], 
                                                    1 + self.ncol), 
@@ -169,6 +169,7 @@ class prepare():
         ys = [-self.nodes[i][1] for i in self.nodes]
         
         fig, ax = plt.subplots()
+        #ax.set_axis_bgcolor((0.96, 0.96, 0.96))
         patch_list = []
         
         min_x, min_y = self.eles[1][0][0], -self.eles[1][0][1]
@@ -255,11 +256,15 @@ class prepare():
         cmap.set_over([0.64705884,  0., 0.14901961, 1.])
         cmap.set_under([0.19215687, 0.21176471, 0.58431375, 1.])
         
-        p = PatchCollection(patch_list, cmap = dis_cmap)
+        p = PatchCollection(patch_list, cmap = dis_cmap, alpha = 0.9)
         p.set_array(numpy.array(colors))
         ax.add_collection(p)
         
-        #Min, max plotting
+        """
+        Min and max scatter plotting
+        """
+        
+        #Max
         max_value = max(colors)
         max_string = ""
         max_screator = str(max_value)
@@ -277,7 +282,7 @@ class prepare():
                     max_string += max_screator[i]
                     scounter += 1
         max_string 
-        max_index = colors.index(max_value)
+        max_index = colors.index(max_value) + 1
         xlist, ylist = [], []
         xlist.append(self.eles[max_index][0][0])
         xlist.append(self.eles[max_index][1][0])
@@ -288,16 +293,57 @@ class prepare():
         ylist.append(self.eles[max_index][2][1])
         ylist.append(self.eles[max_index][3][1])
         
-        x_pos = sum(xlist) / 4
-        y_pos = - sum(ylist) / 4
+        x_pos_max = sum(xlist) / 4
+        y_pos_max = - sum(ylist) / 4
         
-        plt.scatter(x_pos, y_pos, marker = "^", c = "white", s = 52, label = "max: " + str(max_string))
+        #Min
+        min_value = min(colors)
+        min_string = ""
+        min_screator = str(min_value)
+        scounter = 0
+        for i in range(len(min_screator)):
+            if scounter < 4:
+                if ((min_screator[i] == "0") or (min_screator[i] == ".") or (min_screator[i] == "-")) and (scounter == 0):
+                    min_string += min_screator[i]
+                elif (min_screator[i] == "0") and (scounter != 0):
+                    min_string += min_screator[i]
+                    scounter += 1
+                elif (min_screator[i] == ".") and (scounter != 0):
+                    min_string += min_screator[i]
+                else:
+                    min_string += min_screator[i]
+                    scounter += 1
+        min_string 
+        min_index = colors.index(min_value) + 1
+        xlist, ylist = [], []
+        xlist.append(self.eles[min_index][0][0])
+        xlist.append(self.eles[min_index][1][0])
+        xlist.append(self.eles[min_index][2][0])
+        xlist.append(self.eles[min_index][3][0])
+        ylist.append(self.eles[min_index][0][1])
+        ylist.append(self.eles[min_index][1][1])
+        ylist.append(self.eles[min_index][2][1])
+        ylist.append(self.eles[min_index][3][1])
+        
+        x_pos_min = sum(xlist) / 4
+        y_pos_min = - sum(ylist) / 4
+        
+        #Plotting
+        if min_value < 0:
+            plt.scatter(x_pos_max, y_pos_max, marker = "^", c = "white", s = 52, label = "max:  " + str(max_string))
+        else:
+            plt.scatter(x_pos_max, y_pos_max, marker = "^", c = "white", s = 52, label = "max: " + str(max_string))
+        plt.scatter(x_pos_min, y_pos_min, marker = "v", c = "white", s = 52, label = "min: " + str(min_string))
+        
+        """
+        End of min and max scatter plotting
+        """
         
         #Color bar limits set to (mean + 2 * standard deviation)
         cbar_lim = [numpy.mean(colors) -  (2 * numpy.std(colors)),
                     numpy.mean(colors) + (2 * numpy.std(colors))]
                 
-        cbar = plt.colorbar(p, alpha = 0.9,
+        cbar = plt.colorbar(p,
                             ticks = numpy.linspace(cbar_lim[0], 
                                                    cbar_lim[1], 
                                                    1 + self.ncol), 
@@ -319,6 +365,10 @@ class prepare():
         ax.axes.yaxis.set_ticks([])
         
         legend = ax.legend(loc = "best", scatterpoints = 1)
+        
+        legend.get_texts()[0].set_color([0.64705884,  0., 0.14901961, 1.])
+        legend.get_texts()[1].set_color([0.19215687, 0.21176471, 0.58431375, 1.])
+        
         frame = legend.get_frame()
         frame.set_edgecolor("white")
         #plt.grid()
