@@ -18,6 +18,82 @@ plt.rcParams["figure.facecolor"] = "white"
 plt.rcParams["patch.linewidth"] = 0.5
 plt.rcParams["legend.fontsize"] = 9
 
+def minmax(colors, eles):
+    """
+    Min and max scatter plotting
+    """
+        
+    #Max
+    max_value = max(colors)
+    print(max_value)
+    max_string = ""
+    max_screator = str(max_value)
+    scounter = 0
+    for i in range(len(max_screator)):
+        if scounter < 4:
+            if ((max_screator[i] == "0") or (max_screator[i] == ".")) and (scounter == 0):
+                max_string += max_screator[i]
+            elif (max_screator[i] == "0") and (scounter != 0):
+                max_string += max_screator[i]
+                scounter += 1
+            elif (max_screator[i] == ".") and (scounter != 0):
+                max_string += max_screator[i]
+            else:
+                max_string += max_screator[i]
+                scounter += 1
+    max_string 
+    max_index = colors.index(max_value) + 1
+    xlist, ylist = [], []
+    xlist.append(eles[max_index][0][0])
+    xlist.append(eles[max_index][1][0])
+    xlist.append(eles[max_index][2][0])
+    xlist.append(eles[max_index][3][0])
+    ylist.append(eles[max_index][0][1])
+    ylist.append(eles[max_index][1][1])
+    ylist.append(eles[max_index][2][1])
+    ylist.append(eles[max_index][3][1])
+    
+    x_pos_max = sum(xlist) / 4
+    y_pos_max = - sum(ylist) / 4
+    
+    #Min
+    min_value = min(colors)
+    min_string = ""
+    min_screator = str(min_value)
+    scounter = 0
+    for i in range(len(min_screator)):
+        if scounter < 4:
+            if ((min_screator[i] == "0") or (min_screator[i] == ".") or (min_screator[i] == "-")) and (scounter == 0):
+                min_string += min_screator[i]
+            elif (min_screator[i] == "0") and (scounter != 0):
+                min_string += min_screator[i]
+                scounter += 1
+            elif (min_screator[i] == ".") and (scounter != 0):
+                min_string += min_screator[i]
+            else:
+                min_string += min_screator[i]
+                scounter += 1
+    min_string 
+    min_index = colors.index(min_value) + 1
+    xlist, ylist = [], []
+    xlist.append(eles[min_index][0][0])
+    xlist.append(eles[min_index][1][0])
+    xlist.append(eles[min_index][2][0])
+    xlist.append(eles[min_index][3][0])
+    ylist.append(eles[min_index][0][1])
+    ylist.append(eles[min_index][1][1])
+    ylist.append(eles[min_index][2][1])
+    ylist.append(eles[min_index][3][1])
+    
+    x_pos_min = sum(xlist) / 4
+    y_pos_min = - sum(ylist) / 4
+    
+    return(x_pos_max, y_pos_max, max_string, x_pos_min, y_pos_min, min_string)
+    
+    """
+    End of min and max scatter plotting
+    """
+
 def discrete_cmap(N, base_cmap=None):
     #Create an N-bin discrete colormap from the specified input map
     
@@ -127,14 +203,32 @@ class prepare():
          		
         else:
          		max_x = (sum_x / 2) + (diff_y / 2)
-         		min_x = (sum_x / 2) - (diff_y / 2)
-
+         		min_x = (sum_x / 2) - (diff_y / 2)        
+                
         #Matplotlib functions
         dis_cmap = cmap=discrete_cmap(self.ncol, self.init_cmap)
         
         p = PatchCollection(patch_list, cmap = dis_cmap, alpha = 0.9)
         p.set_array(numpy.array(colors))
         ax.add_collection(p)
+        
+        #Plotting min/max
+        minmax_data = minmax(colors, self.eles)
+        
+        x_pos_max = minmax_data[0]
+        y_pos_max = minmax_data[1]
+        max_string = minmax_data[2]
+        x_pos_min = minmax_data[3]
+        y_pos_min = minmax_data[4]
+        min_string = minmax_data[5]
+        
+        logo_legend = plt.scatter(1e6, 1e6, marker = "None", label = "GRoT> ver. 1.0.0")
+        
+        if float(min_string) < 0:
+            max_legend = plt.scatter(x_pos_max, y_pos_max, marker = "^", c = "white", s = 52, label = "max:  " + str(max_string))
+        else:
+            max_legend = plt.scatter(x_pos_max, y_pos_max, marker = "^", c = "white", s = 52, label = "max: " + str(max_string))
+        min_legend = plt.scatter(x_pos_min, y_pos_min, marker = "v", c = "white", s = 52, label = "min: " + str(min_string))
         
         cbar_lim = [min(colors), max(colors)]
         cbar = plt.colorbar(p,
@@ -150,6 +244,19 @@ class prepare():
         ax.axes.xaxis.set_ticks([])
         ax.axes.yaxis.set_ticks([])
         
+        legend_down = plt.legend(handles = [logo_legend], loc = 4, scatterpoints = 1)
+        frame = legend_down.get_frame()
+        frame.set_edgecolor("white")
+        
+        plt.gca().add_artist(legend_down)
+        
+        legend = ax.legend(handles = [max_legend, min_legend], loc = 1, scatterpoints = 1)
+        
+        legend.get_texts()[0].set_color([0.64705884,  0., 0.14901961, 1.])
+        legend.get_texts()[1].set_color([0.19215687, 0.21176471, 0.58431375, 1.])
+        
+        frame = legend.get_frame()
+        frame.set_edgecolor("white")
         #plt.grid()
         
         plt.savefig(results + ".png", DPI = 600)
@@ -260,88 +367,33 @@ class prepare():
         p.set_array(numpy.array(colors))
         ax.add_collection(p)
         
-        """
-        Min and max scatter plotting
-        """
+        #Plotting min/max
+        minmax_data = minmax(colors, self.eles)
         
-        #Max
-        max_value = max(colors)
-        max_string = ""
-        max_screator = str(max_value)
-        scounter = 0
-        for i in range(len(max_screator)):
-            if scounter < 4:
-                if ((max_screator[i] == "0") or (max_screator[i] == ".")) and (scounter == 0):
-                    max_string += max_screator[i]
-                elif (max_screator[i] == "0") and (scounter != 0):
-                    max_string += max_screator[i]
-                    scounter += 1
-                elif (max_screator[i] == ".") and (scounter != 0):
-                    max_string += max_screator[i]
-                else:
-                    max_string += max_screator[i]
-                    scounter += 1
-        max_string 
-        max_index = colors.index(max_value) + 1
-        xlist, ylist = [], []
-        xlist.append(self.eles[max_index][0][0])
-        xlist.append(self.eles[max_index][1][0])
-        xlist.append(self.eles[max_index][2][0])
-        xlist.append(self.eles[max_index][3][0])
-        ylist.append(self.eles[max_index][0][1])
-        ylist.append(self.eles[max_index][1][1])
-        ylist.append(self.eles[max_index][2][1])
-        ylist.append(self.eles[max_index][3][1])
+        x_pos_max = minmax_data[0]
+        y_pos_max = minmax_data[1]
+        max_string = minmax_data[2]
+        x_pos_min = minmax_data[3]
+        y_pos_min = minmax_data[4]
+        min_string = minmax_data[5]
         
-        x_pos_max = sum(xlist) / 4
-        y_pos_max = - sum(ylist) / 4
+        logo_legend = plt.scatter(1e6, 1e6, marker = "None", label = "GRoT> ver. 1.0.0")
         
-        #Min
-        min_value = min(colors)
-        min_string = ""
-        min_screator = str(min_value)
-        scounter = 0
-        for i in range(len(min_screator)):
-            if scounter < 4:
-                if ((min_screator[i] == "0") or (min_screator[i] == ".") or (min_screator[i] == "-")) and (scounter == 0):
-                    min_string += min_screator[i]
-                elif (min_screator[i] == "0") and (scounter != 0):
-                    min_string += min_screator[i]
-                    scounter += 1
-                elif (min_screator[i] == ".") and (scounter != 0):
-                    min_string += min_screator[i]
-                else:
-                    min_string += min_screator[i]
-                    scounter += 1
-        min_string 
-        min_index = colors.index(min_value) + 1
-        xlist, ylist = [], []
-        xlist.append(self.eles[min_index][0][0])
-        xlist.append(self.eles[min_index][1][0])
-        xlist.append(self.eles[min_index][2][0])
-        xlist.append(self.eles[min_index][3][0])
-        ylist.append(self.eles[min_index][0][1])
-        ylist.append(self.eles[min_index][1][1])
-        ylist.append(self.eles[min_index][2][1])
-        ylist.append(self.eles[min_index][3][1])
-        
-        x_pos_min = sum(xlist) / 4
-        y_pos_min = - sum(ylist) / 4
-        
-        #Plotting
-        if min_value < 0:
-            plt.scatter(x_pos_max, y_pos_max, marker = "^", c = "white", s = 52, label = "max:  " + str(max_string))
+        if float(min_string) < 0:
+            max_legend = plt.scatter(x_pos_max, y_pos_max, marker = "^", c = "white", s = 52, label = "max:  " + str(max_string))
         else:
-            plt.scatter(x_pos_max, y_pos_max, marker = "^", c = "white", s = 52, label = "max: " + str(max_string))
-        plt.scatter(x_pos_min, y_pos_min, marker = "v", c = "white", s = 52, label = "min: " + str(min_string))
-        
-        """
-        End of min and max scatter plotting
-        """
+            max_legend = plt.scatter(x_pos_max, y_pos_max, marker = "^", c = "white", s = 52, label = "max: " + str(max_string))
+        min_legend = plt.scatter(x_pos_min, y_pos_min, marker = "v", c = "white", s = 52, label = "min: " + str(min_string))
         
         #Color bar limits set to (mean + 2 * standard deviation)
         cbar_lim = [numpy.mean(colors) -  (2 * numpy.std(colors)),
                     numpy.mean(colors) + (2 * numpy.std(colors))]
+        
+        if (numpy.mean(colors) + (2 * numpy.std(colors))) > float(max_string):
+            cbar_lim[1] = float(max_string)
+            
+        if (numpy.mean(colors) - (2 * numpy.std(colors))) < float(min_string):
+            cbar_lim[0] = float(min_string)       
                 
         cbar = plt.colorbar(p,
                             ticks = numpy.linspace(cbar_lim[0], 
@@ -364,7 +416,13 @@ class prepare():
         ax.axes.xaxis.set_ticks([])
         ax.axes.yaxis.set_ticks([])
         
-        legend = ax.legend(loc = "best", scatterpoints = 1)
+        legend_down = plt.legend(handles = [logo_legend], loc = 4, scatterpoints = 1)
+        frame = legend_down.get_frame()
+        frame.set_edgecolor("white")
+        
+        plt.gca().add_artist(legend_down)
+        
+        legend = ax.legend(handles = [max_legend, min_legend], loc = 1, scatterpoints = 1)
         
         legend.get_texts()[0].set_color([0.64705884,  0., 0.14901961, 1.])
         legend.get_texts()[1].set_color([0.19215687, 0.21176471, 0.58431375, 1.])

@@ -20,7 +20,7 @@ h = prep.thicks(eles)
 h.add(1)
 h.assignall(1)
 
-c.load(bc_dict["magenta"], x = 1e3, y = 0)
+c.load(bc_dict["magenta"], x = 1e2, y = 0)
 cons = c.store()
 
 sol = solver.build(nodes, eles, cons)
