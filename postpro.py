@@ -25,7 +25,6 @@ def minmax(colors, eles):
         
     #Max
     max_value = max(colors)
-    print(max_value)
     max_string = ""
     max_screator = str(max_value)
     scounter = 0
@@ -335,8 +334,14 @@ class prepare():
                 plt.title("Shear XY component of stress tensor")     
                 
             elif results == "huber":
-                colors.append(math.sqrt((math.sqrt(self.res[1][counter][0] ** 2 + self.res[1][counter][1] ** 2) ** 2) + 
-                              (3 * (self.res[1][counter][2] ** 2))))
+                sigy = self.res[1][counter][1]
+                sigx = self.res[1][counter][0]
+                tauxy = self.res[1][counter][2]
+                princ_part = math.sqrt((((sigx - sigy) / 2) ** 2) + (tauxy ** 2))
+                sig1 = ((sigx + sigy) / 2) + princ_part           
+                sig2 = ((sigx + sigy) / 2) - princ_part
+                huber = math.sqrt(((sig1 - sig2) ** 2) / 2)
+                colors.append(huber)
                 plt.title("Huber equivalent stress")
         
             else:
@@ -401,12 +406,8 @@ class prepare():
                                                    1 + self.ncol), 
                             extend='both')
         
-        if results == "huber":
-            cbar_lim = [numpy.mean(colors) -  (2 * numpy.std(colors)),
-                        numpy.mean(colors) + (2 * numpy.std(colors))]
-            if numpy.mean(colors) -  (2 * numpy.std(colors)) < 0:
-                cbar_lim = [0,
-                            numpy.mean(colors) + (2 * numpy.std(colors))]
+        if (results == "huber") and (numpy.mean(colors) - (2 * numpy.std(colors))) < 0:
+                cbar_lim[0] = 0
                 
         p.set_clim(cbar_lim)
         
