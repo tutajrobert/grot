@@ -20,13 +20,12 @@ h = prep.thicks(eles)
 h.add(1)
 h.assignall(1)
 
-c.load(bc_dict["magenta"], x = 1e4, y = 0)
+c.load(bc_dict["magenta"], x = 1e7, y = 0)
 cons = c.store()
 
 sol = solver.build(nodes, eles, cons)
 disp = sol.direct()
 strains = sol.strains_calc(disp)
-principal = sol.principal_calc(strains[1])
 
 post = postpro.prepare(nodes, eles, disp)
 post.save_dresults("disp_x")
@@ -44,26 +43,3 @@ post2.save_sresults("huber")
 
 print("")
 print("Task finished in", t.check())
-
-"""
-NEXT TO DO:
-
-max, min, mean in figures OK
-
-reactions in colors ?
-probe in colors ?
-
-reference calc
-
-principal vectors 50%
-Huber stress OK
-reaction vectors
-tension / compression
-
-easy prep
-
-matrix printer ?
-
-check of code
-comments and docs
-"""

@@ -1,5 +1,6 @@
 import mlib
 
+#Units for further use
 units = {"nm" : 1e-9,
          "um" : 1e-6,
          "mm" : 1e-3,
@@ -121,15 +122,15 @@ class materials():
         print("") 
         
     def set_unit(self, unit):
-    #Scaling nodal dimensions due to E change
+    #Scaling nodal dimensions as Young Modulus E change (it is a trick rather)
         for e in self.edict:
             self.edict[e][8] = self.edict[e][8] * (units[unit] ** 2)
         print("Unit system changed to", "[" + str(unit) + "]")
 
     def set_scale(self, scale):
-    #Scaling nodal dimensions due to E change
+    #Scaling nodal dimensions as Young Modulus E change
         for e in self.edict:
-            self.edict[e][8] = self.edict[e][8] / (scale ** 2)
+            self.edict[e][8] = self.edict[e][8] * (scale ** 2)
         print("Standard nodal dimension set to", "[" + str(scale) + "]")
         
 class thicks():

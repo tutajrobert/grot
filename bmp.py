@@ -4,12 +4,15 @@ import math
 import prep
 import solver
 import sys
+import version
+
+vers = version.get()
 
 def open(im_name):
     
     #Welcome message
     print("")
-    print("GRoT> ver. 0.1, [Graficzny Rozwiązywacz Tarcz]")
+    print("GRoT> ver. " + vers + ", [Graficzny Rozwiązywacz Tarcz]")
     print("..............................................")
     
     #Image opening and size check
@@ -50,7 +53,9 @@ lab_colors = {
 	
 def color_distance(color, ref_color):
     #Euclidean distance in Lab color space
-    return math.sqrt(((color[0] - ref_color[0]) ** 2) + ((color[1] - ref_color[1]) ** 2) + ((color[2] - ref_color[2]) ** 2))
+    return math.sqrt(((color[0] - ref_color[0]) ** 2) + \
+                     ((color[1] - ref_color[1]) ** 2) + \
+                     ((color[2] - ref_color[2]) ** 2))
 
 def color_check(color, lab_colors):
     #Check which reference color in colors dictionary is the closest to given
@@ -115,6 +120,7 @@ def create_geom(im_data):
                 merged_dictionary = {**dict1, **dict2}
                 """
                 
+                #node 1
                 n1 = node_check([j % width, i], 
                                 {**nmerge_list[i], **nmerge_list[i - 1]})
                 if n1 == None:
@@ -125,6 +131,7 @@ def create_geom(im_data):
                     elist.append(n1)
                     nmerge_list[i][n1] = [j % width, i]
 
+                #node 2
                 n2 = node_check([(j % width) + 1, i], 
                                 {**nmerge_list[i], **nmerge_list[i - 1]})
                 if n2 == None:
@@ -135,6 +142,7 @@ def create_geom(im_data):
                     elist.append(n2)
                     nmerge_list[i][n2] = [(j % width) + 1, i]
 
+                #node 3
                 n3 = node_check([(j % width) + 1, i + 1], 
                                  {**nmerge_list[i], **nmerge_list[i - 1]})
                 if n3 == None:
@@ -144,7 +152,8 @@ def create_geom(im_data):
                 else:
                     elist.append(n3)
                     nmerge_list[i][n3] = [(j % width) + 1, i + 1]
-
+                
+                #node 4
                 n4 = node_check([j % width, i + 1], 
                                 {**nmerge_list[i], **nmerge_list[i - 1]})
                 if n4 == None:

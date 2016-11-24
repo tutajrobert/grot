@@ -5,6 +5,9 @@ from matplotlib.collections import PatchCollection
 import math
 import numpy
 import tools
+import version
+
+vers = version.get()
 
 #Matplotlib style functions
 plt.rcParams["font.family"] = "monospace"
@@ -15,10 +18,11 @@ plt.rcParams["xtick.major.size"] = 0
 plt.rcParams["ytick.major.size"] = 0
 plt.rcParams["text.hinting_factor"] = 1
 plt.rcParams["figure.facecolor"] = "white"
-plt.rcParams["patch.linewidth"] = 0.5
+plt.rcParams["patch.linewidth"] = 0.0
 plt.rcParams["legend.fontsize"] = 9
 
 def minmax(colors, eles):
+
     """
     Min and max scatter plotting
     """
@@ -40,7 +44,7 @@ def minmax(colors, eles):
             else:
                 max_string += max_screator[i]
                 scounter += 1
-    max_string 
+ 
     max_index = colors.index(max_value) + 1
     xlist, ylist = [], []
     xlist.append(eles[max_index][0][0])
@@ -72,7 +76,7 @@ def minmax(colors, eles):
             else:
                 min_string += min_screator[i]
                 scounter += 1
-    min_string 
+    
     min_index = colors.index(min_value) + 1
     xlist, ylist = [], []
     xlist.append(eles[min_index][0][0])
@@ -128,7 +132,6 @@ class prepare():
         ys = [-self.nodes[i][1] for i in self.nodes]
         
         fig, ax = plt.subplots()
-        #ax.set_axis_bgcolor((0.96, 0.96, 0.96))
         patch_list = []
         
         min_x, min_y = self.eles[1][0][0], -self.eles[1][0][1]
@@ -221,13 +224,16 @@ class prepare():
         y_pos_min = minmax_data[4]
         min_string = minmax_data[5]
         
-        logo_legend = plt.scatter(1e6, 1e6, marker = "None", label = "GRoT> ver. 1.0.0")
+        logo_legend = plt.scatter(1e6, 1e6, marker = "None", label = "GRoT> ver. " + vers)
         
-        if float(min_string) < 0:
+        #markers border width change
+        plt.rcParams["patch.linewidth"] = 0.5
+        if float(min_string) < 0 and float(max_string) >= 0:
             max_legend = plt.scatter(x_pos_max, y_pos_max, marker = "^", c = "white", s = 52, label = "max:  " + str(max_string))
         else:
             max_legend = plt.scatter(x_pos_max, y_pos_max, marker = "^", c = "white", s = 52, label = "max: " + str(max_string))
         min_legend = plt.scatter(x_pos_min, y_pos_min, marker = "v", c = "white", s = 52, label = "min: " + str(min_string))
+        plt.rcParams["patch.linewidth"] = 0.0
         
         cbar_lim = [min(colors), max(colors)]
         cbar = plt.colorbar(p,
@@ -256,7 +262,6 @@ class prepare():
         
         frame = legend.get_frame()
         frame.set_edgecolor("white")
-        #plt.grid()
         
         plt.savefig(results + ".png", DPI = 600)
         
@@ -336,11 +341,8 @@ class prepare():
             elif results == "huber":
                 sigy = self.res[1][counter][1]
                 sigx = self.res[1][counter][0]
-                tauxy = self.res[1][counter][2]
-                princ_part = math.sqrt((((sigx - sigy) / 2) ** 2) + (tauxy ** 2))
-                sig1 = ((sigx + sigy) / 2) + princ_part           
-                sig2 = ((sigx + sigy) / 2) - princ_part
-                huber = math.sqrt(((sig1 - sig2) ** 2) / 2)
+                tauxy = self.res[1][counter][2]    
+                huber = math.sqrt((sigx ** 2) + (sigy ** 2) + (3 * (tauxy ** 2)))
                 colors.append(huber)
                 plt.title("Huber equivalent stress")
         
@@ -382,31 +384,49 @@ class prepare():
         y_pos_min = minmax_data[4]
         min_string = minmax_data[5]
         
-        logo_legend = plt.scatter(1e6, 1e6, marker = "None", label = "GRoT> ver. 1.0.0")
+        logo_legend = plt.scatter(1e6, 1e6, marker = "None", label = "GRoT> ver. " + vers)
         
+        plt.rcParams["patch.linewidth"] = 0.5
         if float(min_string) < 0:
             max_legend = plt.scatter(x_pos_max, y_pos_max, marker = "^", c = "white", s = 52, label = "max:  " + str(max_string))
         else:
             max_legend = plt.scatter(x_pos_max, y_pos_max, marker = "^", c = "white", s = 52, label = "max: " + str(max_string))
         min_legend = plt.scatter(x_pos_min, y_pos_min, marker = "v", c = "white", s = 52, label = "min: " + str(min_string))
+        plt.rcParams["patch.linewidth"] = 0.0
         
-        #Color bar limits set to (mean + 2 * standard deviation)
-        cbar_lim = [numpy.mean(colors) -  (2 * numpy.std(colors)),
-                    numpy.mean(colors) + (2 * numpy.std(colors))]
+        #Color bar limits set to (mean + 3 * standard deviation)
+        cbar_lim = [numpy.mean(colors) -  (3 * numpy.std(colors)),
+                    numpy.mean(colors) + (3 * numpy.std(colors))]
         
-        if (numpy.mean(colors) + (2 * numpy.std(colors))) > float(max_string):
-            cbar_lim[1] = float(max_string)
+        if (numpy.mean(colors) + (3 * numpy.std(colors))) >= float(max_string) and \
+            (numpy.mean(colors) - (3 * numpy.std(colors))) > float(min_string):
             
-        if (numpy.mean(colors) - (2 * numpy.std(colors))) < float(min_string):
-            cbar_lim[0] = float(min_string)       
-                
-        cbar = plt.colorbar(p,
-                            ticks = numpy.linspace(cbar_lim[0], 
-                                                   cbar_lim[1], 
-                                                   1 + self.ncol), 
-                            extend='both')
+            cbar_lim[1] = 1.0005 * float(max_string)
+            cbar = plt.colorbar(p,
+                                ticks = numpy.linspace(cbar_lim[0], 
+                                                       cbar_lim[1], 
+                                                       1 + self.ncol), 
+                                extend='min')
+
+            
+        elif (numpy.mean(colors) - (3 * numpy.std(colors))) < float(min_string) and \
+            (numpy.mean(colors) + (3 * numpy.std(colors))) <= float(max_string):
+            
+            cbar_lim[0] = 0.9995 * float(min_string)       
+            cbar = plt.colorbar(p,
+                                ticks = numpy.linspace(cbar_lim[0], 
+                                                       cbar_lim[1], 
+                                                       1 + self.ncol), 
+                                extend='max')                
         
-        if (results == "huber") and (numpy.mean(colors) - (2 * numpy.std(colors))) < 0:
+        else:
+            cbar = plt.colorbar(p,
+                                ticks = numpy.linspace(cbar_lim[0], 
+                                                       cbar_lim[1], 
+                                                       1 + self.ncol), 
+                                extend='both')
+        
+        if (results == "huber") and (numpy.mean(colors) - (3 * numpy.std(colors))) < 0:
                 cbar_lim[0] = 0
                 
         p.set_clim(cbar_lim)
