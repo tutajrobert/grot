@@ -95,6 +95,7 @@ class materials():
         self.mat = {}
         self.mnames = {}
         self.unit = ""
+        self.scale = 0
   
     def add(self, name):
     #Adds material by name to prep from mlib.py
@@ -126,19 +127,25 @@ class materials():
         for e in self.edict:
             self.edict[e][8] = self.edict[e][8] * (units[unit] ** 2)
         print("Unit system changed to", "[" + str(unit) + "]")
-
+        self.unit = unit
+        
     def set_scale(self, scale):
     #Scaling nodal dimensions as Young Modulus E change
         for e in self.edict:
             self.edict[e][8] = self.edict[e][8] * (scale ** 2)
-        print("Standard nodal dimension set to", "[" + str(scale) + "]")
+        print("Standard nodal dimension set to", "[" + str(scale) + " " + self.unit+ "]")
+        self.scale = scale
+        
+    def get_unit(self):
+        return [self.unit, self.scale]
         
 class thicks():
 #Class contains elements thicknesses
-    def __init__(self, edict):
+    def __init__(self, edict, mats):
         self.edict = edict
         self.hnum = 0
         self.hdict = {}
+        self.unit, self.scale = mats.get_unit()
      
     def add(self, thickness):
     #Add thickness and property number 
@@ -148,9 +155,9 @@ class thicks():
     def assignall(self, hnum):
     #Assign prevoiusly added thickness property to all elements
         for e in self.edict:
-            self.edict[e][10] = self.hdict[hnum][0]
+            self.edict[e][10] = self.hdict[hnum][0] / self.scale
         print("Thickness of all eles set to", 
-              "[" + str(self.hdict[hnum][0]) + "]")
+              "[" + str(self.hdict[hnum][0]) + " " + self.unit + "]")
         return self.edict
     
     def assignlist(self, elist, hnum):

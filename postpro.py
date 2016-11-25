@@ -28,68 +28,26 @@ def minmax(colors, eles):
     """
         
     #Max
-    max_value = max(colors)
-    max_string = ""
-    max_screator = str(max_value)
-    scounter = 0
-    for i in range(len(max_screator)):
-        if scounter < 4:
-            if ((max_screator[i] == "0") or (max_screator[i] == ".")) and (scounter == 0):
-                max_string += max_screator[i]
-            elif (max_screator[i] == "0") and (scounter != 0):
-                max_string += max_screator[i]
-                scounter += 1
-            elif (max_screator[i] == ".") and (scounter != 0):
-                max_string += max_screator[i]
-            else:
-                max_string += max_screator[i]
-                scounter += 1
- 
-    max_index = colors.index(max_value) + 1
-    xlist, ylist = [], []
-    xlist.append(eles[max_index][0][0])
-    xlist.append(eles[max_index][1][0])
-    xlist.append(eles[max_index][2][0])
-    xlist.append(eles[max_index][3][0])
-    ylist.append(eles[max_index][0][1])
-    ylist.append(eles[max_index][1][1])
-    ylist.append(eles[max_index][2][1])
-    ylist.append(eles[max_index][3][1])
+    max_value = max(colors)              
+    max_string = "%.3e" % max_value
     
-    x_pos_max = sum(xlist) / 4
-    y_pos_max = - sum(ylist) / 4
+    max_index = colors.index(max_value) + 1
+    xlist_max = [eles[max_index][i][0] for i in range(0, 4)]
+    ylist_max = [eles[max_index][i][1] for i in range(0, 4)]
+    
+    x_pos_max = sum(xlist_max) / 4
+    y_pos_max = - sum(ylist_max) / 4
     
     #Min
     min_value = min(colors)
-    min_string = ""
-    min_screator = str(min_value)
-    scounter = 0
-    for i in range(len(min_screator)):
-        if scounter < 4:
-            if ((min_screator[i] == "0") or (min_screator[i] == ".") or (min_screator[i] == "-")) and (scounter == 0):
-                min_string += min_screator[i]
-            elif (min_screator[i] == "0") and (scounter != 0):
-                min_string += min_screator[i]
-                scounter += 1
-            elif (min_screator[i] == ".") and (scounter != 0):
-                min_string += min_screator[i]
-            else:
-                min_string += min_screator[i]
-                scounter += 1
+    min_string = "%.3e" % min_value
     
     min_index = colors.index(min_value) + 1
-    xlist, ylist = [], []
-    xlist.append(eles[min_index][0][0])
-    xlist.append(eles[min_index][1][0])
-    xlist.append(eles[min_index][2][0])
-    xlist.append(eles[min_index][3][0])
-    ylist.append(eles[min_index][0][1])
-    ylist.append(eles[min_index][1][1])
-    ylist.append(eles[min_index][2][1])
-    ylist.append(eles[min_index][3][1])
+    xlist_min = [eles[min_index][i][0] for i in range(0, 4)]
+    ylist_min = [eles[min_index][i][1] for i in range(0, 4)]
     
-    x_pos_min = sum(xlist) / 4
-    y_pos_min = - sum(ylist) / 4
+    x_pos_min = sum(xlist_min) / 4
+    y_pos_min = - sum(ylist_min) / 4
     
     return(x_pos_max, y_pos_max, max_string, x_pos_min, y_pos_min, min_string)
     
@@ -139,15 +97,8 @@ class prepare():
         
         #Nodes coordinates storing
         for i in self.eles:
-            xlist, ylist = [], []
-            xlist.append(self.eles[i][0][0])
-            xlist.append(self.eles[i][1][0])
-            xlist.append(self.eles[i][2][0])
-            xlist.append(self.eles[i][3][0])
-            ylist.append(self.eles[i][0][1])
-            ylist.append(self.eles[i][1][1])
-            ylist.append(self.eles[i][2][1])
-            ylist.append(self.eles[i][3][1])
+            xlist = [self.eles[i][j][0] for j in range(0, 4)]
+            ylist = [self.eles[i][j][1] for j in range(0, 4)]
     
             #Rectangle of vertex in (x, y) and given width and height
             patch_list.append(patches.Rectangle((min(xlist), 
@@ -169,20 +120,20 @@ class prepare():
             dofs = [dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1]
             
             #Results choosing and preparing
-            if results == "disp_x":
+            if results == "x":
                 colors.append(0.25 * (self.res[dofs[0]] + 
                                       self.res[dofs[2]] + 
                                       self.res[dofs[4]] + 
                                       self.res[dofs[6]]))
                 plt.title("Displacement in X direction")
-            elif results == "disp_y":
+            elif results == "y":
                 colors.append(0.25 * (self.res[dofs[1]] + 
                                       self.res[dofs[3]] + 
                                       self.res[dofs[5]] + 
                                       self.res[dofs[7]]))
                 plt.title("Displacement in Y direction")
                 
-            elif results == "disp_mag":
+            elif results == "mag":
                 colors.append(0.25 * (math.sqrt((self.res[dofs[0]] ** 2) + 
                                                 (self.res[dofs[1]] ** 2)) + 
                                       math.sqrt((self.res[dofs[2]] ** 2) + 
@@ -263,9 +214,9 @@ class prepare():
         frame = legend.get_frame()
         frame.set_edgecolor("white")
         
-        plt.savefig(results + ".png", DPI = 600)
+        plt.savefig("disp_" + results + ".png", DPI = 600)
         
-        print("Saved results file", "[" + results + ".png]")
+        print("Saved results file", "[" + "disp_" + results + ".png]")
         
         
     def save_sresults(self, results):
@@ -291,15 +242,8 @@ class prepare():
         #Nodes coordinates storing
         for i in self.eles:
             counter += 1
-            xlist, ylist = [], []
-            xlist.append(self.eles[i][0][0])
-            xlist.append(self.eles[i][1][0])
-            xlist.append(self.eles[i][2][0])
-            xlist.append(self.eles[i][3][0])
-            ylist.append(self.eles[i][0][1])
-            ylist.append(self.eles[i][1][1])
-            ylist.append(self.eles[i][2][1])
-            ylist.append(self.eles[i][3][1])
+            xlist = [self.eles[i][j][0] for j in range(0, 4)]
+            ylist = [self.eles[i][j][1] for j in range(0, 4)]
     
             #Rectangle of vertex in (x, y) and given width and height
             patch_list.append(patches.Rectangle((min(xlist), 
@@ -387,19 +331,19 @@ class prepare():
         logo_legend = plt.scatter(1e6, 1e6, marker = "None", label = "GRoT> ver. " + vers)
         
         plt.rcParams["patch.linewidth"] = 0.5
-        if float(min_string) < 0:
+        if float(min_string) < 0 and float(max_string) >=	 0:
             max_legend = plt.scatter(x_pos_max, y_pos_max, marker = "^", c = "white", s = 52, label = "max:  " + str(max_string))
         else:
             max_legend = plt.scatter(x_pos_max, y_pos_max, marker = "^", c = "white", s = 52, label = "max: " + str(max_string))
         min_legend = plt.scatter(x_pos_min, y_pos_min, marker = "v", c = "white", s = 52, label = "min: " + str(min_string))
         plt.rcParams["patch.linewidth"] = 0.0
         
-        #Color bar limits set to (mean + 3 * standard deviation)
-        cbar_lim = [numpy.mean(colors) -  (3 * numpy.std(colors)),
-                    numpy.mean(colors) + (3 * numpy.std(colors))]
+        #Color bar limits set to (mean + 2 * standard deviation)
+        cbar_lim = [numpy.mean(colors) -  (2 * numpy.std(colors)),
+                    numpy.mean(colors) + (2 * numpy.std(colors))]
         
-        if (numpy.mean(colors) + (3 * numpy.std(colors))) >= float(max_string) and \
-            (numpy.mean(colors) - (3 * numpy.std(colors))) > float(min_string):
+        if (numpy.mean(colors) + (2 * numpy.std(colors))) >= float(max_string) and \
+            (numpy.mean(colors) - (2 * numpy.std(colors))) > float(min_string):
             
             cbar_lim[1] = 1.0005 * float(max_string)
             cbar = plt.colorbar(p,
@@ -409,8 +353,8 @@ class prepare():
                                 extend='min')
 
             
-        elif (numpy.mean(colors) - (3 * numpy.std(colors))) < float(min_string) and \
-            (numpy.mean(colors) + (3 * numpy.std(colors))) <= float(max_string):
+        elif (numpy.mean(colors) - (2 * numpy.std(colors))) < float(min_string) and \
+            (numpy.mean(colors) + (2 * numpy.std(colors))) <= float(max_string):
             
             cbar_lim[0] = 0.9995 * float(min_string)       
             cbar = plt.colorbar(p,
@@ -426,7 +370,7 @@ class prepare():
                                                        1 + self.ncol), 
                                 extend='both')
         
-        if (results == "huber") and (numpy.mean(colors) - (3 * numpy.std(colors))) < 0:
+        if (results == "huber") and (numpy.mean(colors) - (2 * numpy.std(colors))) < 0:
                 cbar_lim[0] = 0
                 
         p.set_clim(cbar_lim)

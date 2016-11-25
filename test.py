@@ -20,11 +20,11 @@ h = prep.thicks(eles)
 h.add(1)
 h.assignall(1)
 
-c.load(bc_dict["magenta"], x = 1e7, y = 0)
+c.load(bc_dict["magenta"], x = 1e2, y = 0)
 cons = c.store()
 
 sol = solver.build(nodes, eles, cons)
-disp = sol.direct()
+disp = sol.least_squares()
 strains = sol.strains_calc(disp)
 
 post = postpro.prepare(nodes, eles, disp)
@@ -43,3 +43,15 @@ post2.save_sresults("huber")
 
 print("")
 print("Task finished in", t.check())
+
+"""
+bmp im.bmp
+mat steel all
+unit mm
+scale 5
+th 2 all
+load x 1e4 y 0 magenta
+solv direct
+res dis m
+res str hub
+"""

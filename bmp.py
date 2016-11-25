@@ -173,18 +173,6 @@ def create_geom(im_data):
                     bc_dict[matched_color].append(n.check((j % width) + 1, i))
                     bc_dict[matched_color].append(n.check((j % width) + 1, i + 1))
                     bc_dict[matched_color].append(n.check(j % width, i + 1))
-
-    """
-    Hardcoded colors for supports
-    Red     support in X direction
-    Green   support in Y direction
-    Blue    support in Z (in-plane) direction
-    Nice and simple pattern, don't you think so?
-    """
-    
-    c.support(bc_dict["blue"])
-    c.support(bc_dict["red"], 0, 1)
-    c.support(bc_dict["green"], 1, 0)
     
     #Rest of colors: black, magenta and brown can be used for different bc or property assignment
     
@@ -199,5 +187,25 @@ def create_geom(im_data):
             print_list += "[" + str(color) + " : " + str(int(len(bc_dict[color]) / 4)) + "] "
     print("Prepared boundaries applied to eles: " + print_list)
     
+    """
+    Hardcoded colors for supports
+    Red     support in X direction
+    Green   support in Y direction
+    Blue    support in Z (in-plane) direction
+    Nice and simple pattern, don't you think so?
+    """
+    
+    c.support(bc_dict["blue"])
+    if len(bc_dict["blue"]) > 0:
+        blue_n = len(bc_dict["blue"])
+        print("Blue boundary [fixed support] applied to [" + str(blue_n) + "] nodes")
+    c.support(bc_dict["red"], 0, 1)
+    if len(bc_dict["red"]) > 0:
+        red_n = len(bc_dict["red"])
+        print("Red boundary [in x-dir support] applied to [" + str(red_n) + "] nodes")
+    c.support(bc_dict["green"], 1, 0)    
+    if len(bc_dict["green"]) > 0:
+        green_n = len(bc_dict["green"])
+        print("Green boundary [in y-dir support] applied to [" + str(green_n) + "] nodes")    
     #Return nodes, eles, constraints and boundaries
     return [n, e, c, bc_dict]
