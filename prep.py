@@ -155,7 +155,7 @@ class thicks():
     def assignall(self, hnum):
     #Assign prevoiusly added thickness property to all elements
         for e in self.edict:
-            self.edict[e][10] = self.hdict[hnum][0] / self.scale
+            self.edict[e][10] = self.hdict[hnum][0] * self.scale
         print("Thickness of all eles set to", 
               "[" + str(self.hdict[hnum][0]) + " " + self.unit + "]")
         return self.edict

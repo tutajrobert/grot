@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.cm as cm
+import os
 from matplotlib.collections import PatchCollection
 import math
 import numpy
@@ -78,7 +79,7 @@ class prepare():
         self.ncol = 9
         self.init_cmap = "RdYlBu"
     
-    def save_dresults(self, results):
+    def save_dresults(self, results, proj_name):
         
         """
         Matplotlib script for results viewing
@@ -213,13 +214,14 @@ class prepare():
         
         frame = legend.get_frame()
         frame.set_edgecolor("white")
-        
-        plt.savefig("disp_" + results + ".png", DPI = 600)
+        if not os.path.exists("results/" + proj_name):
+            os.makedirs("results/" + proj_name)
+        plt.savefig("results/" + proj_name + "/disp_" + results + ".png", DPI = 600)
         
         print("Saved results file", "[" + "disp_" + results + ".png]")
         
         
-    def save_sresults(self, results):
+    def save_sresults(self, results, proj_name):
         
         """
         Matplotlib script for results viewing
@@ -281,6 +283,14 @@ class prepare():
             elif results == "tau_xy":
                 colors.append(self.res[1][counter][2])
                 plt.title("Shear XY component of stress tensor")     
+            
+            elif results == "tau_max":
+                sigy = self.res[1][counter][1]
+                sigx = self.res[1][counter][0]
+                tauxy = self.res[1][counter][2] 
+                taumax = math.sqrt((((sigx - sigy) / 2) ** 2) + (tauxy ** 2))
+                colors.append(taumax)
+                plt.title("Maximum shear stress")               
                 
             elif results == "huber":
                 sigy = self.res[1][counter][1]
@@ -289,7 +299,18 @@ class prepare():
                 huber = math.sqrt((sigx ** 2) + (sigy ** 2) + (3 * (tauxy ** 2)))
                 colors.append(huber)
                 plt.title("Huber equivalent stress")
-        
+                
+            elif results == "sign_huber":
+                sigy = self.res[1][counter][1]
+                sigx = self.res[1][counter][0]
+                tauxy = self.res[1][counter][2] 
+                taumax = math.sqrt((((sigx - sigy) / 2) ** 2) + (tauxy ** 2))
+                sig1 = ((sigx + sigy) / 2) + taumax
+                sig2 = ((sigx + sigy) / 2) - taumax
+                sign = numpy.sign(sig1 + sig2)    
+                sign_huber = sign * math.sqrt((sigx ** 2) + (sigy ** 2) + (3 * (tauxy ** 2)))                
+                colors.append(sign_huber)
+                plt.title("Signed Huber equivalent stress")
             else:
                 pass
                 
@@ -395,7 +416,8 @@ class prepare():
         frame = legend.get_frame()
         frame.set_edgecolor("white")
         #plt.grid()
-        
-        plt.savefig(results + ".png", DPI = 1200)
+        if not os.path.exists("results/" + proj_name):
+            os.makedirs("results/" + proj_name)
+        plt.savefig("results/" + proj_name + "/" + results + ".png", DPI = 1200)
         
         print("Saved results file", "[" + results + ".png]")
