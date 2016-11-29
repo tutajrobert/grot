@@ -19,7 +19,7 @@ def open(im_name):
     print("..............................................")
     
     #Image opening and size check
-    im = Image.open(im_name)
+    im = Image.open("projects/" + im_name)
     width = im.size[0]
     height = im.size[1]
 
@@ -200,15 +200,15 @@ def create_geom(im_data):
     
     c.support(bc_dict["blue"])
     if len(bc_dict["blue"]) > 0:
-        blue_n = len(bc_dict["blue"])
+        blue_n = len(list(set(bc_dict["blue"])))
         print("Blue boundary [fixed support] applied to [" + str(blue_n) + "] nodes")
     c.support(bc_dict["red"], 0, 1)
     if len(bc_dict["red"]) > 0:
-        red_n = len(bc_dict["red"])
+        red_n = len(list(set(bc_dict["red"])))
         print("Red boundary [in x-dir support] applied to [" + str(red_n) + "] nodes")
     c.support(bc_dict["green"], 1, 0)    
     if len(bc_dict["green"]) > 0:
-        green_n = len(bc_dict["green"])
+        green_n = len(list(set(bc_dict["green"])))
         print("Green boundary [in y-dir support] applied to [" + str(green_n) + "] nodes")    
     #Return nodes, eles, constraints and boundaries
     return [n, e, c, bc_dict]

@@ -22,6 +22,9 @@ def ksearch(keyword):
             return input_lines[i][1:]
         #else:
             #return None
+
+proj_name = ksearch("bmp")[0].split(".")[0]            
+            
 im = bmp.open(ksearch("bmp")[0])
 geom = bmp.create_geom(im)
 
@@ -63,13 +66,13 @@ res_d = ksearch("disp")
 if res_d is not None:
     post = postpro.prepare(nodes, eles, disp)
 for i in range(0, len(res_d)):
-    post.save_dresults(res_d[i])
+    post.save_dresults(res_d[i], proj_name)
 
 res_s = ksearch("stress")
 if res_s is not None:
     post2 = postpro.prepare(nodes, eles, strains)
-for i in range(0, len(res_d)):
-    post2.save_sresults(res_s[i])
+for i in range(0, len(res_s)):
+    post2.save_sresults(res_s[i], proj_name)
     
 
 print("")
