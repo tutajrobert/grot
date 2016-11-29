@@ -1,4 +1,4 @@
-import bmp, prep, tools, solver, postpro
+import bmp, prep, tools, solver, postpro, deformed
 
 #start timer
 t = tools.timer()
@@ -20,7 +20,7 @@ def ksearch(keyword):
         #else:
             #return None
 
-proj_name = ksearch("bmp")[0].split(".")[0]            
+proj_name = ksearch("project")[0]            
             
 im = bmp.open(ksearch("bmp")[0])
 geom = bmp.create_geom(im)
@@ -52,10 +52,11 @@ for i in range(len(loads_list)):
 
 cons = c.store()
 
-sol = solver.build(nodes, eles, cons)
+state = ksearch("problem")[0]
+sol = solver.build(nodes, eles, cons, state)
 if ksearch("solver")[0] == "direct":
     disp = sol.direct()
-elif ksearch("solver")[1] == "lsqs":
+elif ksearch("solver")[0] == "lsqs":
     disp = sol.least_squares()
 strains = sol.strains_calc(disp)
 
@@ -70,7 +71,11 @@ if res_s is not None:
     post2 = postpro.prepare(nodes, eles, strains)
 for i in range(0, len(res_s)):
     post2.save_sresults(res_s[i], proj_name)
-    
+
+def_scale = ksearch("deformed")[0]
+if def_scale is not None:
+    post3 = deformed.prepare(nodes, eles, disp, float(def_scale))
+    post3.save_deformed("deformed", proj_name)
 
 print("")
 print("Task finished in", t.check())

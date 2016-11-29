@@ -3,7 +3,7 @@ import sys
 import math
 
 class build():
-    def __init__(self, nodes, elements, constraints):
+    def __init__(self, nodes, elements, constraints, state):
         self.nodes = nodes
         self.eles = elements
         self.cons = constraints
@@ -11,6 +11,7 @@ class build():
         self.clist = [] #constraints list
         self.flist = [] #forces matrix (right)
         self.counter = 0
+        self.state = state
 
         #Preparing global stiffnes matrix initially filled with zeros
         zerolist = []
@@ -54,6 +55,13 @@ class build():
             dofs = [dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1]      
       
             #Global stiffness element preparation
+			
+            
+            #For plane strain
+            if self.state == "planestrain":
+                E = E / (1 - (v**2))
+                v = v / (1 - v)
+            		
             p = (E * h) / (12 * (1 - (v ** 2)))
             q = (E * h) / (1 - v)
     

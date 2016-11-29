@@ -4,6 +4,7 @@ import math
 import prep
 import solver
 import sys
+import os
 import version
 
 vers = version.get()
@@ -16,7 +17,7 @@ def open(im_name):
     print("..............................................")
     
     #Image opening and size check
-    im = Image.open("projects/" + im_name)
+    im = Image.open("projects" + os.sep + im_name)
     width = im.size[0]
     height = im.size[1]
 

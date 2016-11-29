@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.cm as cm
+import matplotlib.colors as clr
 import os
 from matplotlib.collections import PatchCollection
 import math
@@ -62,22 +63,26 @@ def discrete_cmap(N, base_cmap=None):
     base = plt.cm.get_cmap(base_cmap)
     color_list = base(numpy.linspace(1 - (1 / N), 1 / N, N))
     
-    """
-    For edge colors retrieving
-    down_up = [base(numpy.linspace(1, 0, N))[0],
-              base(numpy.linspace(1, 0, N))[-1]]
-    """
+    
+    #For edge colors retrieving
+    down_up = [base(numpy.linspace(1 - (0.5 / N), 0.5 / N, N))[0],
+              base(numpy.linspace(1 - (0.65 / N), 0.65 / N, N))[-1],
+              base(numpy.linspace(1 - (1.8 / N), 1.8 / N, N))[-1]]
+    
               
     cmap_name = base.name + str(N)
-    return base.from_list(cmap_name, color_list, N)
+    #if (type(base) is str) or (type(base) is None):
+    return [clr.LinearSegmentedColormap.from_list(cmap_name, color_list, N), down_up[0], down_up[1], down_up[2]]
+    #else:
+    #    return [base.from_list(cmap_name, color_list, N), down_up[0], down_up[1]]
 
 class prepare():
     def __init__(self, nodes, elements, results):
         self.nodes = nodes
         self.eles = elements
         self.res = results
-        self.ncol = 9
-        self.init_cmap = "RdYlBu"
+        self.ncol = 7
+        self.init_cmap = "inferno_r"
     
     def save_dresults(self, results, proj_name):
         
@@ -160,9 +165,9 @@ class prepare():
          		min_x = (sum_x / 2) - (diff_y / 2)        
                 
         #Matplotlib functions
-        dis_cmap = cmap=discrete_cmap(self.ncol, self.init_cmap)
+        dis_cmap = cmap = discrete_cmap(self.ncol, self.init_cmap)[0]
         
-        p = PatchCollection(patch_list, cmap = dis_cmap, alpha = 0.9)
+        p = PatchCollection(patch_list, cmap = dis_cmap, alpha = 1.0)
         p.set_array(numpy.array(colors))
         ax.add_collection(p)
         
@@ -209,16 +214,16 @@ class prepare():
         
         legend = ax.legend(handles = [max_legend, min_legend], loc = 1, scatterpoints = 1)
         
-        legend.get_texts()[0].set_color([0.64705884,  0., 0.14901961, 1.])
-        legend.get_texts()[1].set_color([0.19215687, 0.21176471, 0.58431375, 1.])
+        legend.get_texts()[0].set_color(discrete_cmap(self.ncol, self.init_cmap)[3])
+        legend.get_texts()[1].set_color(discrete_cmap(self.ncol, self.init_cmap)[1])
         
         frame = legend.get_frame()
         frame.set_edgecolor("white")
-        if not os.path.exists("results/" + proj_name):
-            os.makedirs("results/" + proj_name)
-        plt.savefig("results/" + proj_name + "/disp_" + results + ".png", DPI = 600)
+        if not os.path.exists("results" + os.sep + proj_name):
+            os.makedirs("results" + os.sep + proj_name)
+        plt.savefig("results" + os.sep + proj_name + os.sep + "disp_" + results + ".png", DPI = 600)
         
-        print("Saved results file", "[" + "disp_" + results + ".png]")
+        print("Saved results file", "[" + "disp_" + results + ".png] to results" + os.sep + proj_name + os.sep)
         
         
     def save_sresults(self, results, proj_name):
@@ -233,7 +238,7 @@ class prepare():
         ys = [-self.nodes[i][1] for i in self.nodes]
         
         fig, ax = plt.subplots()
-        #ax.set_axis_bgcolor((0.96, 0.96, 0.96))
+        #ax.set_axis_bgcolor((0.0, 0.0, 0.0))
         patch_list = []
         
         min_x, min_y = self.eles[1][0][0], -self.eles[1][0][1]
@@ -329,13 +334,15 @@ class prepare():
          		min_x = (sum_x / 2) - (diff_y / 2)
 
         #Matplotlib functions
-        dis_cmap = cmap=discrete_cmap(self.ncol, self.init_cmap)
+        dis_cmap = cmap=discrete_cmap(self.ncol, self.init_cmap)[0]
         
         #Hardcoded colors of color bar extensions
-        cmap.set_over([0.64705884,  0., 0.14901961, 1.])
-        cmap.set_under([0.19215687, 0.21176471, 0.58431375, 1.])
-        
-        p = PatchCollection(patch_list, cmap = dis_cmap, alpha = 0.9)
+        #cmap.set_over([0.64705884,  0., 0.14901961, 1.])
+        #cmap.set_under([0.19215687, 0.21176471, 0.58431375, 1.])
+        cmap.set_over(discrete_cmap(self.ncol, self.init_cmap)[2])
+        cmap.set_under(discrete_cmap(self.ncol, self.init_cmap)[1])
+		
+        p = PatchCollection(patch_list, cmap = dis_cmap, alpha = 1.0)
         p.set_array(numpy.array(colors))
         ax.add_collection(p)
         
@@ -362,6 +369,10 @@ class prepare():
         #Color bar limits set to (mean + 2 * standard deviation)
         cbar_lim = [numpy.mean(colors) -  (2 * numpy.std(colors)),
                     numpy.mean(colors) + (2 * numpy.std(colors))]
+            
+        if (results == "sign_huber"):
+            cbar_lim = [0 -  (2 * numpy.std(colors)),
+                        0 + (2 * numpy.std(colors))]
         
         if (numpy.mean(colors) + (2 * numpy.std(colors))) >= float(max_string) and \
             (numpy.mean(colors) - (2 * numpy.std(colors))) > float(min_string):
@@ -386,13 +397,13 @@ class prepare():
         
         else:
             cbar = plt.colorbar(p,
-                                ticks = numpy.linspace(cbar_lim[0], 
+                                ticks = numpy.linspace(cbar_lim[0],
                                                        cbar_lim[1], 
                                                        1 + self.ncol), 
                                 extend='both')
         
         if (results == "huber") and (numpy.mean(colors) - (2 * numpy.std(colors))) < 0:
-                cbar_lim[0] = 0
+            cbar_lim[0] = 0
                 
         p.set_clim(cbar_lim)
         
@@ -410,14 +421,14 @@ class prepare():
         
         legend = ax.legend(handles = [max_legend, min_legend], loc = 1, scatterpoints = 1)
         
-        legend.get_texts()[0].set_color([0.64705884,  0., 0.14901961, 1.])
-        legend.get_texts()[1].set_color([0.19215687, 0.21176471, 0.58431375, 1.])
+        legend.get_texts()[0].set_color(discrete_cmap(self.ncol, self.init_cmap)[3])
+        legend.get_texts()[1].set_color(discrete_cmap(self.ncol, self.init_cmap)[1])
         
         frame = legend.get_frame()
         frame.set_edgecolor("white")
         #plt.grid()
-        if not os.path.exists("results/" + proj_name):
-            os.makedirs("results/" + proj_name)
-        plt.savefig("results/" + proj_name + "/" + results + ".png", DPI = 1200)
+        if not os.path.exists("results" + os.sep + proj_name):
+            os.makedirs("results" + os.sep + proj_name)
+        plt.savefig("results" + os.sep + proj_name + os.sep + results + ".png", DPI = 1200)
         
-        print("Saved results file", "[" + results + ".png]")
+        print("Saved results file", "[" + results + ".png] to results" + os.sep + proj_name + os.sep)
