@@ -1,3 +1,6 @@
+#!/usr/local/bin/python
+# coding: utf-8
+
 import bmp, prep, tools, solver, postpro
 
 #start timer

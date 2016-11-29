@@ -1,3 +1,6 @@
+#!/usr/local/bin/python
+# coding: utf-8
+
 from PIL import Image, ImageCms
 import numpy
 import math
@@ -122,7 +125,7 @@ def create_geom(im_data):
                 
                 #node 1
                 n1 = node_check([j % width, i], 
-                                {**nmerge_list[i], **nmerge_list[i - 1]})
+					{**nmerge_list[i], **nmerge_list[i - 1]})
                 if n1 == None:
                     e1 = n.add(j % width, i)
                     elist.append(e1)
