@@ -1,0 +1,9 @@
+bmp grot_logo.bmp
+mat steel
+unit mm
+scale 2
+thickness 3
+load x 8.4e3 y 0 magenta
+solver direct
+disp x y mag
+stress sig_x tau_max huber sign_huber
