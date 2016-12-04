@@ -48,24 +48,20 @@ bezpośrednio z obrazka zapisanego jako mapa bitowa, a przygotowanego w dowolnym
 <a id="instrukcja" class="anchor" href="#instrukcja" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>3. Instrukcja</h3>
 <p>Wykonanie analizy obliczeniowej wymaga użycia różnych programów pomocniczych. Przygotowanie geometrii odbywa się w prostym programie graficznym (np. Paint, Tux Paint, mtPaint). Ustawienia analizy i warunki brzegowe opisane są w bardzo krótkim pliku tekstowym, który
 można edytować w dowolnym edytorze tekstu (np. Notatnik, Notepad++). Uruchomienie procedury obliczeniowej wykonywane jest jako pojedyczne polecenie pythona. Rezultatem są pliki graficzne w formacie png zapisane w katalogu projektu.</p>
-<p><h4>3.1. Skrócony poradnik jak zacząć</h4>
-Przejdź w konsoli poleceń do katalogu z plikami programu i rozpocznij obliczenia poleceniem:<br><center> <code>python run.py</code> lub <code>python3 run.py</code>.</center></p>
-<p><h4>3.2. Przygotowywanie map bitowych</h4></p>
-<p>Szerszy opis przygotowania modelu dostępny jest pod tym łączem <a href="bitmap.html">Klik!</a>
-</p>
-<p>Geometrię wejściową przygotowuję się jako plik graficzny <code>bmp</code>, w którym jeden piksel odpowiada jednemu kwadratowemu elementowi skończonemu. Zastosowanie odpowiednich kolorów umożliwia odczytanie zapisanej mapy bitowej jako modelu obliczeniowego, do którego
-zostały przypisane odpowiednie warunki brzegowe. Kolory mogą być wybierane dowolnie, zgodnie z instrukcją poniżej. Program jest w stanie rozpoznać zastosowane kolory, dlatego nie jest wymagane użycie odpowiednich barw z określonej palety.<br><br>
-<b>Opis kolorów:</b><br>
-Cyjan, jasnoniebieski, turkus - ciało modelu, elementy skończone<br>
-Biały - brak modelu, elementów skończonych w tym miejscu<br>
-Czerwony, pomarańczowy - utwierdzenie elementu w kierunku poziomym<br>
-Zielony, jasnozielony - utwierdzenie elementu w kierunku pionowym<br>
-Niebieski, granatowy - utwierdzenie elementu w obu kierunkach<br>
-Magenta, fiolet, ciemny róż - obciążeniowy warunek brzegowy<br>
-Brązowy, jasnobrązowy - obciążeniowy warunek brzegowy<br>
-Czarny - obciążeniowy warunek brzegowy<br>
-Żółty - lepiej nie używać, sprawia kłopoty z rozpoznaniem</p>
 
+          <p><h4>3.1. Skrócony poradnik jak zacząć</h4>
+Przejdź w konsoli poleceń do katalogu z plikami programu i rozpocznij obliczenia poleceniem:<br><center> <code>python run.py</code> lub <code>python3 run.py</code>.</center></p>
+
+        <p><h4>3.2. Przygotowywanie map bitowych</h4></p><p>Gotowy plik mapy bitowej z modelem obliczeniowym musi znajdować się w folderze <code>images</code> w katalogu programu.</p>
+
+      <p>Geometrię wejściową przygotowuję się jako plik graficzny <code>bmp</code>, w którym jeden piksel odpowiada jednemu kwadratowemu elementowi skończonemu. Zastosowanie odpowiednich kolorów umożliwia odczytanie zapisanej mapy bitowej jako modelu obliczeniowego, do którego zostały przypisane odpowiednie warunki brzegowe. Kolory mogą być wybierane dowolnie, zgodnie z instrukcją poniżej. Program jest w stanie rozpoznać zastosowane kolory, dlatego nie jest wymagane użycie odpowiednich barw z określonej palety.<br><br>
+<b>Opis warunków brzegowych / kolorów:</b><br>
+Ciało modelu, elementy skończone - <font color="#35F0F0"><b>akwamaryna</b></font><br>
+Brak elementów skończonych w tym miejscu, kolor pusty - <font color="BABABA"><b>biały</b></font><br>
+Utwierdzenia: w kierunku poziomym, pionowym i obu - <font color="red"><b>czerwony</b></font>, <font color = "lime"><b>zielony</b></font>, <font color="blue"><b>granatowy</b></font><br>
+    Obciążenie siłą w węzłach elementu (do 3 obciążeń) - <font color="fuchsia"><b>magenta</b></font>, <font color="maroon"><b>brązowy</b></font>, <font color="black"><b>czarny</b></font></p>
+      
+<p>Należy pamiętać, że w języku python jedna liczba zmiennoprzecinkowa waży 16 bajtów, przez co model obliczeniowy utowrzony na mapie bitowej 100 x 100 px zajmie niemalże 10 </p>
 <p><h4>3.3. Plik wejściowy</h4></p>
 
 <h3>
