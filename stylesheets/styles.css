@@ -48,20 +48,20 @@ h1 {
 }
 
 h2 {
-  color:#393939;
+  color:#000000;
 }
 
 h3, h4, h5, h6 {
-  color:#494949;
+  color:#000000;
 }
 
 a {
-  color:#39c;
+  color:#F8870E;
   text-decoration:none;
 }
 
 a:hover {
-  color:#069;
+  color:#BA3655;
 }
 
 a small {
@@ -90,7 +90,7 @@ blockquote {
 code, pre {
   font-family: monospace, Liberation Mono, DejaVu Sans Mono, Courier New, monospace;
   color:#333;
-  font-size:12px;
+  font-size:13px;
 }
 
 pre {
