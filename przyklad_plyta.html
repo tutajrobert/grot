@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>GRoT&gt; - Graficzny Rozwiązywacz Tarcz</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+	    <p><img src="logo_grot.png"></img></p>
+        <h2>Graficzny Rozwiązywacz Tarcz</h2>
+        <p>Przedprocesor, solwer i postprocesor dla liniowych obliczeń metodą elementów skończonych modeli w płaskim stanie naprężenia generowanych z map bitowych.</p>
+        <p class="view"><a href="https://github.com/tutajrobert/grot">Zobacz stronę projektu w GitHub: <code>tutajrobert/grot</code></a></p>
+        <p class="view"><a href="mailto:tutajrobert@gmail.com">Skontaktuj się z autorem: <code>tutajrobert@gmail.com</code></a></p>
+        <ul>
+          <li><a href="https://github.com/tutajrobert/grot/zipball/master">Download <strong>ZIP</strong></a></li>
+          <li><a href="https://github.com/tutajrobert/grot/tarball/master">Download <strong>TAR</strong></a></li>
+          <li><a href="https://github.com/tutajrobert/grot">Zobacz w <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+	  
+	  <p>Menu: <a href="index.html#o-programie">O programie</a> | <a href="index.html#instalacja">Instalacja</a> | <a href="index.html#instrukcja">Instrukcja</a> | <a href="index.html#przyklady">Przykłady</a> | <a href="index.html#teoria">Teoria</a> | <a href="index.html#autor">Autor</a></p>
+	  
+        <h3>
+<a id="o-programie" class="anchor" href="#o-programie" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>P1: Kwadratowa płyta z otworem</h3>
+
+<p>Rozciąganie płaskiej, kwadratowej płyty z otworem służy jako częsty przykład obliczeniowy dla wykorzystania teorii płaskiego stanu naprężeń. Model obliczeniowy jako mapa bitowa zapisany jest w katalogu programu w <code>projects/plate.bmp</code>. Przejdźmy bez zwłoki do rozwiązania tego problemu w programie GRoT></p>
+<hr>
+<p><h3>1. Utworzenie geometrii modelu</h3>
+Płyta jest stalową blachą kwadratową o boku długości 200 mm, średnicy otworu 80 mm i grubości 4 mm. Do jednego jej boku przyłożona jest siła rozciągająca równa 1000 N. Drugi bok utwierdzony jest w osi kierunku rozciągania, 
+a dwa węzły środkowe tego boku utwierdzone są w obu kierunkach. Materiałem płyty jest stal o module sprężystości równym 210 GPa oraz liczbie Poissona 0,3. Model obliczeniowy przygotowany w Paincie przedstawiony jest poniżej.
+</p>
+
+<center><img src="plate.png" width="50%"></img></center>
+
+<p>
+<h4>1.2. Oznaczenia kolorów powyższego modelu</h4>
+<font color="#35F0F0">Cyjan</font> - elementy skończone modelu tworzące kwadrat o boku 50 pikseli<br>
+<font color="BABABA">Biały</font> - wycięcie otworu o średnicy 20 pikseli<br>
+<font color="red">Czerwony</font> - utwierdzenie węzłów w kierunku poziomym<br>
+<font color="blue">Niebieski</font> - utwierdzenie węzłów w obu kierunkach<br>
+<font color="fuchsia">Fioletowy</font> - nadanie siły w kierunku poziomym o wartości 5000 N</p>
+
+<p>Tak utworzona mapa bitowa jest następnie zapisana w katalogu programu grot w folderze <code>projects</code> jako <code>plate.bmp</code></p>
+<hr>
+<p><h3>2. Przygotowanie pliku wejściowego</h3>
+Gotowy plik wejściowy dla tej analizy można pobrać z niniejszego adresu <a href="plate\input.txt">tutaj</a>. Musi on zostać umieszczony pod nazwą <code>input.txt</code> w katalogu programu GRoT>.</p>
+
+<p>Najważniejsze komendy w pliku wejściowym dla problemu rozciąganej płyty są następujące. Ustawienie rodzaju analizy jako płaski stan naprężeń, wskazanie nazwy pliku geometrii, przypisanie materiału, przeskalowanie modelu czterokrotnie (bok wyrażony w pikselach to 50, w rzeczywistości jest to 200 mm) i nadanie siły dla koloru fioletowego. Jest
+to realizowane przez poniższe polecenia.</p>
+<p><code>
+problem planestress<br>
+bmp grot.bmp<br>
+mat steel<br>
+scale 4<br>
+load x 1000 y 0 magenta<br>
+</code></p>
+<p>Pozostałe polecenia opisane są w pełnym pliku wejściowym, który jest dostępny domyślnie w katalogu programu lub można pobrać go przez odnośnik na początku tego rozdziału.</p>
+<hr>
+<p><h3>3. Uruchomienie analizy</h3>
+Rozpoczęcie obliczeń odbywa się poprzez wywołanie skryptu Python. Może to zostać zrealizowane w wierszu poleceń systemu Windows, w terminalu systemu Linux lub inny znany użytkownikowi sposób. Poniższa instrukcja dotyczy urochomienia
+programu dla systemu Windows w wierszu poleceń <code>cmd.exe</code>. W tym wypadku folder programu GRoT> umieszczony jest w podanym katalogu: <code>C:\grot\</code></p>
+<p><code>cd C:\grot\<br>
+python run.py</code></p>
+
+<p>
+<h4>3.1. Wyjście programu</h4>
+Jeśli cały proces przebiegł pomyślnie to w konsoli powinna zostać wyświetlona poniższa informacja jako krótki raport z przebiegu obliczeń.</p>
+<p><code>
+GRoT> ver. 1.0.0, [Graficzny Rozwiązywacz Tarcz]<br>
+................................................<br>
+<br>
+Bitmap to finite elements model translation [100.0 %]<br>
+Created [2377] nodes<br>
+Created [2236] elements<br>
+Prepared boundaries applied to eles: [red : 48] [blue : 2] [magenta : 50]<br>
+Blue boundary [fixed support] applied to [6] nodes<br>
+Red boundary [in x-dir support] applied to [100] nodes<br>
+Property of all eles set to [steel] (205.0 GPa, 0.3)<br>
+Unit system changed to [mm]<br>
+Standard nodal dimension set to [4.0 mm]<br>
+Thickness of all eles set to [1.0 mm]<br>
+Applied force vector (1.0e+03 N, 0.0e+00 N) distributed to [102] nodes<br>
+<br>
+Building global stiffnes matrix [100.0 %]<br>
+Built [4754 x 4754] matrix<br>
+Storing reserved [316.4] Mbytes of memory<br>
+Solving... (this may take a while)<br>
+Succesfully and directly solved system of linear equations<br>
+Calculated strain and stress tensors (reduced 1-point integration)</code></p>
+
+<hr>
+<p><h3>4. Uzyskane rezultaty</h3>
+Pliki graficzne rozwiązania dostępne są w folderze <code>results/plate/</code>.
+Analityczne rozwiązanie tego zagadnienia wskazuje, że w płycie wystąpią naprężenia średnie równe 8,3 MPa, a maksymalne na krawędzi otworu w płycie równe 18,3 MPa. Przyjrzyjmy się wynikom analizy.</p>
+<center><img src="plate_sig_x.png" width="81%"></img></center>
+<p>
+Maksymalne naprężenia normalne uśrednione do elementu w kierunku poziomym uzyskane w analizie równe są 20,1 MPa. Miejsce ich występowania na modelu zaznaczone jest trójkątem obróconym do góry. Skala wyników dobierana jest tak, by środkowa wartość wyników dla
+wszystkich elementów była w połowie skali, natomiast wartość maksymalna i minimalna oddalone są od niej o 3 odchylenia standardowe. W porównaniu z wynikiem rozwiązania analitycznego analiza wypada całkiem dobrze mając na uwadzę małą liczbę
+elementów, wśród których wszystkie są kwadratowe i tym samym nie mogą wiernie oddać kształtu wyciętego otworu.
+      </section>  
+	  
+	  
+	  
+	  <footer>
+        <p>Projekt prowadzony przez <a href="https://github.com/tutajrobert">tutajrobert</a></p>
+        <p><small>Gospodarzem strony GitHub Pages<br>Motyw utworzony przez <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
