@@ -15,7 +15,7 @@ for i in range(len(input_file_lines)):
 
 def ksearch(keyword):
     for i in range(len(input_lines)):
-        if keyword in input_lines[i][0]:
+        if (keyword in input_lines[i][0]) and ("#" not in input_lines[i][0]):
             return input_lines[i][1:]
         #else:
             #return None
