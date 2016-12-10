@@ -17,7 +17,6 @@
       <header>
 	    <p><img src="logo_grot.png"></img></p>
         <h2>Graficzny Rozwiązywacz Tarcz</h2>
-        <p>Przedprocesor, solwer i postprocesor dla liniowych obliczeń metodą elementów skończonych modeli w płaskim stanie naprężenia generowanych z map bitowych.</p>
         <p class="view"><a href="https://github.com/tutajrobert/grot">Zobacz stronę projektu w GitHub: <code>tutajrobert/grot</code></a></p>
         <p class="view"><a href="mailto:tutajrobert@gmail.com">Skontaktuj się z autorem: <code>tutajrobert@gmail.com</code></a></p>
         <ul>
@@ -26,8 +25,7 @@
           <li><a href="https://github.com/tutajrobert/grot">Zobacz w <strong>GitHub</strong></a></li>
         </ul>
 		<p>Na skróty:<br>
-		A. <a href="graf_instrukcja.pdf">Graficzna instrukcja</a><br>
-		B. <a href="galeria.html">Galeria przykładów</a></p>
+		A. <a href="galeria.html">Galeria przykładów</a></p>
       </header>
       <section>
 	  
@@ -36,7 +34,7 @@
         <h3>
 <a id="o-programie" class="anchor" href="#o-programie" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1. O programie</h3>
 
-<p>Graficzny Rozwiązywacz Tarcz jest programem wykorzystującym metodę elementów skończonych MES dla liniowych obliczeń wytrzymałościowych w płaskim stanie naprężeń lub odkształceń. Jego unikatową funkcją jest wprowadzenie geometrii modelu obliczeniowego 
+<p>Graficzny Rozwiązywacz Tarcz jest programem wykorzystującym metodę elementów skończonych MES dla liniowych, statycznych obliczeń wytrzymałościowych w płaskim stanie naprężeń lub odkształceń. Jego unikatową funkcją jest wprowadzenie geometrii modelu obliczeniowego 
 bezpośrednio z obrazka zapisanego jako mapa bitowa, a przygotowanego w dowolnym programie graficznym.</p>
 
 <h3>
@@ -49,6 +47,7 @@ bezpośrednio z obrazka zapisanego jako mapa bitowa, a przygotowanego w dowolnym
 
 <p><b>Dla systemu Linux:</b><br>
 1. Zainstaluj niezbędne biblioteki: python3-numpy, python3-matplotlib oraz python3-pil.<br>
+ - np. dla Ubuntu: <code>sudo apt-get install python3-numpy</code> itd.<br>
 2. Pobierz GRoT> korzystając z którejś z paczek archiwów z GitHub i rozpakuj w wybranej lokalizacji.
 
 <h3>
@@ -81,7 +80,6 @@ pozwala na wybranie odpowiednich opcji programu.</p>
 <p>
 Przykład 0: <a href="struktura.html">Struktura plików</a><br>
 Przykład 1: <a href="przyklad_plyta.html">Płyta z otworem w płaskim stanie naprężeń</a><br>
-Przykład 2: <a href="przyklad_dwuteownik.html">Dwuteownik w płaskim stanie odkształceń</a><br>
 Więcej: <a href="galeria.html">Galeria z przykładami rezultatów analiz</a>
 </p>
 
@@ -92,10 +90,10 @@ Więcej: <a href="galeria.html">Galeria z przykładami rezultatów analiz</a>
 <p>
 Możliwości programu przedstawione są poniżej jako krótka lista. Każda decyzja i metoda użyta w programie GRoT> została wybrana z konkretnych powodów. Jeśli drogi Czytelniku jesteś ich ciekawy to zapraszam do <a href="mailto:tutajrobert@gmail.com">kontaktu</a>.</p>
 <p>
-> Rozpoznawanie kolorów bardzo człowiecze dzięki użyciu konwersji koloru RGB do palety Lab <a href="https://en.wikipedia.org/wiki/Lab_color_space">wiki: lab_color_space</a><br>
+> Rozpoznawanie kolorów bardzo człowiecze dzięki użyciu konwersji koloru RGB do palety Lab. <a href="https://en.wikipedia.org/wiki/Lab_color_space">wiki: lab_color_space</a><br>
 > Element skończony tarczowy: kwadrat o czterech węzłych i liniowych funkcjach kształtu wedle <a href="http://wektor.il.pw.edu.pl/~zk/mes/index.html">Rakowski, Kacprzyk, "MES w mech. konstr."</a><br>
 > Użyta mapa kolorów dla wyników to inferno z matplotlib. Całe szczęście, że nie jet lub rainbow! <a href="http://www.paraview.org/ParaView/index.php/Default_Color_Map">paraview: default_color_map</a><br>
-> Przede wszystkim stal, a więc i hipoteza Hubera (Misos i Hanky, przepraszam, nie znam) <a href="https://pl.wikipedia.org/wiki/Maksymilian_Tytus_Huber">wiki: maks_tytus_huber</a><br>
+> Przede wszystkim stal, a więc i hipoteza Hubera (von Misos? Przepraszam, nie znam) <a href="https://pl.wikipedia.org/wiki/Maksymilian_Tytus_Huber">wiki: maks_tytus_huber</a> oraz <a href="http://www.ptmts.org.pl/1975-4-olesiak.pdf">artykuł p. Z. Olesiaka</a><br>
 > Podpisany znakiem Huber (signed Huber), czyli naprężenia Hubera o znaku aksjatora tensora naprężeń (stanu hydrostatycznego)
 </p>
 <h3>
