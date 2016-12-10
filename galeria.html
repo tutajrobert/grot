@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>GRoT&gt; - Graficzny Rozwiązywacz Tarcz</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+	    <p><img src="logo_grot.png"></img></p>
+        <h2>Graficzny Rozwiązywacz Tarcz</h2>
+        <p class="view"><a href="https://github.com/tutajrobert/grot">Zobacz stronę projektu w GitHub: <code>tutajrobert/grot</code></a></p>
+        <p class="view"><a href="mailto:tutajrobert@gmail.com">Skontaktuj się z autorem: <code>tutajrobert@gmail.com</code></a></p>
+        <ul>
+          <li><a href="https://github.com/tutajrobert/grot/zipball/master">Download <strong>ZIP</strong></a></li>
+          <li><a href="https://github.com/tutajrobert/grot/tarball/master">Download <strong>TAR</strong></a></li>
+          <li><a href="https://github.com/tutajrobert/grot">Zobacz w <strong>GitHub</strong></a></li>
+        </ul>
+		<p>Na skróty:<br>
+		A. <a href="galeria.html">Galeria przykładów</a></p>
+      </header>
+      <section>
+	  
+	  <p>Menu: <a href="index.html#o-programie">O programie</a> | <a href="index.html#instalacja">Instalacja</a> | <a href="index.html#instrukcja">Instrukcja</a> | <a href="index.html#przyklady">Przykłady</a> | <a href="index.html#teoria">Teoria</a> | <a href="index.html#autor">Autor</a></p>
+	  
+        <h3>
+<a id="o-programie" class="anchor" href="#o-programie" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>G1: Zginanie belki</h3>
+Belka o przekroju prostokątnym zginana siłą przyłożoną do jej prawego końca. Doskonały przykład zjawiska <a href="www.cmmacs.ernet.in/cmmacs/pdf/ch06.pdf">shear locking</a>, które występuje dla elementów skończonych liniowych. Naprężenia gnące są niedoszacowane (331 MPa w porównaniu z 375 MPa dla obliczeń analitycznych), naprężenia tnące przeszacowane (10 MPa kontra 6 MPa), a przemieszczenia końca belki znowu niedoszacowane.
+<center><img src="bend_sig_x.png" width="81%"></img></center>
+    <center><img src="bend_tau_xy.png" width="81%"></img></center><hr>
+
+<h3>G2: Rozciąganie belek z wycięciami</h3>
+Belki podparte są na lewym końcu, natomiast do prawego przyłożona jest siła rozciągająca. Obie belki są tych samych wymiarów. Również wymiary przygotowanych wycięć są identyczne z tą różnicą, że belka lewa ma tylko jedno wycięcie - na górze, natomiast belka prawa ma dwa symetryczne wycięcia - na górze i na dole. Mimo różnicy w przekrojach przewężonego miejsca to niesymetrycznie wycięta belka jest bardziej wytężona, a nie odwrotnie jak mogłoby się wydawać (naprężenia normalne 17 MPa i 15 MPa). To wszystko przez dodatkowe zginanie powodowane przez różnicę w położeniu środków przekroju środkowego i końcowego w miejscu przyłożenia siły.
+<center><img src="tens_sig_x.png" width="81%"></img></center>
+    <center><img src="tens_deformed.png" width="81%"></img></center><hr>
+
+<h3>Porównanie wsporników</h3>
+Oba wsporniki są tych samych gabarytów i są identycznie obciążone siłą w kierunku pionowym. Wspornik z dodatkowym zastrzałem jest wyraźnie mniej ugiety oraz mniej wytężony.
+<center><img src="brackets_deformed.png" width="81%"></img></center>
+    <center><img src="brackets_huber.png" width="81%"></img></center><hr>
+<h3>Klucz płaski</h3>
+Przykład jak i geometria pochodzi z przykładów do programu Z88 Aurora (gorąco polecam!) <a href="http://en.z88.de/examples/">link: Z88</a>. Rezultat pokazuje naprężenia zredukowane według hipotezy Hubera o znaku stanu hydrostatycznego. Dzięki temu odczytać można dodatkową informację o rozciąganiu lub ściskaniu danych elementów, ponieważ naprężenia Hubera dla elementów rozciąganych są ze znakiem <code>+</code>, natomiast dla ściskanych ze znakiem <code>-</code>.
+    <center><img src="wrench_sign_huber.png" width="81%"></img></center><hr>
+<h3>Obciążone logo programu GRoT></h3>
+Przemieszczenia dla napisu programu GRoT>. Czyli tak naprawdę logo programu!
+    <center><img src="grot_disp_mag.png" width="81%"></img></center><hr>
+</section>  
+	  
+
+	  
+	  <footer>
+        <p>Projekt prowadzony przez <a href="https://github.com/tutajrobert">tutajrobert</a></p>
+        <p><small>Gospodarzem strony GitHub Pages<br>Motyw utworzony przez <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
