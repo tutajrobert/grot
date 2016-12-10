@@ -17,7 +17,6 @@
       <header>
 	    <p><img src="logo_grot.png"></img></p>
         <h2>Graficzny Rozwiązywacz Tarcz</h2>
-        <p>Przedprocesor, solwer i postprocesor dla liniowych obliczeń metodą elementów skończonych modeli w płaskim stanie naprężenia generowanych z map bitowych.</p>
         <p class="view"><a href="https://github.com/tutajrobert/grot">Zobacz stronę projektu w GitHub: <code>tutajrobert/grot</code></a></p>
         <p class="view"><a href="mailto:tutajrobert@gmail.com">Skontaktuj się z autorem: <code>tutajrobert@gmail.com</code></a></p>
         <ul>
@@ -26,8 +25,7 @@
           <li><a href="https://github.com/tutajrobert/grot">Zobacz w <strong>GitHub</strong></a></li>
         </ul>
 		<p>Na skróty:<br>
-		A. <a href="graf_instrukcja.pdf">Graficzna instrukcja</a><br>
-		B. <a href="galeria.html">Galeria przykładów</a></p>
+		A. <a href="galeria.html">Galeria przykładów</a></p>
       </header>
       <section>
 	  
@@ -39,10 +37,23 @@
 <p>GRoT> udostępniany jest jako paczka plików, która może być dowolnie umieszczona w katalogach systemu. Przeprowadzanie analiz wymaga
 modyfikacji pliku <code>input.txt</code> znajdującego się w pobranej paczce, a także tworzenia plików graficznych modeli, które muszą być umieszczone wewnątrz folderu <code>projects/</code>. Graficzne rezultaty obliczeń
 zapisują się w katalogu <code>results/</code>. Poniżej przedstawiona jest struktura plików folderu z programem GRoT>.</p><hr>
-<p>Katalog programu 
+<p>Katalog programu:<br>
+    <code>projects/</code> - katalog, w którym umieszczon są pliki graficzne modeli<br>
+    <code>results/</code> - katalog, w którym zapisywane są rezultaty ukończonych analiz<br>
+    <code>input.txt</code> - plik wejściowy obliczeń<br>
+    <code>run.py</code> - skrypt uruchomieniowy programu<br><br>
+    Pozostałe pliki to pliki wewnętrzne programu GRoT>:<br>
+    <code>mlib.py</code> - biblioteka materiałów<br>
+    <code>solver.py</code> - tworzenie macierzy i rozwiązywanie<br>
+    <code>bmp.py</code> - konwertowanie pliku graficznego na model obliczeniowy<br>
+    <code>prep.py</code> - tworzenie węzłów, elementów i warunków brzegowych<br>
+    <code>tools.py</code> - funkcje pomocnicze i zegar<br>
+    <code>postpro.py</code> - postprocesor przemieszczeń i naprężęń<br>
+    <code>deformed.py</code> - postprocesor dla zdeformowanych geometrii<br>
+    <code>version.py</code> - informacja o wersji
       </section>  
 	  
-	  
+
 	  
 	  <footer>
         <p>Projekt prowadzony przez <a href="https://github.com/tutajrobert">tutajrobert</a></p>
