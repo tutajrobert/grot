@@ -30,15 +30,15 @@
 # End of guide
 
 
-project grot
+project bar
 problem planestress
-bmp grot.bmp
+bmp bar.bmp
 mat steel
 unit mm
 scale 1
-thickness 1
+thickness 2
 load x 0 y -1e2 magenta
 solver direct
-disp mag
-stress sign_huber huber
-deformed 3
+disp x y mag
+stress sign_huber huber sig_x sig_y tau_xy eps_x eps_y gamma_xy
+deformed 2
