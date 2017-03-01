@@ -7,20 +7,13 @@ class build():
         self.nodes = nodes
         self.eles = elements
         self.cons = constraints
-        self.gklist = [] #global stiffnes matrix
-        self.clist = [] #constraints list
-        self.flist = [] #forces matrix (right)
         self.counter = 0
         self.state = state
 
         #Preparing global stiffnes matrix initially filled with zeros
-        zerolist = []
-        for i in range(len(self.nodes) * 2):
-            zerolist.append(0)
-        for i in range(len(self.nodes) * 2):
-            self.gklist.append(list(zerolist))
-            self.clist.append(0)
-    
+        zerolist = numpy.zeros(len(self.nodes) * 2)
+        self.gklist = numpy.zeros((len(self.nodes) * 2, len(self.nodes) * 2))	
+        self.clist = numpy.zeros(len(self.nodes) * 2)
         """
         For every element of model calculating:
         kirchhoff modulus G
@@ -52,7 +45,7 @@ class build():
             dof2 = (ele[5] * 2) - 2
             dof3 = (ele[6] * 2) - 2
             dof4 = (ele[7] * 2) - 2
-            dofs = [dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1]      
+            dofs = numpy.array([dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1]) 
       
             #Global stiffness element preparation
 			
@@ -66,37 +59,23 @@ class build():
             q = (E * h) / (1 - v)
     
             k11 = p * 2 * (3 - v)
-            k22, k33, k44, k55, k66, k77, k88 = k11, k11, k11, k11, k11, k11, k11
-    
             k15 = p * (-3 + v)
-            k62, k51, k26, k37, k73, k48, k84 = k15, k15, k15, k15, k15, k15, k15
-    
             k12 = q / 8
-            k74, k21, k83, k65, k56, k47, k38 = k12, k12, k12, k12, k12, k12, k12
-    
             k16 = -q / 8
-            k61, k52, k25, k43, k34, k87, k78 = k16, k16, k16, k16, k16, k16, k16    
-    
-            k17 = p * 2 * v
-            k71, k42, k24, k35, k53, k86, k68 = k17, k17, k17, k17, k17, k17, k17
-    
-            k18 = p * 1.5 * (1 - (3 * v))
-            k23, k32, k45, k67, k76, k54, k81 = k18, k18, k18, k18, k18, k18, k18
-        
+            k17 = p * 2 * v    
+            k18 = p * 1.5 * (1 - (3 * v))        
             k13 = p * (-3 - v)
-            k31, k28, k46, k57, k64, k75, k82 = k13, k13, k13, k13, k13, k13, k13
-
             k14 = p * 1.5 * (-1 + (3 * v))
-            k41, k63, k72, k85, k58, k36, k27 = k14, k14, k14, k14, k14, k14, k14
       
-            klist = [[k11, k12, k13, k14, k15, k16, k17, k18],
-                     [k21, k22, k23, k24, k25, k26, k27, k28],
-                     [k31, k32, k33, k34, k35, k36, k37, k38],
-                     [k41, k42, k43, k44, k45, k46, k47, k48],
-                     [k51, k52, k53, k54, k55, k56, k57, k58],
-                     [k61, k62, k63, k64, k65, k66, k67, k68],
-                     [k71, k72, k73, k74, k75, k76, k77, k78],
-                     [k81, k82, k83, k84, k85, k86, k87, k88]]
+            klist = numpy.array(
+                     [[k11, k12, k13, k14, k15, k16, k17, k18],
+                      [k12, k11, k18, k17, k16, k15, k14, k13],
+                      [k13, k18, k11, k16, k17, k14, k15, k12],
+                      [k14, k17, k16, k11, k18, k13, k12, k15],
+                      [k15, k16, k17, k18, k11, k12, k13, k14],
+                      [k16, k15, k14, k13, k12, k11, k18, k17],
+                      [k17, k14, k15, k12, k13, k18, k11, k16],
+                      [k18, k13, k12, k15, k14, k17, k16, k11]])
       
             #Aggregation of global stiffnes matrix gklist
             for i in range(8):
@@ -113,11 +92,13 @@ class build():
             set element c in flist to 0
         """
         
+        klist = None
+		
         for c in self.cons:
             if self.cons[c] != 0:
                 self.clist[c] = self.cons[c]
             elif self.cons[c] == 0:
-                self.gklist[c] = list(zerolist)
+                self.gklist[c] = zerolist
                 for i in range(len(zerolist)):
                     self.gklist[i][c] = 0
                 self.gklist[c][c] = 1
@@ -125,27 +106,45 @@ class build():
         print("")
         print("Built", "[" + str(len(self.gklist[0])), "x", 
               str(len(self.gklist[0])) + "]", "matrix")
-        print("Storing reserved", "[" + str(round((len(self.gklist[0]) ** 2) * (sys.getsizeof(self.gklist[0][0]) / 1e6), 1)) + "]", "Mbytes of memory")
+        #print("Storing reserved", "[" + str(round((len(self.gklist[0]) ** 2) * (sys.getsizeof(self.gklist[0][0]) / 1e6), 1)) + "]", "Mbytes of memory")
+        print("Storing reserved", "[" + str(round((sys.getsizeof(self.gklist) / 1e6), 1)) + "]", "Mbytes of memory")
     
     def direct(self):
     #Solve linear equations system built above with direct method
         print("Solving... (this may take a while)")
         self.dlist = numpy.linalg.solve(self.gklist, self.clist)
+        print(self.dlist.dtype)
+        self.gklist, self.clist = None, None
         print("Succesfully and directly solved system of linear equations")
         return self.dlist
 
     def least_squares(self):
     #Solve linear equations system built above with iterative least squares method (really long)
+        print("Solving... (this may take a while)")
         self.dlist = numpy.linalg.lstsq(self.gklist, self.clist)
+        self.gklist, self.clist = None, None
         print("Succesfully calculated nodal displacements with least sqaures method [residual : " + str(self.dlist[1]) + "]")
         return self.dlist[0]
-    
+		
+    def cholesky(self):
+    #Solve linear equations system built above with cholesky decomposition method
+        print("Decomposing global stiffness matrix using Cholesky method")
+        L = numpy.linalg.cholesky(self.gklist)
+        self.gklist = None
+        LH = L.T.conj()
+        print("Solving... (this may take a while)")
+        y = numpy.linalg.solve(L, self.clist)
+        L = None
+        self.dlist = numpy.linalg.solve(LH, y)
+        return self.dlist		
+
     def strains_calc(self, disp_res):
     #Reduced integration for strains
 
-        blist = [[.5, -.5, -.5, .5, 0, 0, 0, 0],
+        blist = numpy.array(
+                [[.5, -.5, -.5, .5, 0, 0, 0, 0],
                  [0, 0, 0, 0, -.5, -.5, .5, .5],
-                 [-.5, -.5, .5, .5, .5, -.5, -.5, .5]]
+                 [-.5, -.5, .5, .5, .5, -.5, -.5, .5]])
         
         strains = []
         
@@ -156,22 +155,24 @@ class build():
             dof2 = (self.eles[i][5] * 2) - 2
             dof3 = (self.eles[i][6] * 2) - 2
             dof4 = (self.eles[i][7] * 2) - 2
-            dofs = [dof1, dof1 + 1, 
+            dofs = numpy.array(
+                   [dof1, dof1 + 1, 
                     dof2, dof2 + 1, 
                     dof3, dof3 + 1, 
-                    dof4, dof4 + 1]
+                    dof4, dof4 + 1])
             
-            disp_list = [disp_res[dofs[2]],
+            disp_list = numpy.array(
+                        [disp_res[dofs[2]],
                          disp_res[dofs[0]],
                          disp_res[dofs[6]],
                          disp_res[dofs[4]],
                          disp_res[dofs[3]],
                          disp_res[dofs[1]],
                          disp_res[dofs[7]],
-                         disp_res[dofs[5]]]
+                         disp_res[dofs[5]]])
             
             strains.append(numpy.dot(blist, 
-                    numpy.matrix.transpose(numpy.array(disp_list)))
+                    numpy.matrix.transpose(disp_list))
                 )
         
         #Reduced integration for stresses
@@ -185,9 +186,10 @@ class build():
             v = self.eles[i][9]        
             fc = E / (1 - (v ** 2))
             
-            slist = [[fc, fc * v, 0],
+            slist = numpy.array(
+                    [[fc, fc * v, 0],
                      [fc * v, fc, 0],
-                     [0, 0, fc * ((1 - v) / 2)]]
+                     [0, 0, fc * ((1 - v) / 2)]])
                      
             stresses.append(numpy.dot(slist, strains[counter]))
         print("Calculated strain and stress tensors (reduced 1-point integration)")
