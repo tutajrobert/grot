@@ -429,6 +429,6 @@ class prepare():
         #plt.grid()
         if not os.path.exists("results" + os.sep + proj_name):
             os.makedirs("results" + os.sep + proj_name)
-        plt.savefig("results" + os.sep + proj_name + os.sep + results + ".png", DPI = 1200)
+        plt.savefig("results" + os.sep + proj_name + os.sep + results + ".png", DPI = 600)
         
         print("Saved results file", "[" + results + ".png] to results" + os.sep + proj_name + os.sep)
