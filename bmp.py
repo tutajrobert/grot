@@ -16,12 +16,23 @@ def open(im_name):
     print("GRoT> ver. " + vers + ", [Graficzny Rozwiązywacz Tarcz]")
     print("..............................................")
     
-    #Image opening and size check
+    #Image opening
     im = Image.open("projects" + os.sep + im_name)
-    width = im.size[0]
-    height = im.size[1]
 
-    #RGB to Lab conversion
+    #Image cropping
+    pix = numpy.asarray(im)
+    pix = pix[:,:,0:3] #drop the alpha channel
+    idx = numpy.where(pix-255)[0:2] #drop the color when finding edges
+    box = list(map(min,idx))[::-1] + list(map(max,idx))[::-1]
+    box[2] += 1
+    box[3] += 1
+    im = im.crop(box)
+	
+    #Size check
+    width = im.size[0]
+    height = im.size[1]	
+    
+	#RGB to Lab conversion
 
     srgb_profile = ImageCms.createProfile("sRGB")
     lab_profile  = ImageCms.createProfile("LAB")
@@ -34,7 +45,7 @@ def open(im_name):
 
     im_array = numpy.array(im_lab, dtype='int64')
     im_lab = None
-    
+
     im.close()
     im = None
 	
@@ -185,6 +196,7 @@ def create_geom(im_data):
     
     #Nodes and elements info
     print("")
+    print("Calculated object size: [{} x {}]".format(width, height))
     n.short_info()
     e.short_info()
     
