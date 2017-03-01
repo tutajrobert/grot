@@ -113,7 +113,6 @@ class build():
     #Solve linear equations system built above with direct method
         print("Solving... (this may take a while)")
         self.dlist = numpy.linalg.solve(self.gklist, self.clist)
-        print(self.dlist.dtype)
         self.gklist, self.clist = None, None
         print("Succesfully and directly solved system of linear equations")
         return self.dlist
