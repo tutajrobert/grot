@@ -1,3 +1,3 @@
 def get():
-    version_number = "1.0.0"
+    version_number = "1.1.0"
     return version_number
