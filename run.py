@@ -13,6 +13,8 @@ input_lines = []
 for i in range(len(input_file_lines)):
     input_lines.append(input_file_lines[i].rstrip().split(" "))
 
+input_file.close()	
+	
 def ksearch(keyword):
     for i in range(len(input_lines)):
         if (keyword in input_lines[i][0]) and ("#" not in input_lines[i][0]):
@@ -58,6 +60,8 @@ if ksearch("solver")[0] == "direct":
     disp = sol.direct()
 elif ksearch("solver")[0] == "lsqs":
     disp = sol.least_squares()
+elif ksearch("solver")[0] == "cholesky":
+    disp = sol.cholesky()
 strains = sol.strains_calc(disp)
 
 res_d = ksearch("disp")
