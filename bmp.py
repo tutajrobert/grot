@@ -33,7 +33,11 @@ def open(im_name):
     im_lab = ImageCms.applyTransform(im, rgb2lab_transform)
 
     im_array = numpy.array(im_lab, dtype='int64')
+    im_lab = None
     
+    im.close()
+    im = None
+	
     return[im_array, width, height]
 
 """
@@ -42,7 +46,7 @@ these below are hardcoded
 """
 
 lab_colors = {
-  "white" : [255, 0, 0],
+    "white" : [255, 0, 0],
 	"black" : [0, 0, 0],
 	"red" : [138, 81, 70],
 	"green" : [224, 177, 81],
@@ -175,6 +179,8 @@ def create_geom(im_data):
                     bc_dict[matched_color].append(n.check((j % width) + 1, i + 1))
                     bc_dict[matched_color].append(n.check(j % width, i + 1))
     
+    im_array = None
+
     #Rest of colors: black, magenta and brown can be used for different bc or property assignment
     
     #Nodes and elements info
