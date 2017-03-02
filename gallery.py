@@ -35,6 +35,7 @@ def save_gallery(proj_name, images_list, desc_list, input_file, version):
     gallery_file.write('\n<img src="' + '..' + os.sep + '..' + os.sep + 'logo_grot.png" width="240px"></img>')
     gallery_file.write("<hr>")
     gallery_file.write('<h3>Gallery page of GRoT> project: <font color = "#F8870E">' + proj_name + '</font></h3>')
+    gallery_file.write('Bitmap input file for this analysis: <a href="' + ".." + os.sep + ".." + os.sep + "projects" + os.sep + proj_name + ".bmp" + '">' + "projects" + os.sep + proj_name + ".bmp" + '</a>')
     gallery_file.write("<p>Date of analysis (year/month/day): " + (time.strftime("%Y/%m/%d")) + " \
 	<br>GRoT> version: " + version + '<br>Visit website of this wonderful simulation package: <a href="https://tutajrobert.github.io/grot/">tutajrobert.github.io/grot</a>' +"<br><br>Input file for this analysis is shown below:")
     gallery_file.write('<code>' + input_file + '</code>')
