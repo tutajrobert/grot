@@ -14,7 +14,7 @@ def open(im_name):
     #Welcome message
     print("")
     print("GRoT> ver. " + vers + ", [Graficzny Rozwiązywacz Tarcz]")
-    print("..............................................")
+    print("................................................")
     
     #Image opening
     im = Image.open("projects" + os.sep + im_name)

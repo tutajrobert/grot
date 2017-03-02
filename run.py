@@ -1,4 +1,4 @@
-import bmp, prep, tools, solver, postpro, deformed, gallery, version, os
+import bmp, prep, tools, solver, postpro, deformed, gallery, version, os, subprocess, sys
 
 #start timer
 t = tools.timer()
@@ -111,6 +111,17 @@ for i in range(0, len(res_s)):
     desc_list.append(results_names[res_s[i]])
 
 gallery.save_gallery(proj_name, results_list, desc_list, gallery_input_file, version.get())	
-	
+gallery_path = "results" + os.sep + proj_name + os.sep + proj_name + "_gallery.html"
+
 print("")
 print("Task finished in", t.check())
+
+open_gallery = input("\nDo you want to open results gallery page in your default browser [y/n]?\n")
+
+if open_gallery == "y":
+    if sys.platform.startswith('darwin'):
+        subprocess.call(('open', gallery_path))
+    elif os.name == 'nt':
+        os.startfile(gallery_path)
+    elif os.name == 'posix':
+        subprocess.call(('xdg-open', gallery_path))
