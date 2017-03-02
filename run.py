@@ -1,4 +1,4 @@
-import bmp, prep, tools, solver, postpro, deformed
+import bmp, prep, tools, solver, postpro, deformed, gallery, version, os
 
 #start timer
 t = tools.timer()
@@ -13,7 +13,7 @@ input_lines = []
 for i in range(len(input_file_lines)):
     input_lines.append(input_file_lines[i].rstrip().split(" "))
 
-input_file.close()	
+input_file.close()
 	
 def ksearch(keyword):
     for i in range(len(input_lines)):
@@ -64,22 +64,53 @@ elif ksearch("solver")[0] == "cholesky":
     disp = sol.cholesky()
 strains = sol.strains_calc(disp)
 
+gallery_input_file = ""
+
+for i in input_file_lines:
+    if i[0] != "#":
+        gallery_input_file += i + "<br>"
+
+results_list = []
+				 
+results_names = {"x" : "Displacement in X direction",
+                 "y" : "Displacement in Y direction",
+				 "mag" : "Displacement magnitude",
+				 "eps_x" : "Normal XX component of strain tensor",
+				 "eps_y" : "Normal YY component of strain tensor",
+				 "gamma_xy" : "Shear XY component of strain tensor",
+				 "sig_x" : "Normal XX component of stress tensor",
+				 "sig_y" : "Normal YY component of stress tensor",
+				 "tau_xy" : "Shear XY component of stress tensor",
+				 "huber" : "Huber equivalent stress",
+				 "sign_huber" : "Signed Huber equivalent stress",
+				 "deformed" : "Deformed plot (displacement magnitude)"}
+
+desc_list = []
+				 
 res_d = ksearch("disp")
 if res_d is not None:
     post = postpro.prepare(nodes, eles, disp)
 for i in range(0, len(res_d)):
     post.save_dresults(res_d[i], proj_name)
-
-res_s = ksearch("stress")
-if res_s is not None:
-    post2 = postpro.prepare(nodes, eles, strains)
-for i in range(0, len(res_s)):
-    post2.save_sresults(res_s[i], proj_name)
+    results_list.append("disp_" + res_d[i] + ".png")
+    desc_list.append(results_names[res_d[i]])
 
 def_scale = ksearch("deformed")[0]
 if def_scale is not None:
     post3 = deformed.prepare(nodes, eles, disp, float(def_scale))
     post3.save_deformed("deformed", proj_name)
+    results_list.append("deformed" + ".png")
+    desc_list.append(results_names["deformed"])	
+	
+res_s = ksearch("stress")
+if res_s is not None:
+    post2 = postpro.prepare(nodes, eles, strains)
+for i in range(0, len(res_s)):
+    post2.save_sresults(res_s[i], proj_name)
+    results_list.append(res_s[i] + ".png")
+    desc_list.append(results_names[res_s[i]])
 
+gallery.save_gallery(proj_name, results_list, desc_list, gallery_input_file, version.get())	
+	
 print("")
 print("Task finished in", t.check())
