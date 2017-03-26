@@ -13,7 +13,7 @@ import version
 vers = version.get()
 
 #Matplotlib style functions
-patch_line = 0.15
+patch_line = 0.0
 alpha = 1.0
 plt.rcParams["font.family"] = "serif"
 plt.rcParams["font.size"] = 11
