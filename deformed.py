@@ -11,17 +11,20 @@ import version
 
 vers = version.get()
 
+patch_line = 0.0
+alpha = 1.0
+
+"""
 #Matplotlib style functions
-plt.rcParams["font.family"] = "monospace"
-plt.rcParams["font.size"] = 10
+plt.rcParams["font.family"] = "serif"
+plt.rcParams["font.size"] = 11
 plt.rcParams["font.weight"] = 100
-plt.rcParams["font.variant"] = "small-caps"
-plt.rcParams["xtick.major.size"] = 0
-plt.rcParams["ytick.major.size"] = 0
+#plt.rcParams["font.variant"] = "small-caps"
 plt.rcParams["text.hinting_factor"] = 1
-plt.rcParams["figure.facecolor"] = "white"
-plt.rcParams["patch.linewidth"] = 0.0
-plt.rcParams["legend.fontsize"] = 9
+#plt.rcParams["figure.facecolor"] = "gray"
+plt.rcParams["patch.linewidth"] = patch_line
+plt.rcParams["legend.fontsize"] = 10
+"""
 
 def minmax(colors, eles):
 
@@ -62,12 +65,14 @@ def discrete_cmap(N, base_cmap=None):
     
     base = plt.cm.get_cmap(base_cmap)
     color_list = base(numpy.linspace(1 - (1 / N), 1 / N, N))
-    
-    
+    color_list[3] = [.906, .906, .906, 1.]
     #For edge colors retrieving
-    down_up = [base(numpy.linspace(1 - (0.5 / N), 0.5 / N, N))[0],
-              base(numpy.linspace(1 - (0.65 / N), 0.65 / N, N))[-1],
-              base(numpy.linspace(1 - (1.8 / N), 1.8 / N, N))[-1]]
+    # 0 is for max
+    # 1 is for min
+    # 2 is for min label
+    down_up = [base(numpy.linspace(1 - (0.2 / N), 0.2 / N, N))[0],
+              base(numpy.linspace(1 - (0.2 / N), 0.2 / N, N))[-1],
+              base(numpy.linspace(1 - (0.2 / N), 0.2 / N, N))[-1]]
     
               
     cmap_name = base.name + str(N)
@@ -82,7 +87,7 @@ class prepare():
         self.eles = elements
         self.res = results
         self.ncol = 7
-        self.init_cmap = "inferno_r"
+        self.init_cmap = "coolwarm_r"
         self.scale = scale
         
     def save_deformed(self, results, proj_name):
@@ -198,7 +203,7 @@ class prepare():
         else:
             max_legend = plt.scatter(99999, 99999, marker = "^", c = "white", s = 52, label = "max: " + str(max_string))
         min_legend = plt.scatter(-99999, -99999, marker = "v", c = "white", s = 52, label = "min: " + str(min_string))        
-        plt.rcParams["patch.linewidth"] = 0.0
+        plt.rcParams["patch.linewidth"] = patch_line
         cbar_lim = [min(deformed_points_colors), max(deformed_points_colors)]
         cbar = plt.colorbar(scatter,
                             ticks = numpy.linspace(cbar_lim[0], 

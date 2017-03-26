@@ -19,8 +19,7 @@ def ksearch(keyword):
     for i in range(len(input_lines)):
         if (keyword in input_lines[i][0]) and ("#" not in input_lines[i][0]):
             return input_lines[i][1:]
-        #else:
-            #return None
+    return [None]
 
 proj_name = ksearch("project")[0]            
             
@@ -94,6 +93,14 @@ for i in range(0, len(res_d)):
     post.save_dresults(res_d[i], proj_name)
     results_list.append("disp_" + res_d[i] + ".png")
     desc_list.append(results_names[res_d[i]])
+	
+res_s = ksearch("stress")
+if res_s[0] is not None:
+    post2 = postpro.prepare(nodes, eles, strains)
+    for i in range(0, len(res_s)):
+        post2.save_sresults(res_s[i], proj_name)
+        results_list.append(res_s[i] + ".png")
+        desc_list.append(results_names[res_s[i]])
 
 def_scale = ksearch("deformed")[0]
 if def_scale is not None:
@@ -101,14 +108,6 @@ if def_scale is not None:
     post3.save_deformed("deformed", proj_name)
     results_list.append("deformed" + ".png")
     desc_list.append(results_names["deformed"])	
-	
-res_s = ksearch("stress")
-if res_s is not None:
-    post2 = postpro.prepare(nodes, eles, strains)
-for i in range(0, len(res_s)):
-    post2.save_sresults(res_s[i], proj_name)
-    results_list.append(res_s[i] + ".png")
-    desc_list.append(results_names[res_s[i]])
 
 gallery.save_gallery(proj_name, results_list, desc_list, gallery_input_file, version.get())	
 gallery_path = "results" + os.sep + proj_name + os.sep + proj_name + "_gallery.html"
