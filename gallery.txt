@@ -1,108 +1,112 @@
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GRoT> Graphical Resolver of T4s</title>
+    <link rel="stylesheet" href="main.css">
 <style>
 
-@font-face {
-  font-family: Consolas;
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: Consolas;
-  font-weight: 700;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: Consolas;
-  font-weight: 400;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: Consolas;
-  font-weight: 700;
-  font-style: italic;
-}
-
 body {
-  background-color: #fff;
-  padding:20px;
-  font: 14px/1.5 Consolas, Courier New, "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color:#727272;
-  font-weight:400;
+    text-align:justify;
+    margin:40px auto;
+    max-width:650px;
+    line-height:1.7;
+    font-size:17px;
+    font-family:serif;
+    font-weight:400;
+    font-style:normal;
+    color:#555;
+    background-color: #ffffff;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  color:#222;
-  margin:0 0 20px;
+h1 {
+	text-align:right;
+	line-height:1.0;
+    font-family:"Georgia";
+    font-weight:400;
+	margin-bottom:15px;
+    color:#444;
 }
 
-p, ul, ol, table, pre, dl {
-  margin:0 0 20px;
+h2 {
+    line-height:1.2;
+    font-family:"Georgia";
+    font-weight:400;
+    color:#222;
 }
 
-h1, h2, h3 {
-  line-height:1.1;
+h2 {
+    text-align:left;
+    border-top:solid 1px #d6d6d6;
+	margin-bottom:-20px;
+	margin-top:50px;
+    font-weight:400;
 }
 
-h3, h4, h5, h6 {
-  color:#000000;
+h2 span {
+    top:-.75em;
+    padding:0 10px 0 0;
+    background:#fff;
+    position:relative;
 }
 
+h3, h4 {
+    line-height:1.2;
+    font-family:"Georgia";
+    font-weight:400;
+    color:#222;
+	margin-top:25px;
+	margin-bottom:0px;
+}
+     
 a {
-  color:#F8870E;
-  text-decoration:none;
+    color:#4358CB;
+    font-style:oblique;
+	text-decoration:none;
 }
 
-a:hover {
-  color:#BA3655;
+#menu a {
+	color:white;
+	font-style:oblique;
 }
 
-a small {
-  font-size:11px;
-  color:#777;
-  margin-top:-0.3em;
-  display:block;
+code {
+    color:#666;
+    font-family:monospace;
+    line-height:1.5;
+    font-size:15px;
+	background-color:#e7e7e7;
 }
 
-a:hover small {
-  color:#777;
+footer {
+    font-size:13px;
+    padding: 0 0;
+	margin-top: 40px;
 }
 
-code, pre {
-  font-family: monospace, Liberation Mono, DejaVu Sans Mono, Courier New, monospace;
-  color:#333;
-  font-size:13px;
-}
-
-div.img {
-    margin: 10px;
-    border: 1px solid #ccc;
-    float: left;
-    width: 400px;
-}
-
-div.img:hover {
-    border: 1px solid #777;
-}
-
-div.img img {
-    width: 100%;
-    height: auto;
-}
-
-div.desc {
-    padding: 15px;
+menu {
+    font-size:18px;
     text-align: center;
+    padding: 0 0;
+	color:white;
+    background-color:#4358CB;
+	margin-bottom: 60px;
 }
 
-hr {
-    border:0;
-    background:#e5e5e5;
-    height:1px;
-    margin:20 20 20px;
+header {
+    font-size:18px;
+    text-align:center;
+}
+
+ul {
+    padding-left:20px;
+    padding-right:0px;
+}
+
+
+ol {
+    padding-left:20px;
+    padding-right:0px;
 }
 
 </style>

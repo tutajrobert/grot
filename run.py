@@ -66,8 +66,8 @@ strains = sol.strains_calc(disp)
 gallery_input_file = ""
 
 for i in input_file_lines:
-    if i[0] != "#":
-        gallery_input_file += i + "<br>"
+    if (i[0] != "#") and (len(i) != 1):
+        gallery_input_file += "<code>" + i + "</code><br>"
 
 results_list = []
 				 
