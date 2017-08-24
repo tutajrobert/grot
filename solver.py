@@ -1,6 +1,9 @@
 import numpy
+import scipy.sparse
+import scipy.sparse.linalg
 import sys
 import math
+import time
 
 class build():
     def __init__(self, nodes, elements, constraints, state):
@@ -11,9 +14,9 @@ class build():
         self.state = state
 
         #Preparing global stiffnes matrix initially filled with zeros
-        zerolist = numpy.zeros(len(self.nodes) * 2)
-        self.gklist = numpy.zeros((len(self.nodes) * 2, len(self.nodes) * 2))	
         self.clist = numpy.zeros(len(self.nodes) * 2)
+        self.gklist = scipy.sparse.lil_matrix((len(self.nodes) * 2, len(self.nodes) * 2))
+
         """
         For every element of model calculating:
         kirchhoff modulus G
@@ -80,7 +83,7 @@ class build():
             #Aggregation of global stiffnes matrix gklist
             for i in range(8):
                 for j in range(8):
-                    self.gklist[dofs[i]][dofs[j]] += klist[i][j]
+                    self.gklist[dofs[i], dofs[j]] += klist[i][j]
         
         """
         Application of constraints:
@@ -92,27 +95,38 @@ class build():
             set element c in flist to 0
         """
         
+        print("")
+        print("Built", "[" + str(len(self.nodes) * 2), "x", 
+              str(len(self.nodes) * 2) + "]", "matrix")
+        
         klist = None
-		
+        
+        prog_counter = 0
         for c in self.cons:
+            #Progress text in percents
+            prog_counter += 1
+            sys.stdout.write("\r" + 
+            "Applying Dirichlet boundary conditions [" + 
+            str(round(((prog_counter) / len(self.cons)) * 100, 2)) + 
+            " %]")
+            sys.stdout.flush()
+            
             if self.cons[c] != 0:
                 self.clist[c] = self.cons[c]
             elif self.cons[c] == 0:
-                self.gklist[c] = zerolist
-                for i in range(len(zerolist)):
-                    self.gklist[i][c] = 0
-                self.gklist[c][c] = 1
-
+                self.gklist[c, :] = 0
+                self.gklist[:, c] = 0
+                self.gklist[c, c] = 1
+        self.gklist = self.gklist.tocsr()
         print("")
-        print("Built", "[" + str(len(self.gklist[0])), "x", 
-              str(len(self.gklist[0])) + "]", "matrix")
-        #print("Storing reserved", "[" + str(round((len(self.gklist[0]) ** 2) * (sys.getsizeof(self.gklist[0][0]) / 1e6), 1)) + "]", "Mbytes of memory")
-        print("Storing reserved", "[" + str(round((sys.getsizeof(self.gklist) / 1e6), 1)) + "]", "Mbytes of memory")
-    
+        
+        self.cons = None
+        
     def direct(self):
     #Solve linear equations system built above with direct method
+        print("")
         print("Solving... (this may take a while)")
-        self.dlist = numpy.linalg.solve(self.gklist, self.clist)
+        self.dlist = scipy.sparse.linalg.spsolve(self.gklist, self.clist)
         self.gklist, self.clist = None, None
         print("Succesfully and directly solved system of linear equations")
         return self.dlist
