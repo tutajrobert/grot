@@ -15,14 +15,14 @@ vers = version.get()
 #Matplotlib style functions
 patch_line = 0.0
 alpha = 1.0
-plt.rcParams["font.family"] = "serif"
-plt.rcParams["font.size"] = 11
+plt.rcParams["font.family"] = "monospace"
+plt.rcParams["font.size"] = 10
 plt.rcParams["font.weight"] = 100
 #plt.rcParams["font.variant"] = "small-caps"
 plt.rcParams["text.hinting_factor"] = 1
 #plt.rcParams["figure.facecolor"] = "gray"
 plt.rcParams["patch.linewidth"] = patch_line
-plt.rcParams["legend.fontsize"] = 10
+plt.rcParams["legend.fontsize"] = 9
 
 def minmax(colors, eles):
 
