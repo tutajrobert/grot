@@ -114,13 +114,3 @@ gallery_path = "results" + os.sep + proj_name + os.sep + proj_name + "_gallery.h
 
 print("")
 print("Task finished in", t.check())
-
-open_gallery = input("\nDo you want to open results gallery page in your default browser [y/n]?\n")
-
-if open_gallery == "y":
-    if sys.platform.startswith('darwin'):
-        subprocess.call(('open', gallery_path))
-    elif os.name == 'nt':
-        os.startfile(gallery_path)
-    elif os.name == 'posix':
-        subprocess.call(('xdg-open', gallery_path))
