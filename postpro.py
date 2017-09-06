@@ -9,6 +9,7 @@ import math
 import numpy
 import tools
 import version
+import stress
 
 vers = version.get()
 
@@ -86,7 +87,41 @@ class prepare():
         self.res = results
         self.ncol = 7
         self.init_cmap = "coolwarm_r"
-    
+        
+        self.min_x, self.min_y = self.eles[1][0][0], -self.eles[1][0][1]
+        self.max_x, self.max_y = self.min_x, self.min_y
+        
+        self.patch_list = []
+        for i in self.eles:
+            xlist = [self.eles[i][j][0] for j in range(0, 4)]
+            ylist = [self.eles[i][j][1] for j in range(0, 4)]
+
+            #Rectangle of vertex in (x, y) and given width and height
+            self.patch_list.append(patches.Rectangle((min(xlist), 
+                                                -min(ylist)), 
+                                                1.0, 
+                                                -1.0))
+                                                
+            #Axes limits searching
+            self.min_x = tools.min_search(min(xlist), self.min_x)
+            self.min_y = tools.min_search(-max(ylist), self.min_y)            
+            self.max_x = tools.max_search(max(xlist), self.max_x)
+            self.max_y = tools.max_search(-min(ylist), self.max_y) 
+
+            #Axes range
+            diff_x = self.max_x - self.min_x
+            diff_y = self.max_y - self.min_y
+            sum_x = self.max_x + self.min_x
+            sum_y = self.max_y + self.min_y
+
+            if diff_x > diff_y:
+                    self.max_y = (sum_y / 2) + (diff_x / 2)
+                    self.min_y = (sum_y / 2) - (diff_x / 2)
+                    
+            else:
+                    self.max_x = (sum_x / 2) + (diff_y / 2)
+                    self.min_x = (sum_x / 2) - (diff_y / 2)             
+
     def save_dresults(self, results, proj_name):
         
         """
@@ -95,32 +130,12 @@ class prepare():
         """
     
         colors = []
-        xs = [self.nodes[i][0] for i in self.nodes]
-        ys = [-self.nodes[i][1] for i in self.nodes]
         
         fig, ax = plt.subplots()
-        patch_list = []
-        
-        min_x, min_y = self.eles[1][0][0], -self.eles[1][0][1]
-        max_x, max_y = min_x, min_y
-        
+                
         #Nodes coordinates storing
         for i in self.eles:
-            xlist = [self.eles[i][j][0] for j in range(0, 4)]
-            ylist = [self.eles[i][j][1] for j in range(0, 4)]
-    
-            #Rectangle of vertex in (x, y) and given width and height
-            patch_list.append(patches.Rectangle((min(xlist), 
-                                                -min(ylist)), 
-                                                1.0, 
-                                                -1.0))
-            
-            #Axes limits searching
-            min_x = tools.min_search(min(xlist), min_x)
-            min_y = tools.min_search(-max(ylist), min_y)            
-            max_x = tools.max_search(max(xlist), max_x)
-            max_y = tools.max_search(-min(ylist), max_y)
-            
+                       
             #Displacement results storing
             dof1 = (self.eles[i][4] * 2) - 2
             dof2 = (self.eles[i][5] * 2) - 2
@@ -151,26 +166,12 @@ class prepare():
                                                 (self.res[dofs[5]] ** 2)) +
                                       math.sqrt((self.res[dofs[6]] ** 2) + 
                                                 (self.res[dofs[7]] ** 2))))
-                plt.title("Displacement magnitude")
-        
-        #Axes range
-        diff_x = max_x - min_x
-        diff_y = max_y - min_y
-        sum_x = max_x + min_x
-        sum_y = max_y + min_y
-
-        if diff_x > diff_y:
-         		max_y = (sum_y / 2) + (diff_x / 2)
-         		min_y = (sum_y / 2) - (diff_x / 2)
-         		
-        else:
-         		max_x = (sum_x / 2) + (diff_y / 2)
-         		min_x = (sum_x / 2) - (diff_y / 2)        
+                plt.title("Displacement magnitude")   
                 
         #Matplotlib functions
         dis_cmap = cmap = discrete_cmap(self.ncol, self.init_cmap)[0]
         
-        p = PatchCollection(patch_list, cmap = dis_cmap, alpha = alpha)
+        p = PatchCollection(self.patch_list, cmap = dis_cmap, alpha = alpha)
         p.set_array(numpy.array(colors))
         ax.add_collection(p)
         
@@ -203,8 +204,8 @@ class prepare():
                             )
         p.set_clim(cbar_lim)
         
-        plt.xlim(min_x - 1, max_x + 1)
-        plt.ylim(min_y - 1, max_y + 1)
+        plt.xlim(self.min_x - 1, self.max_x + 1)
+        plt.ylim(self.min_y - 1, self.max_y + 1)
         
         ax.axes.xaxis.set_ticks([])
         ax.axes.yaxis.set_ticks([])
@@ -224,128 +225,39 @@ class prepare():
         frame.set_edgecolor("white")
         if not os.path.exists("results" + os.sep + proj_name):
             os.makedirs("results" + os.sep + proj_name)
-        plt.savefig("results" + os.sep + proj_name + os.sep + "disp_" + results + ".png", DPI = 600)
+        plt.savefig("results" + os.sep + proj_name + os.sep + "disp_" + results + ".png", DPI = 300)
         
         print("Saved results file", "[" + "disp_" + results + ".png] to results" + os.sep + proj_name + os.sep)
         
         
     def save_sresults(self, results, proj_name):
-        
+ 
         """
         Matplotlib script for results viewing
         One element == one colour, so element solution
         """
     
         colors = []
-        xs = [self.nodes[i][0] for i in self.nodes]
-        ys = [-self.nodes[i][1] for i in self.nodes]
-        
         fig, ax = plt.subplots()
-        #ax.set_axis_bgcolor((0.0, 0.0, 0.0))
-        patch_list = []
-        
-        min_x, min_y = self.eles[1][0][0], -self.eles[1][0][1]
-        max_x, max_y = min_x, min_y
-        
+              
         counter = -1
         
         #Nodes coordinates storing
         for i in self.eles:
             counter += 1
-            xlist = [self.eles[i][j][0] for j in range(0, 4)]
-            ylist = [self.eles[i][j][1] for j in range(0, 4)]
-    
-            #Rectangle of vertex in (x, y) and given width and height
-            patch_list.append(patches.Rectangle((min(xlist), 
-                                                -min(ylist)), 
-                                                1.0, 
-                                                -1.0))
-            
-            #Axes limits searching
-            min_x = tools.min_search(min(xlist), min_x)
-            min_y = tools.min_search(-max(ylist), min_y)            
-            max_x = tools.max_search(max(xlist), max_x)
-            max_y = tools.max_search(-min(ylist), max_y)
-            
             #Results choosing and preparing
-            if results == "eps_x":
-                colors.append(self.res[0][counter][0])
-                plt.title("Normal XX component of strain tensor")
-
-            elif results == "eps_y":
-                colors.append(self.res[0][counter][1])
-                plt.title("Normal YY component of strain tensor")
-                
-            elif results == "gamma_xy":
-                colors.append(self.res[0][counter][2])
-                plt.title("Shear XY component of strain tensor")
-            
-            if results == "sig_x":
-                colors.append(self.res[1][counter][0])
-                plt.title("Normal XX component of stress tensor")
-
-            elif results == "sig_y":
-                colors.append(self.res[1][counter][1])
-                plt.title("Normal YY component of stress tensor")
-                
-            elif results == "tau_xy":
-                colors.append(self.res[1][counter][2])
-                plt.title("Shear XY component of stress tensor")     
-            
-            elif results == "tau_max":
-                sigy = self.res[1][counter][1]
-                sigx = self.res[1][counter][0]
-                tauxy = self.res[1][counter][2] 
-                taumax = math.sqrt((((sigx - sigy) / 2) ** 2) + (tauxy ** 2))
-                colors.append(taumax)
-                plt.title("Maximum shear stress")               
-                
-            elif results == "huber":
-                sigy = self.res[1][counter][1]
-                sigx = self.res[1][counter][0]
-                tauxy = self.res[1][counter][2]    
-                huber = math.sqrt((sigx ** 2) + (sigy ** 2) + (3 * (tauxy ** 2)))
-                colors.append(huber)
-                plt.title("Huber equivalent stress")
-                
-            elif results == "sign_huber":
-                sigy = self.res[1][counter][1]
-                sigx = self.res[1][counter][0]
-                tauxy = self.res[1][counter][2] 
-                taumax = math.sqrt((((sigx - sigy) / 2) ** 2) + (tauxy ** 2))
-                sig1 = ((sigx + sigy) / 2) + taumax
-                sig2 = ((sigx + sigy) / 2) - taumax
-                sign = numpy.sign(sig1 + sig2)    
-                sign_huber = sign * math.sqrt((sigx ** 2) + (sigy ** 2) + (3 * (tauxy ** 2)))                
-                colors.append(sign_huber)
-                plt.title("Signed Huber equivalent stress")
-            else:
-                pass
-                
-        #Axes range
-        diff_x = max_x - min_x
-        diff_y = max_y - min_y
-        sum_x = max_x + min_x
-        sum_y = max_y + min_y
-
-        if diff_x > diff_y:
-         		max_y = (sum_y / 2) + (diff_x / 2)
-         		min_y = (sum_y / 2) - (diff_x / 2)
-         		
-        else:
-         		max_x = (sum_x / 2) + (diff_y / 2)
-         		min_x = (sum_x / 2) - (diff_y / 2)
+            to_plot = stress.results(self.res, results, counter)
+            colors.append(to_plot[0])
+            plt.title(to_plot[1])    
 
         #Matplotlib functions
-        dis_cmap = cmap=discrete_cmap(self.ncol, self.init_cmap)[0]
+        dis_cmap = cmap = discrete_cmap(self.ncol, self.init_cmap)[0]
         
         #Hardcoded colors of color bar extensions
-        #cmap.set_over([0.64705884,  0., 0.14901961, 1.])
-        #cmap.set_under([0.19215687, 0.21176471, 0.58431375, 1.])
         cmap.set_over(discrete_cmap(self.ncol, self.init_cmap)[2])
         cmap.set_under(discrete_cmap(self.ncol, self.init_cmap)[1])
 		
-        p = PatchCollection(patch_list, cmap = dis_cmap, alpha = alpha)
+        p = PatchCollection(self.patch_list, cmap = dis_cmap, alpha = alpha)
         p.set_array(numpy.array(colors))
         ax.add_collection(p)
         
@@ -372,7 +284,8 @@ class prepare():
         #Color bar limits set to (mean + 2 * standard deviation)
         cbar_lim = [numpy.mean(colors) -  (2 * numpy.std(colors)),
                     numpy.mean(colors) + (2 * numpy.std(colors))]
-            
+         
+        #Zero has to be in the middle!         
         if (results == "sign_huber"):
             cbar_lim = [0 -  (2 * numpy.std(colors)),
                         0 + (2 * numpy.std(colors))]
@@ -387,7 +300,6 @@ class prepare():
                                                        1 + self.ncol), 
                                 extend='min')
 
-            
         elif (numpy.mean(colors) - (2 * numpy.std(colors))) < float(min_string) and \
             (numpy.mean(colors) + (2 * numpy.std(colors))) <= float(max_string):
             
@@ -410,8 +322,8 @@ class prepare():
                 
         p.set_clim(cbar_lim)
         
-        plt.xlim(min_x - 1, max_x + 1)
-        plt.ylim(min_y - 1, max_y + 1)
+        plt.xlim(self.min_x - 1, self.max_x + 1)
+        plt.ylim(self.min_y - 1, self.max_y + 1)
         
         ax.axes.xaxis.set_ticks([])
         ax.axes.yaxis.set_ticks([])
@@ -429,9 +341,9 @@ class prepare():
         
         frame = legend.get_frame()
         frame.set_edgecolor("white")
-        #plt.grid()
+
         if not os.path.exists("results" + os.sep + proj_name):
             os.makedirs("results" + os.sep + proj_name)
-        plt.savefig("results" + os.sep + proj_name + os.sep + results + ".png", DPI = 600)
+        plt.savefig("results" + os.sep + proj_name + os.sep + results + ".png", DPI = 300)
         
         print("Saved results file", "[" + results + ".png] to results" + os.sep + proj_name + os.sep)
