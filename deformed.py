@@ -12,19 +12,6 @@ import version
 vers = version.get()
 
 patch_line = 0.0
-alpha = 1.0
-
-"""
-#Matplotlib style functions
-plt.rcParams["font.family"] = "serif"
-plt.rcParams["font.size"] = 11
-plt.rcParams["font.weight"] = 100
-#plt.rcParams["font.variant"] = "small-caps"
-plt.rcParams["text.hinting_factor"] = 1
-#plt.rcParams["figure.facecolor"] = "gray"
-plt.rcParams["patch.linewidth"] = patch_line
-plt.rcParams["legend.fontsize"] = 10
-"""
 
 def minmax(colors, eles):
 
@@ -98,17 +85,11 @@ class prepare():
         """
     
         colors = []
-        xs = [self.nodes[i][0] for i in self.nodes]
-        ys = [-self.nodes[i][1] for i in self.nodes]
         
         fig, ax = plt.subplots()
-        patch_list = []
         deformed_points_x, deformed_points_y = [], []
         deformed_points_colors = []
         center_points_x, center_points_y = [], []
-        
-        min_x, min_y = self.eles[1][0][0], -self.eles[1][0][1]
-        max_x, max_y = min_x, min_y
         
         #Nodes coordinates storing
         for i in self.eles:
@@ -116,17 +97,8 @@ class prepare():
             ylist = [self.eles[i][j][1] for j in range(0, 4)]
     
             #Rectangle of vertex in (x, y) and given width and height
-            patch_list.append(patches.Rectangle((min(xlist), 
-                                                -min(ylist)), 
-                                                1.0, 
-                                                -1.0))
             center_points_x.append((min(xlist) + 0.5))
             center_points_y.append((-1 * min(ylist) - 0.5))
-            #Axes limits searching
-            min_x = tools.min_search(min(xlist), min_x)
-            min_y = tools.min_search(-max(ylist), min_y)            
-            max_x = tools.max_search(max(xlist), max_x)
-            max_y = tools.max_search(-min(ylist), max_y)
             
             #Displacement results storing
             dof1 = (self.eles[i][4] * 2) - 2
@@ -182,12 +154,6 @@ class prepare():
          		max_x = (sum_x / 2) + (diff_y / 2)
          		min_x = (sum_x / 2) - (diff_y / 2)        
                 
-        #Matplotlib functions
-        #dis_cmap = cmap = discrete_cmap(self.ncol, self.init_cmap)[0]
-        #p = PatchCollection(patch_list, cmap = dis_cmap, alpha = 1.0)
-        #p.set_array(numpy.array(colors))
-        #ax.add_collection(p)
-        #Plotting min/max
         minmax_data = minmax(deformed_points_colors, self.eles)
         
         x_pos_max = minmax_data[0]
@@ -230,6 +196,6 @@ class prepare():
         frame.set_edgecolor("white")        
         if not os.path.exists("results" + os.sep + proj_name):
             os.makedirs("results" + os.sep + proj_name)
-        plt.savefig("results" + os.sep + proj_name + os.sep + results + ".png", DPI = 600)
+        plt.savefig("results" + os.sep + proj_name + os.sep + results + ".png", DPI = 300)
         
         print("Saved results file", "[" + results + ".png] to results" + os.sep + proj_name + os.sep)
