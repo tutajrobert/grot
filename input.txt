@@ -24,6 +24,7 @@
 # --- stress  --- Stress and strains results selection. Possible SETTINGS: eps_x, eps_y, gamma_xy, sig_x, sig_y, tau_xy, huber, sign_huber.
 #                   eps_x, eps_y, gamma_xy - Strains in X direction, strains in Y direction, shear strains
 #                   sig_x, sig_y, tau_xy - Stress in X direction, stress in Y direction, shear stress
+#                   princ1, princ2, tau_max - First principal stress, second principal stress, maximum shear stress
 #                   huber, sign_huber - Huber equivalent stress, signed huber equivalent stress
 # --- deformed -- Plot of deformed model. Number is deformation scale multiplier, where 1 is equal to standard nodal dimension between two nodes.
 #
@@ -40,5 +41,5 @@ thickness 2
 load x 0 y -1e2 magenta
 solver direct
 disp x y mag
-stress sign_huber huber sig_x sig_y tau_xy eps_x eps_y gamma_xy
+stress eps_x eps_y gamma_xy sig_x sig_y tau_xy princ1 princ2 tau_max huber sign_huber
 deformed 2
