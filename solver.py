@@ -205,7 +205,17 @@ class build():
                      [0, 0, fc * ((1 - v) / 2)]])
                      
             stresses.append(numpy.dot(slist, strains[counter]))
+        principals = []
+        for i in range(len(self.eles)):        
+            princ_1 = 0.5 * (stresses[i][0] + stresses[i][1]) + math.sqrt(((0.5 * (stresses[i][0] - stresses[i][1])) ** 2) + stresses[i][2] ** 2)
+            princ_2 = 0.5 * (stresses[i][0] + stresses[i][1]) - math.sqrt(((0.5 * (stresses[i][0] - stresses[i][1])) ** 2) + stresses[i][2] ** 2)
+            tau_max = 0.5 * (princ_1 - princ_2)
+            if stresses[i][0] == stresses[i][1]:
+                theta_princ = 0
+            else:
+                theta_princ = 0.5 * numpy.arctan((2 * stresses[i][2]) / (stresses[i][0] - stresses[i][1]))
+            principals.append([princ_1, princ_2, tau_max, theta_princ])
         print("Calculated strain and stress tensors (reduced 1-point integration)")
         print("")
         
-        return(strains, stresses)
+        return(strains, stresses, principals)
