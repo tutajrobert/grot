@@ -82,7 +82,10 @@ results_names = {"x" : "Displacement in X direction",
 				 "tau_xy" : "Shear XY component of stress tensor",
 				 "huber" : "Huber equivalent stress",
 				 "sign_huber" : "Signed Huber equivalent stress",
-				 "deformed" : "Deformed plot (displacement magnitude)"}
+				 "deformed" : "Deformed plot (displacement magnitude)",
+                 "princ1" : "First principal stress",
+                 "princ2" : "Second principal stress",
+                 "tau_max" : "Maximum shear stress",}
 
 desc_list = []
 				 
