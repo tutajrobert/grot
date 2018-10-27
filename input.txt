@@ -11,25 +11,33 @@
 #
 # Input file COMMANDS guide below
 #
-# --- project --- Project name. Directory of this name will be created in "results/" folder, where graphical results files will be stored.
+# --- project --- Project name. 
+#                 Directory of this name will be created in "results/" folder, where graphical results files will be stored.
 # --- problem --- State of the problem. Possible SETTINGS: planestress, planestrain.
-# --- bmp     --- Bitmap model file name - this file have to be stored in "images/" directory first.
-# --- mat     --- Material selection. Possible SETTINGS: steel, alu, titan. One can easily add new materials in "mlib.py" file in GRoT> directory.
+# --- bmp     --- Bitmap model file name - this file have to be stored in "projects/" directory first.
+# --- mat     --- Material selection. Possible SETTINGS: steel, alu, titan.
+#                 One can easily add new materials in "mlib.py" file in GRoT> directory.
 # --- unit    --- Dimension unit of model. Possible SETTINGS: nm, um, mm, cm, dm, m, km.
-# --- scale   --- Scale of the model. Multiplies default bitmap model unit dimension by scalar. For example: 20 px width in bitmap can be 40 mm in computational model with scale 2.
+# --- scale   --- Scale of the model. Multiplies default bitmap model unit dimension by scalar. 
+#                 For example: 20 px width in bitmap can be 40 mm in computational model with scale 2.
 # --- thickness - Thickness of model. Unit is the same as entered in unit COMMAND.
 # --- load    --- Force applied to appropriate boundary color. X is horizontal direction, Y is vertical.
 # --- solver  --- Solver selection. Possible SETTINGS: direct, lsqs. Lsqs is iterative least square method solver.
-# --- disp    --- Displacements results selection. Possible SETTINGS: x, y, mag. That is displacement in X axis, Y axis and magnitude.
-# --- stress  --- Stress and strains results selection. Possible SETTINGS: eps_x, eps_y, gamma_xy, sig_x, sig_y, tau_xy, huber, sign_huber.
+# --- disp    --- Displacements results selection. Possible SETTINGS: x, y, mag. 
+#                 That is displacement in X axis, Y axis and magnitude.
+# --- stress  --- Stress and strains results selection. 
+#                   Possible SETTINGS:
+#                   eps_x, eps_y, gamma_xy, sig_x, sig_y, tau_xy, huber, sign_huber.
 #                   eps_x, eps_y, gamma_xy - Strains in X direction, strains in Y direction, shear strains
 #                   sig_x, sig_y, tau_xy - Stress in X direction, stress in Y direction, shear stress
-#                   princ1, princ2, tau_max - First principal stress, second principal stress, maximum shear stress
-#                   huber, sign_huber - Huber equivalent stress, signed huber equivalent stress
-# --- deformed -- Plot of deformed model. Number is deformation scale multiplier, where 1 is equal to standard nodal dimension between two nodes.
+#                   sig_1, sig_2, tau_max - First principal stress, second principal stress, maximum shear stress
+#                   eps_1, eps_2, gamma_max - First principal strain, second principal strain, maximum shear strain
+#                   huber, sign_huber, eff_strain - Huber equivalent stress, signed huber equivalent stress, effective strain
+#                   theta, inv_1, inv_2 - Principal stress orientation angle, first and second invariant of stress tensor
+# --- deformed -- Plot of deformed model. 
+#                 Number is deformation scale multiplier, where 1 is equal to standard nodal dimension between two nodes.
 #
 # End of guide
-
 
 project bar
 problem planestress
@@ -38,8 +46,9 @@ mat steel
 unit mm
 scale 1
 thickness 2
-load x 0 y -1e2 magenta
+load x 0 y -1e3 magenta
 solver direct
+probe black
 disp x y mag
-stress eps_x eps_y gamma_xy sig_x sig_y tau_xy princ1 princ2 tau_max huber sign_huber
-deformed 2
+stress eps_x eps_y gamma_xy sig_x sig_y tau_xy huber sign_huber eff_strain
+deformed 4

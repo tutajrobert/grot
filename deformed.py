@@ -127,6 +127,7 @@ class prepare():
                                       self.res[dofs[5]] + 
                                       self.res[dofs[7]]))
                 plt.title("Deformed shape (displacement magnitude)")
+                title = "Deformed shape (displacement magnitude)"
 				
         #Deformed shape
         if results == "deformed":
@@ -199,3 +200,4 @@ class prepare():
         plt.savefig("results" + os.sep + proj_name + os.sep + results + ".png", DPI = 300)
         
         print("Saved results file", "[" + results + ".png] to results" + os.sep + proj_name + os.sep)
+        return title

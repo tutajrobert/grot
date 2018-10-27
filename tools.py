@@ -31,4 +31,3 @@ def min_search(value, min):
     else:
         pass
     return min
-		

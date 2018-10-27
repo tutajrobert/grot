@@ -1,4 +1,4 @@
-import bmp, prep, tools, solver, postpro, deformed, gallery, version, os, subprocess, sys
+import bmp, prep, tools, solver, postpro, deformed, gallery, version, os, subprocess, sys, prob
 
 #start timer
 t = tools.timer()
@@ -14,14 +14,14 @@ for i in range(len(input_file_lines)):
     input_lines.append(input_file_lines[i].rstrip().split(" "))
 
 input_file.close()
-	
+
 def ksearch(keyword):
     for i in range(len(input_lines)):
-        if (keyword in input_lines[i][0]) and ("#" not in input_lines[i][0]):
+        if (keyword in input_lines[i][0]) and ("#" not in input_lines[i]):
             return input_lines[i][1:]
     return [None]
 
-proj_name = ksearch("project")[0]            
+proj_name = ksearch("project")[0]
             
 im = bmp.open(ksearch("bmp")[0])
 geom = bmp.create_geom(im)
@@ -30,6 +30,7 @@ nodes = geom[0].store()
 eles = geom[1].store()
 c = geom[2]
 bc_dict = geom[3]
+eprobes_dict = geom[4]
 
 m = prep.materials(eles)
 m.add(ksearch("mat")[0])
@@ -55,6 +56,8 @@ cons = c.store()
 
 state = ksearch("problem")[0]
 sol = solver.build(nodes, eles, cons, state)
+cons = None
+
 if ksearch("solver")[0] == "direct":
     disp = sol.direct()
 elif ksearch("solver")[0] == "lsqs":
@@ -69,48 +72,43 @@ for i in input_file_lines:
     if (i[0] != "#") and (len(i) != 1):
         gallery_input_file += "<code>" + i + "</code><br>"
 
+probe_color = ksearch("probe")[0]
+prob.write(probe_color, bc_dict, eprobes_dict, disp, strains, proj_name)
+        
 results_list = []
-				 
-results_names = {"x" : "Displacement in X direction",
-                 "y" : "Displacement in Y direction",
-				 "mag" : "Displacement magnitude",
-				 "eps_x" : "Normal XX component of strain tensor",
-				 "eps_y" : "Normal YY component of strain tensor",
-				 "gamma_xy" : "Shear XY component of strain tensor",
-				 "sig_x" : "Normal XX component of stress tensor",
-				 "sig_y" : "Normal YY component of stress tensor",
-				 "tau_xy" : "Shear XY component of stress tensor",
-				 "huber" : "Huber equivalent stress",
-				 "sign_huber" : "Signed Huber equivalent stress",
-				 "deformed" : "Deformed plot (displacement magnitude)",
-                 "princ1" : "First principal stress",
-                 "princ2" : "Second principal stress",
-                 "tau_max" : "Maximum shear stress",}
 
 desc_list = []
-				 
+
 res_d = ksearch("disp")
 if res_d is not None:
     post = postpro.prepare(nodes, eles, disp)
 for i in range(0, len(res_d)):
-    post.save_dresults(res_d[i], proj_name)
+    res_name = post.save_dresults(res_d[i], proj_name)
     results_list.append("disp_" + res_d[i] + ".png")
-    desc_list.append(results_names[res_d[i]])
-	
+    #desc_list.append(results_names[res_d[i]])
+    desc_list.append(res_name)
+post = None
+
 res_s = ksearch("stress")
 if res_s[0] is not None:
     post2 = postpro.prepare(nodes, eles, strains)
     for i in range(0, len(res_s)):
-        post2.save_sresults(res_s[i], proj_name)
+        res_name = post2.save_sresults(res_s[i], proj_name)
         results_list.append(res_s[i] + ".png")
-        desc_list.append(results_names[res_s[i]])
+        #desc_list.append(results_names[res_s[i]])
+        desc_list.append(res_name)
+post2 = None
+strains = None
 
 def_scale = ksearch("deformed")[0]
 if def_scale is not None:
     post3 = deformed.prepare(nodes, eles, disp, float(def_scale))
-    post3.save_deformed("deformed", proj_name)
+    res_name = post3.save_deformed("deformed", proj_name)
     results_list.append("deformed" + ".png")
-    desc_list.append(results_names["deformed"])	
+    #desc_list.append(results_names["deformed"])
+    desc_list.append(res_name)
+post3 = None
+nodes, eles, disp = None, None, None
 
 gallery.save_gallery(proj_name, results_list, desc_list, gallery_input_file, version.get())	
 gallery_path = "results" + os.sep + proj_name + os.sep + proj_name + "_gallery.html"

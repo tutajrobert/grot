@@ -27,19 +27,19 @@ def open(im_name):
     box[2] += 1
     box[3] += 1
     im = im.crop(box)
-	
+
     #Size check
     width = im.size[0]
     height = im.size[1]	
     
-	#RGB to Lab conversion
+    #RGB to Lab conversion
 
     srgb_profile = ImageCms.createProfile("sRGB")
     lab_profile  = ImageCms.createProfile("LAB")
 
     rgb2lab_transform = ImageCms.buildTransformFromOpenProfiles(
         srgb_profile, lab_profile, "RGB", "LAB"
-	    )
+        )
 
     im_lab = ImageCms.applyTransform(im, rgb2lab_transform)
 
@@ -48,7 +48,7 @@ def open(im_name):
 
     im.close()
     im = None
-	
+
     return[im_array, width, height]
 
 """
@@ -58,15 +58,15 @@ these below are hardcoded
 
 lab_colors = {
     "white" : [255, 0, 0],
-	"black" : [0, 0, 0],
-	"red" : [138, 81, 70],
-	"green" : [224, 177, 81],
-	"blue" : [75, 68, 144],
-	"cyan" : [231, 205, 241],
-	"magenta" : [153, 94, 195],
-	"brown" : [89, 26, 45]
-	}
-	
+    "black" : [0, 0, 0],
+    "red" : [138, 81, 70],
+    "green" : [224, 177, 81],
+    "blue" : [75, 68, 144],
+    "cyan" : [231, 205, 241],
+    "magenta" : [153, 94, 195],
+    "brown" : [89, 26, 45]
+    }
+
 def color_distance(color, ref_color):
     #Euclidean distance in Lab color space
     return math.sqrt(((color[0] - ref_color[0]) ** 2) + \
@@ -88,13 +88,22 @@ Just need to know that "cyan" is used as model body
 and "white" is used for background
 """
 
-bc_dict = 	{
+bc_dict =   {
     "black" : [],
-	"red" : [],
-	"green" : [],
-	"blue" : [],
-	"magenta" : [],
-	"brown" : []
+    "red" : [],
+    "green" : [],
+    "blue" : [],
+    "magenta" : [],
+    "brown" : []
+    }
+
+eprobes_dict = {
+    "black" : [],
+    "red" : [],
+    "green" : [],
+    "blue" : [],
+    "magenta" : [],
+    "brown" : []
     }
 
 #Starting BMP to fem model translation
@@ -114,10 +123,10 @@ def create_geom(im_data):
 
     nmerge_list = []
     im_array, width, height = im_data[0], im_data[1], im_data[2]
-    
+
     for i in range(height):
         nmerge_list.append({})
-        
+
         #Progress text in percents
         sys.stdout.write("\r" + 
             "Bitmap to finite elements model translation [" + 
@@ -135,7 +144,7 @@ def create_geom(im_data):
                 node number. If yes : use old number, if no create new one
                 merged_dictionary = {**dict1, **dict2}
                 """
-                
+
                 #node 1
                 n1 = node_check([j % width, i], 
                                 {**nmerge_list[i], **nmerge_list[i - 1]})
@@ -189,7 +198,8 @@ def create_geom(im_data):
                     bc_dict[matched_color].append(n.check((j % width) + 1, i))
                     bc_dict[matched_color].append(n.check((j % width) + 1, i + 1))
                     bc_dict[matched_color].append(n.check(j % width, i + 1))
-    
+                    eprobes_dict[matched_color].append(e.get(elist[3], elist[2], elist[1], elist[0]))
+
     im_array = None
 
     #Rest of colors: black, magenta and brown can be used for different bc or property assignment
@@ -227,4 +237,4 @@ def create_geom(im_data):
         green_n = len(list(set(bc_dict["green"])))
         print("Green boundary [in y-dir support] applied to [" + str(green_n) + "] nodes")    
     #Return nodes, eles, constraints and boundaries
-    return [n, e, c, bc_dict]
+    return [n, e, c, bc_dict, eprobes_dict]

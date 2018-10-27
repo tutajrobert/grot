@@ -196,16 +196,16 @@ class build():
         
             counter += 1
             E = self.eles[i][8]
-            v = self.eles[i][9]        
+            v = self.eles[i][9]
             fc = E / (1 - (v ** 2))
             
             slist = numpy.array(
                     [[fc, fc * v, 0],
                      [fc * v, fc, 0],
-                     [0, 0, fc * ((1 - v) / 2)]])
+                     [0, 0, fc * ((1 - v))]]) #/ 2)]])
                      
             stresses.append(numpy.dot(slist, strains[counter]))
-        principals = []
+        principals_stress = []
         for i in range(len(self.eles)):        
             princ_1 = 0.5 * (stresses[i][0] + stresses[i][1]) + math.sqrt(((0.5 * (stresses[i][0] - stresses[i][1])) ** 2) + stresses[i][2] ** 2)
             princ_2 = 0.5 * (stresses[i][0] + stresses[i][1]) - math.sqrt(((0.5 * (stresses[i][0] - stresses[i][1])) ** 2) + stresses[i][2] ** 2)
@@ -214,8 +214,19 @@ class build():
                 theta_princ = 0
             else:
                 theta_princ = 0.5 * numpy.arctan((2 * stresses[i][2]) / (stresses[i][0] - stresses[i][1]))
-            principals.append([princ_1, princ_2, tau_max, theta_princ])
+            principals_stress.append([princ_1, princ_2, tau_max, theta_princ])
+
+        principals_strains = []
+        for i in range(len(self.eles)):        
+            princ_1 = 0.5 * (strains[i][0] + strains[i][1]) + math.sqrt(((0.5 * (strains[i][0] - strains[i][1])) ** 2) + strains[i][2] ** 2)
+            princ_2 = 0.5 * (strains[i][0] + strains[i][1]) - math.sqrt(((0.5 * (strains[i][0] - strains[i][1])) ** 2) + strains[i][2] ** 2)
+            tau_max = 0.5 * (princ_1 - princ_2)
+            if strains[i][0] == strains[i][1]:
+                theta_princ = 0
+            else:
+                theta_princ = 0.5 * numpy.arctan((2 * strains[i][2]) / (strains[i][0] - strains[i][1]))
+            principals_strains.append([princ_1, princ_2, tau_max, theta_princ])
         print("Calculated strain and stress tensors (reduced 1-point integration)")
         print("")
         
-        return(strains, stresses, principals)
+        return(strains, stresses, principals_stress, principals_strains)
