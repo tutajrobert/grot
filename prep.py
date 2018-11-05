@@ -61,7 +61,7 @@ class elements():
                                  self.ndict[n3], 
                                  self.ndict[n4], 
                                  n1, n2, n3, n4,
-                                 0, 0, 0]
+                                 0, 0, 0, 0, 0]
         return self.edict
 
     def get(self, n1, n2, n3, n4):
@@ -114,9 +114,20 @@ class materials():
         for e in self.edict:
             self.edict[e][8] = self.mat[mnum][0]
             self.edict[e][9] = self.mat[mnum][1]
+            self.edict[e][11] = self.mat[mnum][2]
+            self.edict[e][12] = self.mat[mnum][3]
         print("Property of all eles set to", "[" + str(self.mnames[mnum]) + "]", 
               "(" + str(self.mat[mnum][0] / 1e9) + " GPa,",
               str(self.mat[mnum][1]) + ")")
+        return self.edict
+    
+    def assignplast(self, elist):
+        print("Assign plasticity")
+        print(elist)
+        for i in range(len(elist)):
+            #pass
+            self.edict[elist[i]][8] = 0.000001
+            self.edict[elist[i]][9] = 0.499999
         return self.edict
  
     def info(self):
@@ -126,7 +137,7 @@ class materials():
             print("m" + str(m), self.mnames[m], ":", 
                    str(int(self.mat[m][0] / 1e9)) + "e+9 GPa,", 
                    round(self.mat[m][1], 2))  
-        print("") 
+        print("")
 
     def set_unit(self, unit):
     #Scaling nodal dimensions as Young Modulus E change (it is a trick rather)
@@ -144,6 +155,9 @@ class materials():
 
     def get_unit(self):
         return [self.unit, self.scale]
+        
+    def get_prop(self, mnum):
+        return [self.mat[mnum][0] * (units[self.unit] ** 2), self.mat[mnum][1]]
 
 class thicks():
 #Class contains elements thicknesses

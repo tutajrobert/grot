@@ -1,4 +1,4 @@
-import bmp, prep, tools, solver, postpro, deformed, gallery, version, os, subprocess, sys, prob
+import bmp, prep, tools, solver, postpro, deformed, gallery, version, os, subprocess, sys, prob, plast, iter
 
 #start timer
 t = tools.timer()
@@ -55,8 +55,8 @@ for i in range(len(loads_list)):
 cons = c.store()
 
 state = ksearch("problem")[0]
-sol = solver.build(nodes, eles, cons, state)
-cons = None
+sol = solver.build(nodes, eles, cons, state, load_inc = 1.0)
+#cons = None
 
 if ksearch("solver")[0] == "direct":
     disp = sol.direct()
@@ -65,6 +65,40 @@ elif ksearch("solver")[0] == "lsqs":
 elif ksearch("solver")[0] == "cholesky":
     disp = sol.cholesky()
 strains = sol.strains_calc(disp)
+
+##########
+if ksearch("plast")[0] == "yes":
+    iter_res = iter.prepare(disp, strains)
+    step_factor = iter_res.first_step()
+if (ksearch("plast")[0] == "yes") and (step_factor < 1):
+    load_step = step_factor
+    steps_num = int(ksearch("plast")[1])
+    load_inc = (1 - step_factor) / (steps_num)
+    flags_list = []
+    for i in range(steps_num):
+        load_step += load_inc
+        
+        #RK2
+        sol = solver.build(nodes, eles, cons, state, load_inc / 2.0) 
+        if ksearch("solver")[0] == "direct":
+            disp = sol.direct()
+        strains = sol.strains_calc(disp)
+        halfstep_strains = iter_res.halfstep(strains)
+        plast_res = plast.search(eles, halfstep_strains, m, flags_list)
+        eles = plast_res[0]
+        flags_list = plast_res[1]
+        print("plast" + str(load_step))
+        state = ksearch("problem")[0]
+        sol = solver.build(nodes, eles, cons, state, load_inc)
+        #cons = None    
+          
+        if ksearch("solver")[0] == "direct":
+            disp = sol.direct()
+        strains = sol.strains_calc(disp)
+        final_results = iter_res.store(disp, strains)
+        disp = final_results[0]
+        strains = final_results[1]      
+#############
 
 gallery_input_file = ""
 
@@ -98,7 +132,7 @@ if res_s[0] is not None:
         #desc_list.append(results_names[res_s[i]])
         desc_list.append(res_name)
 post2 = None
-strains = None
+#strains = None
 
 def_scale = ksearch("deformed")[0]
 if def_scale is not None:
@@ -108,7 +142,7 @@ if def_scale is not None:
     #desc_list.append(results_names["deformed"])
     desc_list.append(res_name)
 post3 = None
-nodes, eles, disp = None, None, None
+#nodes, eles, disp = None, None, None
 
 gallery.save_gallery(proj_name, results_list, desc_list, gallery_input_file, version.get())	
 gallery_path = "results" + os.sep + proj_name + os.sep + proj_name + "_gallery.html"

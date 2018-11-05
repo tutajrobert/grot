@@ -6,7 +6,7 @@ import math
 import time
 
 class build():
-    def __init__(self, nodes, elements, constraints, state):
+    def __init__(self, nodes, elements, constraints, state, load_inc):
         self.nodes = nodes
         self.eles = elements
         self.cons = constraints
@@ -112,7 +112,7 @@ class build():
             sys.stdout.flush()
             
             if self.cons[c] != 0:
-                self.clist[c] = self.cons[c]
+                self.clist[c] = self.cons[c] * load_inc
             elif self.cons[c] == 0:
                 self.gklist[c, :] = 0
                 self.gklist[:, c] = 0
@@ -202,7 +202,7 @@ class build():
             slist = numpy.array(
                     [[fc, fc * v, 0],
                      [fc * v, fc, 0],
-                     [0, 0, fc * ((1 - v))]]) #/ 2)]])
+                     [0, 0, fc * ((1 - v)/ 2)]])
                      
             stresses.append(numpy.dot(slist, strains[counter]))
         principals_stress = []
@@ -230,3 +230,15 @@ class build():
         print("")
         
         return(strains, stresses, principals_stress, principals_strains)
+
+        #STRUCTURE OF SOLVER'S RESULTS RETURN CALL:
+            #disp_results: long vector of disp results in form of [x1, y1, x2, y2, x3, y3, x4, y4...]
+            
+            #stress_results: [strains, stresses, principal_stress, principal_strains]
+                #strains: elemental results in form of lists [l1, l2, l3, l4, l5, l6, l7, l8...]
+                #stresses elemental results in form of lists [l1, l2, l3, l4, l5, l6, l7, l8...]
+                #principal stresses elemental results in form of lists [l1, l2, l3, l4, l5, l6, l7...]
+                #principal strains elemental results in form of lists [l1, l2, l3, l4, l5, l6, l7...]
+                    #all above lists are in form [rx, ry, rxz] or [r1, r2, r12max, rangle]
+             
+                #in short: res[0][60][2] is strains, element number 60, xy value of strain 

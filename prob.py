@@ -15,7 +15,7 @@ def write(color, bc_dict, eprobes_dict, disp, strains, proj_name):
         res_table = []
         res_table.append((7 - int(len(str(e)) / 2)) * " " + str(e))
         for name in names[1:]:
-            value = stress.results(strains, name, e)
+            value = stress.results(strains, name, e - 1)
             if value is not None:
                 if str(value[0])[0] == "-":
                     res_table.append("{0:.{1}e}".format(value[0], 6))
