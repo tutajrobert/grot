@@ -75,21 +75,26 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     steps_num = int(ksearch("plast")[1])
     load_inc = (1 - step_factor) / (steps_num)
     flags_list = []
+    eles_list = []
     for i in range(steps_num):
         load_step += load_inc
         
         #RK2
-        sol = solver.build(nodes, eles, cons, state, load_inc / 2.0) 
+        #sol = solver.build(nodes, eles, cons, state, load_inc / 2.0)
+        sol.plast_update([], load_inc / 2.0)
         if ksearch("solver")[0] == "direct":
             disp = sol.direct()
         strains = sol.strains_calc(disp)
         halfstep_strains = iter_res.halfstep(strains)
         plast_res = plast.search(eles, halfstep_strains, m, flags_list)
-        eles = plast_res[0]
+        eles_list = plast_res[0]
+        #eles = plast_res[0]
         flags_list = plast_res[1]
         print("plast" + str(load_step))
         state = ksearch("problem")[0]
-        sol = solver.build(nodes, eles, cons, state, load_inc)
+        sol.plast_update(eles_list, load_inc)
+        m.assignplast(eles_list)
+        #sol = solver.build(nodes, eles, cons, state, load_inc)
         #cons = None    
           
         if ksearch("solver")[0] == "direct":

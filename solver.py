@@ -117,17 +117,89 @@ class build():
                 self.gklist[c, :] = 0
                 self.gklist[:, c] = 0
                 self.gklist[c, c] = 1
-        self.gklist = self.gklist.tocsr()
+        #self.gklist = self.gklist.tocsr()
         print("")
         
-        self.cons = None
+        #self.cons = None
+    
+    def plast_update(self, eles_list, load_inc):
+        print(eles_list)
+        for e in eles_list:   
+            for z in range(2):     
+                ele = self.eles[e]  
+                
+                if z == 0:
+                    E = ele[8]
+                    v = ele[9]
+                else:
+                    E = -ele[8] * ele[12]
+                    v = 0.4999
+                h = ele[10]
+          
+                G = E / (2 * (1 + v))
+          
+                #Degree of freedoms are in unknown order, thus needed lines below
+                dof1 = (ele[4] * 2) - 2
+                dof2 = (ele[5] * 2) - 2
+                dof3 = (ele[6] * 2) - 2
+                dof4 = (ele[7] * 2) - 2
+                dofs = numpy.array([dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1]) 
+                
+                #For plane strain
+                if self.state == "planestrain":
+                    E = E / (1 - (v**2))
+                    v = v / (1 - v)
+                        
+                p = (E * h) / (12 * (1 - (v ** 2)))
+                q = (E * h) / (1 - v)
         
+                k11 = p * 2 * (3 - v)
+                k15 = p * (-3 + v)
+                k12 = q / 8
+                k16 = -q / 8
+                k17 = p * 2 * v    
+                k18 = p * 1.5 * (1 - (3 * v))        
+                k13 = p * (-3 - v)
+                k14 = p * 1.5 * (-1 + (3 * v))
+          
+                klist = numpy.array(
+                         [[k11, k12, k13, k14, k15, k16, k17, k18],
+                          [k12, k11, k18, k17, k16, k15, k14, k13],
+                          [k13, k18, k11, k16, k17, k14, k15, k12],
+                          [k14, k17, k16, k11, k18, k13, k12, k15],
+                          [k15, k16, k17, k18, k11, k12, k13, k14],
+                          [k16, k15, k14, k13, k12, k11, k18, k17],
+                          [k17, k14, k15, k12, k13, k18, k11, k16],
+                          [k18, k13, k12, k15, k14, k17, k16, k11]])
+          
+                #Aggregation of global stiffnes matrix gklist
+                for i in range(8):
+                    for j in range(8):
+                        self.gklist[dofs[i], dofs[j]] -= klist[i][j]
+                
+            klist = None
+            
+        prog_counter = 0
+        for c in self.cons:
+            prog_counter += 1        
+            if self.cons[c] != 0:
+                self.clist[c] = self.cons[c] * load_inc
+            elif self.cons[c] == 0:
+                self.gklist[c, :] = 0
+                self.gklist[:, c] = 0
+                self.gklist[c, c] = 1
+        #self.gklist = self.gklist.tocsr()
+        print("")
+        
+        #self.cons = None
+    
     def direct(self):
     #Solve linear equations system built above with direct method
         print("")
         print("Solving... (this may take a while)")
-        self.dlist = scipy.sparse.linalg.spsolve(self.gklist, self.clist)
-        self.gklist, self.clist = None, None
+        self.dlist = scipy.sparse.linalg.spsolve(self.gklist.tocsr(), self.clist)
+        #self.dlist = numpy.linalg.solve(self.gklist, self.clist)
+        #self.gklist, self.clist = None, None
         print("Succesfully and directly solved system of linear equations")
         return self.dlist
 

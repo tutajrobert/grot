@@ -126,9 +126,9 @@ class materials():
         print(elist)
         for i in range(len(elist)):
             #pass
-            self.edict[elist[i]][8] = 0.000001
-            self.edict[elist[i]][9] = 0.499999
-        return self.edict
+            self.edict[elist[i]][8] *= self.edict[elist[i]][12]
+            self.edict[elist[i]][9] = .4999
+        #return self.edict
  
     def info(self):
     #Prints material list

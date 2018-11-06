@@ -12,4 +12,5 @@ def search(eles, strains, material, flags_list):
                 if value[0] >= plast_value:
                     elist.append(enum)
                     flags_list.append(enum)
-    return [material.assignplast(elist), flags_list]
+    return [elist, flags_list]
+    #return [material.assignplast(elist), flags_list]
