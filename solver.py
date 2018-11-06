@@ -100,28 +100,19 @@ class build():
               str(len(self.nodes) * 2) + "]", "matrix")
         
         klist = None
-        
-        prog_counter = 0
+        self.constraints_apply(load_inc)
+        print("Applied Dirichlet boundary conditions")
+        print("")
+ 
+    def constraints_apply(self, load_inc):
         for c in self.cons:
-            #Progress text in percents
-            prog_counter += 1
-            sys.stdout.write("\r" + 
-            "Applying Dirichlet boundary conditions [" + 
-            str(round(((prog_counter) / len(self.cons)) * 100, 2)) + 
-            " %]")
-            sys.stdout.flush()
-            
             if self.cons[c] != 0:
                 self.clist[c] = self.cons[c] * load_inc
             elif self.cons[c] == 0:
                 self.gklist[c, :] = 0
                 self.gklist[:, c] = 0
                 self.gklist[c, c] = 1
-        #self.gklist = self.gklist.tocsr()
-        print("")
         
-        #self.cons = None
-    
     def plast_update(self, eles_list, load_inc):
         print(eles_list)
         for e in eles_list:   
@@ -179,30 +170,22 @@ class build():
                 
             klist = None
             
-        prog_counter = 0
-        for c in self.cons:
-            prog_counter += 1        
-            if self.cons[c] != 0:
-                self.clist[c] = self.cons[c] * load_inc
-            elif self.cons[c] == 0:
-                self.gklist[c, :] = 0
-                self.gklist[:, c] = 0
-                self.gklist[c, c] = 1
-        #self.gklist = self.gklist.tocsr()
-        print("")
-        
-        #self.cons = None
+        self.constraints_apply(load_inc)
     
     def direct(self):
     #Solve linear equations system built above with direct method
         print("")
         print("Solving... (this may take a while)")
         self.dlist = scipy.sparse.linalg.spsolve(self.gklist.tocsr(), self.clist)
-        #self.dlist = numpy.linalg.solve(self.gklist, self.clist)
-        #self.gklist, self.clist = None, None
+        self.gklist, self.clist = None, None
         print("Succesfully and directly solved system of linear equations")
         return self.dlist
 
+    def direct_plast(self):
+    #Solve linear equations system built above with direct method
+        self.dlist = scipy.sparse.linalg.spsolve(self.gklist.tocsr(), self.clist)
+        return self.dlist
+        
     def least_squares(self):
     #Solve linear equations system built above with iterative least squares method (really long)
         print("Solving... (this may take a while)")
@@ -223,7 +206,7 @@ class build():
         self.dlist = numpy.linalg.solve(LH, y)
         return self.dlist		
 
-    def strains_calc(self, disp_res):
+    def strains_calc(self, disp_res, msg = 1):
     #Reduced integration for strains
 
         blist = numpy.array(
@@ -298,8 +281,10 @@ class build():
             else:
                 theta_princ = 0.5 * numpy.arctan((2 * strains[i][2]) / (strains[i][0] - strains[i][1]))
             principals_strains.append([princ_1, princ_2, tau_max, theta_princ])
-        print("Calculated strain and stress tensors (reduced 1-point integration)")
-        print("")
+        
+        if msg == 1:
+            print("Calculated strain and stress tensors (reduced 1-point integration)")
+            print("")
         
         return(strains, stresses, principals_stress, principals_strains)
 

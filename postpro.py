@@ -81,8 +81,7 @@ def discrete_cmap(N, base_cmap=None):
     #    return [base.from_list(cmap_name, color_list, N), down_up[0], down_up[1]]
 
 class prepare():
-    def __init__(self, nodes, elements, results):
-        self.nodes = nodes
+    def __init__(self, elements, results):
         self.eles = elements
         self.res = results
         self.ncol = 7
