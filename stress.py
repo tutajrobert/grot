@@ -64,6 +64,15 @@ def results(res_matrix, res_name, counter):
 
     elif res_name == "inv_2":
         return [res_matrix[2][counter][0] * res_matrix[2][counter][1], "Second invariant of stress tensor"]
-
+    
+    elif res_name == "epl_x":
+        return [res_matrix[4][counter][0], "Normal XX component of strain tensor (plastic part)"]
+ 
+    elif res_name == "epl_y":
+        return [res_matrix[4][counter][1], "Normal YY component of strain tensor (plastic part)"]
+        
+    elif res_name == "epl_xy":
+        return [2*res_matrix[4][counter][2], "Shear XY component of strain tensor (plastic part)"]
+ 
     else:
         pass

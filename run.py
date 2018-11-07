@@ -39,6 +39,7 @@ m.add(ksearch("mat")[0])
 m.assignall(1)
 m.set_unit(ksearch("unit")[0])
 m.set_scale(float(ksearch("scale")[0]))
+scale = float(ksearch("scale")[0])
 
 h = prep.thicks(eles, m)
 h.add(float(ksearch("thickness")[0]))
@@ -58,7 +59,7 @@ cons = c.store()
 c, bc_dict = None, None
 
 state = ksearch("problem")[0]
-sol = solver.build(nodes, eles, cons, state, load_inc = 1.0)
+sol = solver.build(nodes, eles, cons, state, load_inc = 1.0, scale = scale)
 nodes, cons = None, None
 
 if ksearch("plast")[0] != "yes":
@@ -100,9 +101,10 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
         m.assignplast(eles_list)
         disp = sol.direct_plast()
         strains = sol.strains_calc(disp, msg = 0)
-        final_results = iter_res.store(disp, strains)
+        final_results = iter_res.store(disp, strains, flags_list)
         disp = final_results[0]
-        strains = final_results[1]      
+        strains = final_results[1]   
+    strains = iter_res.store_plstrain(strains)
 #############
 
 sol, iter_res, plast = None, None, None

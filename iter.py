@@ -1,26 +1,34 @@
 import stress, numpy
 criterium = "huber"
 limit = 235
-
-def store(disp, strains):
-    return None
     
 class prepare():
     def __init__(self, disp, strains):
         self.disp = disp
         self.strains = strains
-        #self.pstrains = pstrains
-
-    def store(self, disp, strains):
+        self.pstrains = []
+        for j in range(len(self.strains[0])):
+            self.pstrains.append([])
+            for k in range(3):
+                self.pstrains[j].append(0)
+                
+    def store(self, disp, strains, flags_list):
         print("Store")
         self.disp += disp
         for i in range(len(self.strains)):
             for j in range(len(self.strains[i])):
                 for k in range(3): #the 3. is principal angle, not to be scaled
                     self.strains[i][j][k] += strains[i][j][k]
-
+        for j in range(len(self.pstrains)):
+            if (j + 1) in flags_list:
+                for k in range(3):
+                    self.pstrains[j][k] += self.strains[0][j][k]     
         return [self.disp, self.strains]
-        
+    
+    def store_plstrain(self, strains):
+        strains.append(self.pstrains)
+        return strains
+    
     def halfstep(self, strains):
         print("Half")
         for i in range(len(self.strains)):

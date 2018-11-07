@@ -6,12 +6,13 @@ import math
 import time
 
 class build():
-    def __init__(self, nodes, elements, constraints, state, load_inc):
+    def __init__(self, nodes, elements, constraints, state, load_inc, scale):
         self.nodes = nodes
         self.eles = elements
         self.cons = constraints
         self.counter = 0
         self.state = state
+        self.scale = scale
 
         #Preparing global stiffnes matrix initially filled with zeros
         self.clist = numpy.zeros(len(self.nodes) * 2)
@@ -102,7 +103,6 @@ class build():
         klist = None
         self.constraints_apply(load_inc)
         print("Applied Dirichlet boundary conditions")
-        print("")
  
     def constraints_apply(self, load_inc):
         for c in self.cons:
@@ -208,11 +208,11 @@ class build():
 
     def strains_calc(self, disp_res, msg = 1):
     #Reduced integration for strains
-
+        sc = self.scale
         blist = numpy.array(
-                [[.5, -.5, -.5, .5, 0, 0, 0, 0],
-                 [0, 0, 0, 0, -.5, -.5, .5, .5],
-                 [-.5, -.5, .5, .5, .5, -.5, -.5, .5]])
+                [[.5/sc, -.5/sc, -.5/sc, .5/sc, 0, 0, 0, 0],
+                 [0, 0, 0, 0, -.5/sc, -.5/sc, .5/sc, .5/sc],
+                 [-.5/sc, -.5/sc, .5/sc, .5/sc, .5/sc, -.5/sc, -.5/sc, .5/sc]])
         
         strains = []
         
@@ -286,7 +286,7 @@ class build():
             print("Calculated strain and stress tensors (reduced 1-point integration)")
             print("")
         
-        return(strains, stresses, principals_stress, principals_strains)
+        return([strains, stresses, principals_stress, principals_strains])
 
         #STRUCTURE OF SOLVER'S RESULTS RETURN CALL:
             #disp_results: long vector of disp results in form of [x1, y1, x2, y2, x3, y3, x4, y4...]

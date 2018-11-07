@@ -148,8 +148,8 @@ class materials():
 
     def set_scale(self, scale):
     #Scaling nodal dimensions as Young Modulus E change
-        for e in self.edict:
-            self.edict[e][8] = self.edict[e][8] * (scale ** 2)
+        #for e in self.edict:
+        #    self.edict[e][8] = self.edict[e][8] * (scale ** 2)
         print("Standard nodal dimension set to", "[" + str(scale) + " " + self.unit+ "]")
         self.scale = scale
 
@@ -175,7 +175,7 @@ class thicks():
     def assignall(self, hnum):
     #Assign prevoiusly added thickness property to all elements
         for e in self.edict:
-            self.edict[e][10] = self.hdict[hnum][0] * self.scale
+            self.edict[e][10] = self.hdict[hnum][0]# * self.scale
         print("Thickness of all eles set to", 
               "[" + str(self.hdict[hnum][0]) + " " + self.unit + "]")
         return self.edict

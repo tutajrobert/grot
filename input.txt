@@ -34,22 +34,23 @@
 #                   eps_1, eps_2, gamma_max - First principal strain, second principal strain, maximum shear strain
 #                   huber, sign_huber, eff_strain - Huber equivalent stress, signed huber equivalent stress, effective strain
 #                   theta, inv_1, inv_2 - Principal stress orientation angle, first and second invariant of stress tensor
+#                   epl_x, epl_y, epl_xy - Plastic strains in X direction, Y direction and shear strains
 # --- deformed -- Plot of deformed model. 
 #                 Number is deformation scale multiplier, where 1 is equal to standard nodal dimension between two nodes.
 #
 # End of guide
 
-project barPLAST
+project barPLASTbig
 problem planestress
-bmp bar.bmp
+bmp bar_big.bmp
 mat steel
 unit mm
-scale 1
+scale 0.5
 thickness 2
 load x 0 y -.6e3 magenta
 solver direct
 probe black
 disp x y mag
-stress eps_x eps_y gamma_xy sig_x sig_y tau_xy huber sign_huber eff_strain inv_1 inv_2 sig_1 sig_2 tau_max
+stress eps_x eps_y gamma_xy sig_x sig_y tau_xy huber sign_huber eff_strain inv_1 inv_2 sig_1 sig_2 tau_max epl_x epl_y epl_xy
 deformed 4
-plast yes 24
+plast yes 20
