@@ -77,7 +77,7 @@ if ksearch("plast")[0] == "yes":
     disp_el = copy.copy(disp)
     strains = sol.strains_calc(disp, msg = 0)
     iter_res = iter.prepare(disp, strains)
-    step_factor = iter_res.first_step()
+    step_factor = iter_res.first_step(m)
 if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     load_step = step_factor
     steps_num = int(ksearch("plast")[1])
@@ -99,8 +99,8 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
         print("plast" + str(load_step))
         state = ksearch("problem")[0]
         sol.plast_update(eles_list, load_inc)
-        m.assignplast(eles_list)
         disp = sol.direct_plast()
+        m.assignplast(eles_list)
         strains = sol.strains_calc(disp, msg = 0)
         final_results = iter_res.store(m, disp, strains, flags_list)
         disp = final_results[0]

@@ -157,7 +157,7 @@ class materials():
         return [self.unit, self.scale]
         
     def get_prop(self, mnum):
-        return [self.mat[mnum][0] * (units[self.unit] ** 2), self.mat[mnum][1]]
+        return [self.mat[mnum][0] * (units[self.unit] ** 2), self.mat[mnum][1], self.mat[mnum][2]]
 
 class thicks():
 #Class contains elements thicknesses

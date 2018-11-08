@@ -1,6 +1,5 @@
 import stress, numpy
 criterium = "huber"
-limit = 235
     
 class prepare():
     def __init__(self, disp, strains):
@@ -45,7 +44,8 @@ class prepare():
 
         return strains
         
-    def first_step(self):
+    def first_step(self, material):
+        limit = material.get_prop(1)[2]
         values = []
         
         for enum in range(1, len(self.strains[1])):
