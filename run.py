@@ -1,4 +1,4 @@
-import gc, bmp, prep, tools, solver, postpro, deformed, gallery, version, os, subprocess, sys, prob, plast, iter
+import gc, bmp, prep, tools, solver, postpro, deformed, gallery, version, os, subprocess, sys, prob, plast, iter, copy
 
 #start timer
 t = tools.timer()
@@ -74,6 +74,7 @@ if ksearch("plast")[0] != "yes":
 ##########
 if ksearch("plast")[0] == "yes":
     disp = sol.direct_plast()
+    disp_el = copy.copy(disp)
     strains = sol.strains_calc(disp, msg = 0)
     iter_res = iter.prepare(disp, strains)
     step_factor = iter_res.first_step()
@@ -101,14 +102,15 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
         m.assignplast(eles_list)
         disp = sol.direct_plast()
         strains = sol.strains_calc(disp, msg = 0)
-        final_results = iter_res.store(disp, strains, flags_list)
+        final_results = iter_res.store(m, disp, strains, flags_list)
         disp = final_results[0]
         strains = final_results[1]   
     strains = iter_res.store_plstrain(strains)
+    res_disp = iter_res.residual_disp(disp_el)
 #############
 
-sol, iter_res, plast = None, None, None
-halfstep_strains, plast_res, final_results = None, None, None
+    disp_el, sol, iter_res, plast, m = None, None, None, None, None
+    halfstep_strains, plast_res, final_results = None, None, None
 gc.collect()
 
 gallery_input_file = ""
@@ -121,7 +123,6 @@ probe_color = ksearch("probe")[0]
 prob.write(probe_color, bc_dict, eprobes_dict, disp, strains, proj_name)
         
 results_list = []
-
 desc_list = []
 
 res_d = ksearch("disp")
@@ -133,12 +134,27 @@ for i in range(0, len(res_d)):
     desc_list.append(res_name)
 post = None
 
+if (ksearch("plast")[0] == "yes") and (step_factor < 1):
+    post = postpro.prepare(eles, res_disp)
+    res_name = post.save_dresults("res", proj_name)
+    results_list.append("disp_res.png")
+    desc_list.append(res_name)
+    res_disp = None
+post = None
+
 res_s = ksearch("stress")
 if res_s[0] is not None:
     post2 = postpro.prepare(eles, strains)
     for i in range(0, len(res_s)):
         res_name = post2.save_sresults(res_s[i], proj_name)
         results_list.append(res_s[i] + ".png")
+        desc_list.append(res_name)
+    if (ksearch("plast")[0] == "yes") and (step_factor < 1):
+        res_name = post2.save_sresults("pl_strain", proj_name)
+        results_list.append("pl_strain" + ".png")
+        desc_list.append(res_name)
+        res_name = post2.save_sresults("res_stress", proj_name)
+        results_list.append("res_stress" + ".png")
         desc_list.append(res_name)
 post2 = None
 strains = None

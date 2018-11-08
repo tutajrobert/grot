@@ -12,7 +12,7 @@ class prepare():
             for k in range(3):
                 self.pstrains[j].append(0)
                 
-    def store(self, disp, strains, flags_list):
+    def store(self, material, disp, strains, flags_list):
         print("Store")
         self.disp += disp
         for i in range(len(self.strains)):
@@ -21,10 +21,17 @@ class prepare():
                     self.strains[i][j][k] += strains[i][j][k]
         for j in range(len(self.pstrains)):
             if (j + 1) in flags_list:
-                for k in range(3):
-                    self.pstrains[j][k] += self.strains[0][j][k]     
+                value = stress.results(strains, "eff_strain", (j))[0]
+                self.pstrains[j][0] += value    
+                value *= material.get_prop(1)[0]
+                self.pstrains[j][1] += value
         return [self.disp, self.strains]
-    
+    def residual_disp(self, disp_el):
+        res_disp = []
+        for i in range(len(self.disp)):
+            res_disp.append(self.disp[i] - disp_el[i])
+        print(res_disp)
+        return res_disp
     def store_plstrain(self, strains):
         strains.append(self.pstrains)
         return strains

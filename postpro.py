@@ -169,7 +169,17 @@ class prepare():
                                                 (self.res[dofs[7]] ** 2))))
                 plt.title("Displacement magnitude")
                 title = "Displacement magnitude"
-
+            elif results == "res":
+                colors.append(0.25 * (math.sqrt((self.res[dofs[0]] ** 2) + 
+                                                (self.res[dofs[1]] ** 2)) + 
+                                      math.sqrt((self.res[dofs[2]] ** 2) + 
+                                                (self.res[dofs[3]] ** 2)) +
+                                      math.sqrt((self.res[dofs[4]] ** 2) + 
+                                                (self.res[dofs[5]] ** 2)) +
+                                      math.sqrt((self.res[dofs[6]] ** 2) + 
+                                                (self.res[dofs[7]] ** 2))))
+                plt.title("Residual displacement magnitude")
+                title = "Residual displacement magnitude"
         #Matplotlib functions
         dis_cmap = cmap = discrete_cmap(self.ncol, self.init_cmap)[0]
 
