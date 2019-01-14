@@ -2,11 +2,11 @@ import os
 import math
 import stress
 
-names = ["elem_num", "eps_x", "eps_y", "gamma_xy", "sig_x", "sig_y", "tau_xy", "huber", "sign_huber", "sig_1", "sig_2", "tau_max",
-        "eps_1", "eps_2", "gamma_max", "eff_strain", "theta", "inv_1", "inv_2"]
+names = ["elem_num", "eps_x", "eps_y", "eps_z", "gamma_xy", "sig_x", "sig_y", "tau_xy", "huber", "sign_huber", "sig_1", "sig_2", "tau_max",
+        "eps_1", "eps_2", "gamma_max", "theta", "inv_1", "inv_2"]
  
 table_to_print = [] 
-def write(color, bc_dict, eprobes_dict, disp, strains, proj_name):
+def write(color, bc_dict, eprobes_dict, disp, strains, proj_name, material):
     if not os.path.exists("results" + os.sep + proj_name):
         os.makedirs("results" + os.sep + proj_name)
     file = open("results" + os.sep + proj_name + os.sep + "eres.txt", "w")
@@ -15,7 +15,9 @@ def write(color, bc_dict, eprobes_dict, disp, strains, proj_name):
         res_table = []
         res_table.append((7 - int(len(str(e)) / 2)) * " " + str(e))
         for name in names[1:]:
-            value = stress.results(strains, name, e - 1)
+            E = material.get_prop(1)[0]
+            v = material.get_prop(1)[1]
+            value = stress.results(strains, name, e - 1, E, v)
             if value is not None:
                 if str(value[0])[0] == "-":
                     res_table.append("{0:.{1}e}".format(value[0], 6))

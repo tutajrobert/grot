@@ -20,15 +20,11 @@ class prepare():
                     self.strains[i][j][k] += strains[i][j][k]
         for j in range(len(self.pstrains)):
             if (j + 1) in flags_list:
-                value = stress.results(strains, "eff_strain", (j))[0]
-                #e1 = stress.results(self.strains, "eff_strain", (j))[0]
-                #e0 = stress.results(strains, "eff_strain", (j))[0]
-                #s0 = stress.results(strains, "huber", (j))[0]
-                #s1 = stress.results(self.strains, "huber", (j))[0]
-                #value = e1 - ((1 / 205e3) * s1)
-                #print(s1)
+                E = material.get_prop(1)[3] * material.get_prop(1)[0]
+                v = .5
+                value = stress.results(strains, "eff_strain", (j), E, v)[0]
                 self.pstrains[j][0] += value    
-                value *= material.get_prop(1)[0]
+                value *= material.get_prop(1)[3] * material.get_prop(1)[0]
                 self.pstrains[j][1] += value
         return [self.disp, self.strains]
     def residual_disp(self, disp_el):
@@ -52,10 +48,12 @@ class prepare():
         
     def first_step(self, material):
         limit = material.get_prop(1)[2]
+        E = material.get_prop(1)[0]
+        v = material.get_prop(1)[1]
         values = []
         
         for enum in range(1, len(self.strains[1])):
-            value = stress.results(self.strains, criterium, enum)
+            value = stress.results(self.strains, criterium, enum, E, v)
             values.append(value[0])
         max_value = max(values)
 

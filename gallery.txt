@@ -22,7 +22,7 @@ body {
 h1 {
 	text-align:right;
 	line-height:1.0;
-    font-family:"Georgia";
+    font-family:serif;
     font-weight:400;
 	margin-bottom:15px;
     color:#444;
@@ -30,7 +30,7 @@ h1 {
 
 h2 {
     line-height:1.2;
-    font-family:"Georgia";
+    font-family:serif;
     font-weight:400;
     color:#222;
 }
@@ -52,7 +52,7 @@ h2 span {
 
 h3, h4 {
     line-height:1.2;
-    font-family:"Georgia";
+    font-family:serif;
     font-weight:400;
     color:#222;
 	margin-top:25px;
@@ -72,7 +72,7 @@ a {
 
 code {
     color:#666;
-    font-family:monospace;
+    font-family:courier;
     line-height:1.5;
     font-size:15px;
 	background-color:#e7e7e7;

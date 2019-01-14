@@ -284,7 +284,6 @@ class build():
         
         if msg == 1:
             print("Calculated strain and stress tensors (reduced 1-point integration)")
-            print("")
         
         return([strains, stresses, principals_stress, principals_strains])
 

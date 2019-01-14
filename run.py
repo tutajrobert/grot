@@ -118,7 +118,7 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     res_disp = iter_res.residual_disp(disp_el)
 #############
 
-    disp_el, sol, iter_res, plast, m = None, None, None, None, None
+    disp_el, sol, iter_res, plast = None, None, None, None
     halfstep_strains, plast_res, final_results = None, None, None
 gc.collect()
 
@@ -130,7 +130,7 @@ for i in input_file_lines:
         gallery_input_file += "<code>" + i + "</code><br>"
 print("")
 probe_color = ksearch("probe")[0]
-prob.write(probe_color, bc_dict, eprobes_dict, disp, strains, proj_name)
+prob.write(probe_color, bc_dict, eprobes_dict, disp, strains, proj_name, m)
         
 results_list = []
 desc_list = []
@@ -169,15 +169,15 @@ if res_s[0] is not None:
         str(i + 1) + " of " + str(len(res_s)) + 
         "] to results" + os.sep + proj_name + os.sep)
         sys.stdout.flush()
-        res_name = post2.save_sresults(res_s[i], proj_name)
+        res_name = post2.save_sresults(res_s[i], proj_name, m)
         results_list.append(res_s[i] + ".png")
         desc_list.append(res_name)
     print("")
     if (ksearch("plast")[0] == "yes") and (step_factor < 1):
-        res_name = post2.save_sresults("pl_strain", proj_name)
+        res_name = post2.save_sresults("pl_strain", proj_name, m)
         results_list.append("pl_strain" + ".png")
         desc_list.append(res_name)
-        res_name = post2.save_sresults("res_stress", proj_name)
+        res_name = post2.save_sresults("res_stress", proj_name, m)
         results_list.append("res_stress" + ".png")
         desc_list.append(res_name)
 post2 = None

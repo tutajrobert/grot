@@ -5,15 +5,17 @@ def all_res():
     names = []
     return names
 
-def results(res_matrix, res_name, counter):
+def results(res_matrix, res_name, counter, E, v):
     if res_name == "eps_x":
         return [res_matrix[0][counter][0], "Normal XX component of strain tensor"]
 
     elif res_name == "eps_y":
         return [res_matrix[0][counter][1], "Normal YY component of strain tensor"]
+
     elif res_name == "eps_z":
-        ezz = (res_matrix[0][counter][0] + res_matrix[0][counter][1]) * -0.3
+        ezz = (res_matrix[1][counter][0] + res_matrix[1][counter][1]) * -v / E
         return [ezz, "Normal ZZ component of strain tensor"]
+
     elif res_name == "gamma_xy":
         return [2*res_matrix[0][counter][2], "Shear XY component of strain tensor"]
 
@@ -57,13 +59,15 @@ def results(res_matrix, res_name, counter):
     elif res_name == "eff_strain":
         exx = res_matrix[0][counter][0]
         eyy = res_matrix[0][counter][1]
-        ezz = (res_matrix[0][counter][0] + res_matrix[0][counter][1]) * -0.3
+        ezz = (res_matrix[1][counter][0] + res_matrix[1][counter][1]) * -v / E
         exy = res_matrix[0][counter][2]
-        eff_strain = (1 / 1.3) * math.sqrt((0.5 * ((exx - eyy)**2 + (eyy - ezz)**2 + (ezz - exx)**2)) + ((3/2)*(exy**2)))
+        eff_strain = (1 / (math.sqrt(2) * (1 + v))) * math.sqrt(((exx - eyy)**2 + (eyy - ezz)**2 + (ezz - exx)**2) + ((3/2)*(exy**2)))
         return [eff_strain, "Effective strain"]
+		
     elif res_name == "theta":
-        return [res_matrix[3][counter][3] * 180 / math.pi, "Principal stress orientation angle"]
-
+        return [res_matrix[2][counter][3] * 180 / math.pi, "Principal stress orientation angle"]
+    elif res_name == "theta_n":
+        return [res_matrix[3][counter][3] * 180 / math.pi, "Principal strain orientation angle"]
     elif res_name == "inv_1":
         return [res_matrix[2][counter][0] + res_matrix[2][counter][1], "First invariant of stress tensor"]
 

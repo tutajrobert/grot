@@ -245,7 +245,7 @@ class prepare():
         
         return title
 
-    def save_sresults(self, results, proj_name):
+    def save_sresults(self, results, proj_name, material):
 
         """
         Matplotlib script for results viewing
@@ -261,8 +261,10 @@ class prepare():
         #Nodes coordinates storing
         for i in self.eles:
             counter += 1
+            ele = self.eles[i]  
+            E, v = material.get_prop(1)[0], material.get_prop(1)[1]
             #Results choosing and preparing
-            to_plot = stress.results(self.res, results, counter)
+            to_plot = stress.results(self.res, results, counter, E, v)
             colors.append(to_plot[0])
         plt.title(to_plot[1])
         title = to_plot[1]
