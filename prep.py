@@ -122,8 +122,8 @@ class materials():
         return self.edict
     
     def assignplast(self, elist):
-        print("Assign plasticity")
-        print(elist)
+        #print("Assign plasticity")
+        #print(elist)
         for i in range(len(elist)):
             #pass
             self.edict[elist[i]][8] *= self.edict[elist[i]][12]

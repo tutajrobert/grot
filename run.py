@@ -84,6 +84,11 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     load_inc = (1 - step_factor) / (steps_num)
     flags_list = []
     eles_list = []
+    sys.stdout.write("\r" + 
+    "Nonlinear plasticity solver iteration [" + 
+    str(1) + " of " + str(steps_num) + "]")
+    sys.stdout.flush()
+    
     for i in range(steps_num):
         load_step += load_inc
         
@@ -96,7 +101,11 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
         eles_list = plast_res[0]
         #eles = plast_res[0]
         flags_list = plast_res[1]
-        print("plast" + str(load_step))
+        sys.stdout.write("\r" + 
+        "Nonlinear plasticity solver iteration [" + 
+        str(i + 1) + " of " + str(steps_num) + "]")
+        sys.stdout.flush()
+        #print("plast" + str(load_step))
         state = ksearch("problem")[0]
         sol.plast_update(eles_list, load_inc)
         disp = sol.direct_plast()
@@ -113,12 +122,13 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     halfstep_strains, plast_res, final_results = None, None, None
 gc.collect()
 
+print("")
 gallery_input_file = ""
 
 for i in input_file_lines:
     if (i[0] != "#") and (len(i) != 1):
         gallery_input_file += "<code>" + i + "</code><br>"
-
+print("")
 probe_color = ksearch("probe")[0]
 prob.write(probe_color, bc_dict, eprobes_dict, disp, strains, proj_name)
         
@@ -128,12 +138,20 @@ desc_list = []
 res_d = ksearch("disp")
 if res_d is not None:
     post = postpro.prepare(eles, disp)
+    
 for i in range(0, len(res_d)):
+    sys.stdout.write("\r" + 
+    "Plotted displacements results [" + 
+    str(i + 1) + " of " + str(len(res_d)) + 
+    "] to results" + os.sep + proj_name + os.sep)
+    sys.stdout.flush()
     res_name = post.save_dresults(res_d[i], proj_name)
     results_list.append("disp_" + res_d[i] + ".png")
     desc_list.append(res_name)
 post = None
+print("")
 
+#brak komunikatu
 if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     post = postpro.prepare(eles, res_disp)
     res_name = post.save_dresults("res", proj_name)
@@ -146,9 +164,15 @@ res_s = ksearch("stress")
 if res_s[0] is not None:
     post2 = postpro.prepare(eles, strains)
     for i in range(0, len(res_s)):
+        sys.stdout.write("\r" + 
+        "Plotted stress and strains results [" + 
+        str(i + 1) + " of " + str(len(res_s)) + 
+        "] to results" + os.sep + proj_name + os.sep)
+        sys.stdout.flush()
         res_name = post2.save_sresults(res_s[i], proj_name)
         results_list.append(res_s[i] + ".png")
         desc_list.append(res_name)
+    print("")
     if (ksearch("plast")[0] == "yes") and (step_factor < 1):
         res_name = post2.save_sresults("pl_strain", proj_name)
         results_list.append("pl_strain" + ".png")

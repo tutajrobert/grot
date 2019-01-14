@@ -114,7 +114,7 @@ class build():
                 self.gklist[c, c] = 1
         
     def plast_update(self, eles_list, load_inc):
-        print(eles_list)
+        #print(eles_list)
         for e in eles_list:   
             for z in range(2):     
                 ele = self.eles[e]  

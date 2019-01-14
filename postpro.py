@@ -239,7 +239,7 @@ class prepare():
             os.makedirs("results" + os.sep + proj_name)
         plt.savefig("results" + os.sep + proj_name + os.sep + "disp_" + results + ".png", DPI = 300)
 
-        print("Saved contour plot", "[" + "disp_" + results + ".png] to results" + os.sep + proj_name + os.sep)
+        #print("Saved contour plot", "[" + "disp_" + results + ".png] to results" + os.sep + proj_name + os.sep)
         plt.close()
         fig, ax = None, None
         
@@ -362,7 +362,7 @@ class prepare():
             os.makedirs("results" + os.sep + proj_name)
         plt.savefig("results" + os.sep + proj_name + os.sep + results + ".png", DPI = 300)
 
-        print("Saved contour plot", "[" + results + ".png] to results" + os.sep + proj_name + os.sep)
+        #print("Saved contour plot", "[" + results + ".png] to results" + os.sep + proj_name + os.sep)
         plt.close()
         fig, ax = None, None
         return title

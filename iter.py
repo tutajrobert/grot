@@ -12,7 +12,7 @@ class prepare():
                 self.pstrains[j].append(0)
                 
     def store(self, material, disp, strains, flags_list):
-        print("Store")
+        #print("Store")
         self.disp += disp
         for i in range(len(self.strains)):
             for j in range(len(self.strains[i])):
@@ -21,6 +21,12 @@ class prepare():
         for j in range(len(self.pstrains)):
             if (j + 1) in flags_list:
                 value = stress.results(strains, "eff_strain", (j))[0]
+                #e1 = stress.results(self.strains, "eff_strain", (j))[0]
+                #e0 = stress.results(strains, "eff_strain", (j))[0]
+                #s0 = stress.results(strains, "huber", (j))[0]
+                #s1 = stress.results(self.strains, "huber", (j))[0]
+                #value = e1 - ((1 / 205e3) * s1)
+                #print(s1)
                 self.pstrains[j][0] += value    
                 value *= material.get_prop(1)[0]
                 self.pstrains[j][1] += value
@@ -29,14 +35,14 @@ class prepare():
         res_disp = []
         for i in range(len(self.disp)):
             res_disp.append(self.disp[i] - disp_el[i])
-        print(res_disp)
+        #(res_disp)
         return res_disp
     def store_plstrain(self, strains):
         strains.append(self.pstrains)
         return strains
     
     def halfstep(self, strains):
-        print("Half")
+        #print("Half")
         for i in range(len(self.strains)):
             for j in range(len(self.strains[i])):
                 for k in range(3): #the 3. is principal angle, not to be scaled

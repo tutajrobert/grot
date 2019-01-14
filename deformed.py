@@ -198,5 +198,6 @@ class prepare():
             os.makedirs("results" + os.sep + proj_name)
         plt.savefig("results" + os.sep + proj_name + os.sep + results + ".png", DPI = 300)
         
-        print("Saved results file", "[" + results + ".png] to results" + os.sep + proj_name + os.sep)
+        #print("Saved results file", "[" + results + ".png] to results" + os.sep + proj_name + os.sep)
+        print("Plotted deformed view", "[" + results + ".png] to results" + os.sep + proj_name + os.sep)
         return title
