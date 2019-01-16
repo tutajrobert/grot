@@ -32,7 +32,7 @@ class build():
             #Progress text in percents
             sys.stdout.write("\r" + 
             "Building global stiffnes matrix [" + 
-            str(round(((self.counter) / len(self.eles)) * 100, 2)) + 
+            str(round(((self.counter) / len(self.eles)) * 100, 1)) + 
             " %]")
             sys.stdout.flush()
         
@@ -283,8 +283,7 @@ class build():
             principals_strains.append([princ_1, princ_2, tau_max, theta_princ])
         
         if msg == 1:
-            print("Calculated strain and stress tensors (reduced 1-point integration)")
-        
+            print("Calculated strain and stress tensors (reduced 1-point integration)")  
         return([strains, stresses, principals_stress, principals_strains])
 
         #STRUCTURE OF SOLVER'S RESULTS RETURN CALL:
@@ -297,4 +296,84 @@ class build():
                 #principal strains elemental results in form of lists [l1, l2, l3, l4, l5, l6, l7...]
                     #all above lists are in form [rx, ry, rxz] or [r1, r2, r12max, rangle]
              
-                #in short: res[0][60][2] is strains, element number 60, xy value of strain 
+                #in short: res[0][60][2] is strains, element number 60, xy value of strain
+                
+    def strains_backcalc(self, disp_res, msg = 1):
+    #Reduced integration for strains
+        sc = self.scale
+        blist = numpy.array(
+                [[.5/sc, -.5/sc, -.5/sc, .5/sc, 0, 0, 0, 0],
+                 [0, 0, 0, 0, -.5/sc, -.5/sc, .5/sc, .5/sc],
+                 [-.5/sc, -.5/sc, .5/sc, .5/sc, .5/sc, -.5/sc, -.5/sc, .5/sc]])
+        
+        strains = []
+        
+        #Displacement results storing
+        for i in self.eles:
+            
+            dof1 = (self.eles[i][4] * 2) - 2
+            dof2 = (self.eles[i][5] * 2) - 2
+            dof3 = (self.eles[i][6] * 2) - 2
+            dof4 = (self.eles[i][7] * 2) - 2
+            dofs = numpy.array(
+                   [dof1, dof1 + 1, 
+                    dof2, dof2 + 1, 
+                    dof3, dof3 + 1, 
+                    dof4, dof4 + 1])
+            
+            disp_list = numpy.array(
+                        [disp_res[dofs[2]],
+                         disp_res[dofs[0]],
+                         disp_res[dofs[6]],
+                         disp_res[dofs[4]],
+                         disp_res[dofs[3]],
+                         disp_res[dofs[1]],
+                         disp_res[dofs[7]],
+                         disp_res[dofs[5]]])
+            
+            strains.append(numpy.dot(blist, 
+                    numpy.matrix.transpose(disp_list))
+                )
+        
+        #Reduced integration for stresses
+        stresses = []
+        counter = -1 #counter for synchronize with strains
+        
+        for i in self.eles:
+        
+            counter += 1
+            E = self.eles[i][8]
+            v = self.eles[i][9]
+            fc = E / (1 - (v ** 2))
+            
+            slist = numpy.array(
+                    [[fc, fc * v, 0],
+                     [fc * v, fc, 0],
+                     [0, 0, fc * ((1 - v)/ 2)]])
+                     
+            stresses.append(numpy.dot(slist, strains[counter]))
+        principals_stress = []
+        for i in range(len(self.eles)):        
+            princ_1 = 0.5 * (stresses[i][0] + stresses[i][1]) + math.sqrt(((0.5 * (stresses[i][0] - stresses[i][1])) ** 2) + stresses[i][2] ** 2)
+            princ_2 = 0.5 * (stresses[i][0] + stresses[i][1]) - math.sqrt(((0.5 * (stresses[i][0] - stresses[i][1])) ** 2) + stresses[i][2] ** 2)
+            tau_max = 0.5 * (princ_1 - princ_2)
+            if stresses[i][0] == stresses[i][1]:
+                theta_princ = 0
+            else:
+                theta_princ = 0.5 * numpy.arctan((2 * stresses[i][2]) / (stresses[i][0] - stresses[i][1]))
+            principals_stress.append([princ_1, princ_2, tau_max, theta_princ])
+
+        principals_strains = []
+        for i in range(len(self.eles)):        
+            princ_1 = 0.5 * (strains[i][0] + strains[i][1]) + math.sqrt(((0.5 * (strains[i][0] - strains[i][1])) ** 2) + strains[i][2] ** 2)
+            princ_2 = 0.5 * (strains[i][0] + strains[i][1]) - math.sqrt(((0.5 * (strains[i][0] - strains[i][1])) ** 2) + strains[i][2] ** 2)
+            tau_max = 0.5 * (princ_1 - princ_2)
+            if strains[i][0] == strains[i][1]:
+                theta_princ = 0
+            else:
+                theta_princ = 0.5 * numpy.arctan((2 * strains[i][2]) / (strains[i][0] - strains[i][1]))
+            principals_strains.append([princ_1, princ_2, tau_max, theta_princ])
+        
+        if msg == 1:
+            print("Calculated strain and stress tensors (reduced 1-point integration)")  
+        return([strains, stresses, principals_stress, principals_strains])

@@ -79,6 +79,18 @@ def results(res_matrix, res_name, counter, E, v):
  
     elif res_name == "res_stress":
         return [res_matrix[4][counter][1], "Residual Huber equivalent stress"]
- 
+
+    elif res_name == "tot_strain":
+        return [res_matrix[4][counter][2], "Total effective strain"]
+    
+    elif res_name == "bstress":
+        exx = res_matrix[0][counter][0]
+        eyy = res_matrix[0][counter][1]
+        ezz = (res_matrix[1][counter][0] + res_matrix[1][counter][1]) * -v / E
+        exy = res_matrix[0][counter][2]
+        eff_strain = (1 / (math.sqrt(2) * (1 + v))) * math.sqrt(((exx - eyy)**2 + (eyy - ezz)**2 + (ezz - exx)**2) + ((3/2)*(exy**2)))
+        plstrain = res_matrix[4][counter][0]
+        value = 205e3 * abs(eff_strain - plstrain)
+        return [value, "Back stress"]
     else:
         pass

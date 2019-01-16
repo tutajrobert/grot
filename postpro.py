@@ -261,8 +261,9 @@ class prepare():
         #Nodes coordinates storing
         for i in self.eles:
             counter += 1
-            ele = self.eles[i]  
-            E, v = material.get_prop(1)[0], material.get_prop(1)[1]
+            ele = self.eles[i]
+            E, v = ele[8], ele[9]            
+            #E, v = material.get_prop(1)[0], material.get_prop(1)[1]
             #Results choosing and preparing
             to_plot = stress.results(self.res, results, counter, E, v)
             colors.append(to_plot[0])

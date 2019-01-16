@@ -76,7 +76,7 @@ if ksearch("plast")[0] == "yes":
     disp = sol.direct_plast()
     disp_el = copy.copy(disp)
     strains = sol.strains_calc(disp, msg = 0)
-    iter_res = iter.prepare(disp, strains)
+    iter_res = iter.prepare(disp, strains, eles)
     step_factor = iter_res.first_step(m)
 if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     load_step = step_factor
@@ -113,12 +113,13 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
         strains = sol.strains_calc(disp, msg = 0)
         final_results = iter_res.store(m, disp, strains, flags_list)
         disp = final_results[0]
-        strains = final_results[1]   
+        strains = final_results[1]
     strains = iter_res.store_plstrain(strains)
     res_disp = iter_res.residual_disp(disp_el)
+    print("")
 #############
 
-    disp_el, sol, iter_res, plast = None, None, None, None
+    disp_el, iter_res, plast = None, None, None
     halfstep_strains, plast_res, final_results = None, None, None
 gc.collect()
 
@@ -128,7 +129,7 @@ gallery_input_file = ""
 for i in input_file_lines:
     if (i[0] != "#") and (len(i) != 1):
         gallery_input_file += "<code>" + i + "</code><br>"
-print("")
+
 probe_color = ksearch("probe")[0]
 prob.write(probe_color, bc_dict, eprobes_dict, disp, strains, proj_name, m)
         
@@ -157,7 +158,6 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     res_name = post.save_dresults("res", proj_name)
     results_list.append("disp_res.png")
     desc_list.append(res_name)
-    res_disp = None
 post = None
 
 res_s = ksearch("stress")
@@ -181,7 +181,7 @@ if res_s[0] is not None:
         results_list.append("res_stress" + ".png")
         desc_list.append(res_name)
 post2 = None
-strains = None
+#strains = None
 
 def_scale = ksearch("deformed")[0]
 if def_scale is not None:
@@ -190,10 +190,16 @@ if def_scale is not None:
     results_list.append("deformed" + ".png")
     desc_list.append(res_name)
 post3 = None
-eles, disp = None, None
+disp = None
 
 gallery.save_gallery(proj_name, results_list, desc_list, gallery_input_file, version.get())	
 gallery_path = "results" + os.sep + proj_name + os.sep + proj_name + "_gallery.html"
 
 print("")
 print("Task finished in", t.check())
+
+res_strains = sol.strains_backcalc(res_disp, 1)
+res_strains.append(strains[4])
+
+post4 = postpro.prepare(eles, res_strains)
+res_name = post4.save_sresults("bstress", proj_name, m)

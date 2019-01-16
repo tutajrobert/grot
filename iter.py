@@ -2,15 +2,18 @@ import stress, numpy
 criterium = "huber"
     
 class prepare():
-    def __init__(self, disp, strains):
+    def __init__(self, disp, strains, eles):
         self.disp = disp
         self.strains = strains
+        self.eles = eles
         self.pstrains = []
         for j in range(len(self.strains[0])):
             self.pstrains.append([])
             for k in range(3):
                 self.pstrains[j].append(0)
-                
+            E = self.eles[j + 1][8]
+            v = self.eles[j + 1][9]
+            self.pstrains[j][2] += stress.results(strains, "eff_strain", (j), E, v)[0]
     def store(self, material, disp, strains, flags_list):
         #print("Store")
         self.disp += disp
@@ -18,6 +21,10 @@ class prepare():
             for j in range(len(self.strains[i])):
                 for k in range(3): #the 3. is principal angle, not to be scaled
                     self.strains[i][j][k] += strains[i][j][k]
+        for j in range(len(self.pstrains)):      
+            E = self.eles[j + 1][8]
+            v = self.eles[j + 1][9]
+            self.pstrains[j][2] += stress.results(strains, "eff_strain", (j), E, v)[0]
         for j in range(len(self.pstrains)):
             if (j + 1) in flags_list:
                 E = material.get_prop(1)[3] * material.get_prop(1)[0]
@@ -68,4 +75,6 @@ class prepare():
                 for j in range(len(self.strains[i])):
                     for k in range(3): #the 3. is principal angle, not to be scaled
                         self.strains[i][j][k] *= factor
+            for j in range(len(self.strains[i])):
+                self.pstrains[j][2] *= factor
             return factor
