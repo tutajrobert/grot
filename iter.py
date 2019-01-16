@@ -9,7 +9,7 @@ class prepare():
         self.pstrains = []
         for j in range(len(self.strains[0])):
             self.pstrains.append([])
-            for k in range(3):
+            for k in range(7):
                 self.pstrains[j].append(0)
             E = self.eles[j + 1][8]
             v = self.eles[j + 1][9]
@@ -33,6 +33,11 @@ class prepare():
                 self.pstrains[j][0] += value    
                 value *= material.get_prop(1)[3] * material.get_prop(1)[0]
                 self.pstrains[j][1] += value
+                
+                self.pstrains[j][3] += strains[0][j][0]
+                self.pstrains[j][4] += strains[0][j][1]
+                self.pstrains[j][5] += strains[0][j][2]
+                self.pstrains[j][6] += stress.results(strains, "eps_z", (j), E, v)[0]
         return [self.disp, self.strains]
     def residual_disp(self, disp_el):
         res_disp = []
