@@ -51,6 +51,6 @@ load x 0 y -.3e3 magenta
 solver direct
 probe black
 disp x y mag
-stress eps_x eps_y eps_z gamma_xy eps_1 eps_2 gamma_max eff_strain sig_x sig_y tau_xy huber sign_huber sig_1 sig_2 tau_max theta tot_strain
+stress eps_x plez
 deformed 4
 plast yes 12
