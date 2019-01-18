@@ -1,0 +1,215 @@
+<html>
+<title>GRoT> project gallery: barPLAST</title><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GRoT> Graphical Resolver of T4s</title>
+    <link rel="stylesheet" href="main.css">
+<style>
+
+body {
+    text-align:justify;
+    margin:40px auto;
+    max-width:650px;
+    line-height:1.7;
+    font-size:17px;
+    font-family:serif;
+    font-weight:400;
+    font-style:normal;
+    color:#555;
+    background-color: #ffffff;
+}
+
+h1 {
+	text-align:right;
+	line-height:1.0;
+    font-family:serif;
+    font-weight:400;
+	margin-bottom:15px;
+    color:#444;
+}
+
+h2 {
+    line-height:1.2;
+    font-family:serif;
+    font-weight:400;
+    color:#222;
+}
+
+h2 {
+    text-align:left;
+    border-top:solid 1px #d6d6d6;
+	margin-bottom:-20px;
+	margin-top:50px;
+    font-weight:400;
+}
+
+h2 span {
+    top:-.75em;
+    padding:0 10px 0 0;
+    background:#fff;
+    position:relative;
+}
+
+h3, h4 {
+    line-height:1.2;
+    font-family:serif;
+    font-weight:400;
+    color:#222;
+	margin-top:25px;
+	margin-bottom:0px;
+}
+     
+a {
+    color:#4358CB;
+    font-style:oblique;
+	text-decoration:none;
+}
+
+#menu a {
+	color:white;
+	font-style:oblique;
+}
+
+code {
+    color:#666;
+    font-family:courier;
+    line-height:1.5;
+    font-size:15px;
+	background-color:#e7e7e7;
+}
+
+footer {
+    font-size:13px;
+    padding: 0 0;
+	margin-top: 40px;
+}
+
+menu {
+    font-size:18px;
+    text-align: center;
+    padding: 0 0;
+	color:white;
+    background-color:#4358CB;
+	margin-bottom: 60px;
+}
+
+header {
+    font-size:18px;
+    text-align:center;
+}
+
+ul {
+    padding-left:20px;
+    padding-right:0px;
+}
+
+
+ol {
+    padding-left:20px;
+    padding-right:0px;
+}
+
+</style>
+</head>
+<body><h2><span>Gallery page of GRoT> project: <i>barPLAST</i></span></h2><p>Bitmap input file for this analysis: barPLAST.bmp<br>Date of analysis (year/month/day): 2019/01/18     <br>GRoT> version: 1.4.0<br>Visit website of this wonderful simulation package: <a href="https://tutajrobert.github.io/grot/">tutajrobert.github.io/grot</a></p><p>Input file for this analysis is shown below:<br><code>project barPLAST
+</code><br><code>problem planestress
+</code><br><code>bmp bar.bmp
+</code><br><code>mat steel
+</code><br><code>unit mm
+</code><br><code>scale 1
+</code><br><code>thickness 1
+</code><br><code>load x 0 y -400 magenta
+</code><br><code>solver direct
+</code><br><code>probe black
+</code><br><code>disp x y mag
+</code><br><code>stress huber eps_x eps_y eff_strain sig_1 inv_2 theta tau_xy sign_huber
+</code><br><code>deformed 4
+</code><br><code>plast yes 12</code><br><h2><span>Results images</span></h2>
+
+<div class="img">
+                   <a target="_blank" href="disp_x.png">
+                   <img src="disp_x.png" width="640" height="480" alt="Displacement in X direction">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="disp_y.png">
+                   <img src="disp_y.png" width="640" height="480" alt="Displacement in Y direction">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="disp_mag.png">
+                   <img src="disp_mag.png" width="640" height="480" alt="Displacement magnitude">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="huber.png">
+                   <img src="huber.png" width="640" height="480" alt="Huber equivalent stress">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="eps_x.png">
+                   <img src="eps_x.png" width="640" height="480" alt="Normal XX component of strain tensor">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="eps_y.png">
+                   <img src="eps_y.png" width="640" height="480" alt="Normal YY component of strain tensor">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="eff_strain.png">
+                   <img src="eff_strain.png" width="640" height="480" alt="Effective strain">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="sig_1.png">
+                   <img src="sig_1.png" width="640" height="480" alt="First principal stress">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="inv_2.png">
+                   <img src="inv_2.png" width="640" height="480" alt="Second invariant of stress tensor">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="theta.png">
+                   <img src="theta.png" width="640" height="480" alt="Principal stress orientation angle">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="tau_xy.png">
+                   <img src="tau_xy.png" width="640" height="480" alt="Shear XY component of stress tensor">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="sign_huber.png">
+                   <img src="sign_huber.png" width="640" height="480" alt="Signed Huber equivalent stress">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="deformed.png">
+                   <img src="deformed.png" width="640" height="480" alt="Deformed shape (displacement magnitude)">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="disp_res.png">
+                   <img src="disp_res.png" width="640" height="480" alt="Residual displacement magnitude">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="pl_strain.png">
+                   <img src="pl_strain.png" width="640" height="480" alt="Plastic part of effective strain">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="h_stress.png">
+                   <img src="h_stress.png" width="640" height="480" alt="Hardening Huber equivalent stress">
+                   </a></div>
+
+<div class="img">
+                   <a target="_blank" href="res_huber.png">
+                   <img src="res_huber.png" width="640" height="480" alt="Residual Huber equivalent stress after unloading">
+                   </a></div>
+
+</body>
+</html>
