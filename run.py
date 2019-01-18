@@ -76,6 +76,7 @@ if ksearch("plast")[0] == "yes":
     disp = sol.direct_plast()
     disp_el = copy.copy(disp)
     strains = sol.strains_calc(disp, msg = 0)
+    strains_el = copy.deepcopy(strains)
     iter_res = iter.prepare(disp, strains, eles)
     step_factor = iter_res.first_step(m)
 if (ksearch("plast")[0] == "yes") and (step_factor < 1):
@@ -116,6 +117,7 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
         strains = final_results[1]
     strains = iter_res.store_plstrain(strains)
     res_disp = iter_res.residual_disp(disp_el)
+    res_strains = iter_res.residual_strains(strains_el)
     print("")
 #############
 
@@ -198,8 +200,8 @@ gallery_path = "results" + os.sep + proj_name + os.sep + proj_name + "_gallery.h
 print("")
 print("Task finished in", t.check())
 
-res_strains = sol.strains_backcalc(res_disp, 1)
-res_strains.append(strains[4])
+if (ksearch("plast")[0] == "yes") and (step_factor < 1):
+    res_strains.append(strains[4])
 
-post4 = postpro.prepare(eles, res_strains)
-res_name = post4.save_sresults("bstress", proj_name, m)
+    post5 = postpro.prepare(eles, res_strains)
+    res_name = post5.save_sresults("huber", proj_name, m)

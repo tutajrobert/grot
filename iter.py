@@ -19,8 +19,9 @@ class prepare():
         self.disp += disp
         for i in range(len(self.strains)):
             for j in range(len(self.strains[i])):
-                for k in range(3): #the 3. is principal angle, not to be scaled
-                    self.strains[i][j][k] += strains[i][j][k]
+                for k in range(len(self.strains[i][j])): #the 5. is principal angle, not to be scaled
+                    if k < 5:
+                        self.strains[i][j][k] += strains[i][j][k]
         for j in range(len(self.pstrains)):      
             E = self.eles[j + 1][8]
             v = self.eles[j + 1][9]
@@ -45,6 +46,13 @@ class prepare():
             res_disp.append(self.disp[i] - disp_el[i])
         #(res_disp)
         return res_disp
+    def residual_strains(self, strains_el):
+       for i in range(len(strains_el)):
+            for j in range(len(strains_el[i])):
+                for k in range(len(self.strains[i][j])): #the 5. is principal angle, not to be scaled
+                    if k < 5:
+                        strains_el[i][j][k] = self.strains[i][j][k] - strains_el[i][j][k]
+       return strains_el
     def store_plstrain(self, strains):
         strains.append(self.pstrains)
         return strains
@@ -53,8 +61,9 @@ class prepare():
         #print("Half")
         for i in range(len(self.strains)):
             for j in range(len(self.strains[i])):
-                for k in range(3): #the 3. is principal angle, not to be scaled
-                    strains[i][j][k] = self.strains[i][j][k] + strains[i][j][k]
+                for k in range(len(self.strains[i][j])): #the 5. is principal angle, not to be scaled
+                    if k < 5:
+                        strains[i][j][k] = self.strains[i][j][k] + strains[i][j][k]
 
         return strains
         
@@ -78,8 +87,9 @@ class prepare():
         
             for i in range(len(self.strains)):
                 for j in range(len(self.strains[i])):
-                    for k in range(3): #the 3. is principal angle, not to be scaled
-                        self.strains[i][j][k] *= factor
+                    for k in range(len(self.strains[i][j])): #the 5. is principal angle, not to be scaled
+                        if k < 5:
+                            self.strains[i][j][k] *= factor
             for j in range(len(self.strains[i])):
                 self.pstrains[j][2] *= factor
             return factor

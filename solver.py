@@ -260,8 +260,27 @@ class build():
                      [0, 0, fc * ((1 - v)/ 2)]])
                      
             stresses.append(numpy.dot(slist, strains[counter]))
+        def zdir(i):           
+            if self.state == "planestress":
+                eps_z = (stresses[i][0] + stresses[i][1]) * -v / E
+                eps_x = strains[i][0]
+                eps_y = strains[i][1]
+                eps_xy = strains[i][2]
+                eff_strain = (1 / (math.sqrt(2) * (1 + v))) * math.sqrt(((eps_x - eps_y)**2 + (eps_y - eps_z)**2 + (eps_z - eps_x)**2) + ((3/2)*(eps_xy**2)))
+                sig_z = 0
+            elif self.state == "planestrain":
+                eps_z = 0
+                eps_x = strains[i][0]
+                eps_y = strains[i][1]
+                eps_xy = strains[i][2]
+                eff_strain = (1 / (math.sqrt(2) * (1 + v))) * math.sqrt(((eps_x - eps_y)**2 + (eps_y - eps_z)**2 + (eps_z - eps_x)**2) + ((3/2)*(eps_xy**2)))
+                sig_z = (E / (1 - (v**2))) * (eps_x + eps_z) * -v
+            return [eps_z, sig_z, eff_strain]
+                
         principals_stress = []
-        for i in range(len(self.eles)):        
+        for i in range(len(self.eles)):
+            zres = zdir(i)
+            eps_z, sig_z, eff_strain = zres[0], zres[1], zres[2]
             princ_1 = 0.5 * (stresses[i][0] + stresses[i][1]) + math.sqrt(((0.5 * (stresses[i][0] - stresses[i][1])) ** 2) + stresses[i][2] ** 2)
             princ_2 = 0.5 * (stresses[i][0] + stresses[i][1]) - math.sqrt(((0.5 * (stresses[i][0] - stresses[i][1])) ** 2) + stresses[i][2] ** 2)
             tau_max = 0.5 * (princ_1 - princ_2)
@@ -269,10 +288,13 @@ class build():
                 theta_princ = 0
             else:
                 theta_princ = 0.5 * numpy.arctan((2 * stresses[i][2]) / (stresses[i][0] - stresses[i][1]))
-            principals_stress.append([princ_1, princ_2, tau_max, theta_princ])
+        
+            principals_stress.append([princ_1, princ_2, tau_max, sig_z, 0, theta_princ])
 
         principals_strains = []
-        for i in range(len(self.eles)):        
+        for i in range(len(self.eles)):
+            zres = zdir(i)
+            eps_z, sig_z, eff_strain = zres[0], zres[1], zres[2]        
             princ_1 = 0.5 * (strains[i][0] + strains[i][1]) + math.sqrt(((0.5 * (strains[i][0] - strains[i][1])) ** 2) + strains[i][2] ** 2)
             princ_2 = 0.5 * (strains[i][0] + strains[i][1]) - math.sqrt(((0.5 * (strains[i][0] - strains[i][1])) ** 2) + strains[i][2] ** 2)
             tau_max = 0.5 * (princ_1 - princ_2)
@@ -280,7 +302,7 @@ class build():
                 theta_princ = 0
             else:
                 theta_princ = 0.5 * numpy.arctan((2 * strains[i][2]) / (strains[i][0] - strains[i][1]))
-            principals_strains.append([princ_1, princ_2, tau_max, theta_princ])
+            principals_strains.append([princ_1, princ_2, tau_max, eps_z, eff_strain, theta_princ])
         
         if msg == 1:
             print("Calculated strain and stress tensors (reduced 1-point integration)")  
@@ -294,7 +316,7 @@ class build():
                 #stresses elemental results in form of lists [l1, l2, l3, l4, l5, l6, l7, l8...]
                 #principal stresses elemental results in form of lists [l1, l2, l3, l4, l5, l6, l7...]
                 #principal strains elemental results in form of lists [l1, l2, l3, l4, l5, l6, l7...]
-                    #all above lists are in form [rx, ry, rxz] or [r1, r2, r12max, rangle]
+                    #all above lists are in form [rx, ry, rxz] or [r1, r2, r12max, rz, reff, rangle]
              
                 #in short: res[0][60][2] is strains, element number 60, xy value of strain
                 
@@ -352,8 +374,26 @@ class build():
                      [0, 0, fc * ((1 - v)/ 2)]])
                      
             stresses.append(numpy.dot(slist, strains[counter]))
+        def zdir(i):           
+            if self.state == "planestress":
+                eps_z = (stresses[i][0] + stresses[i][1]) * -v / E
+                eps_x = strains[i][0]
+                eps_y = strains[i][1]
+                eps_xy = strains[i][2]
+                eff_strain = (1 / (math.sqrt(2) * (1 + v))) * math.sqrt(((eps_x - eps_y)**2 + (eps_y - eps_z)**2 + (eps_z - eps_x)**2) + ((3/2)*(eps_xy**2)))
+                sig_z = 0
+            elif self.state == "planestrain":
+                eps_z = 0
+                eps_x = strains[i][0]
+                eps_y = strains[i][1]
+                eps_xy = strains[i][2]
+                eff_strain = (1 / (math.sqrt(2) * (1 + v))) * math.sqrt(((eps_x - eps_y)**2 + (eps_y - eps_z)**2 + (eps_z - eps_x)**2) + ((3/2)*(eps_xy**2)))
+                sig_z = (E / (1 - (v**2))) * (eps_x + eps_z) * -v
+            return [eps_z, sig_z, eff_strain]
         principals_stress = []
-        for i in range(len(self.eles)):        
+        for i in range(len(self.eles)):
+            zres = zdir(i)
+            eps_z, sig_z, eff_strain = zres[0], zres[1], zres[2]
             princ_1 = 0.5 * (stresses[i][0] + stresses[i][1]) + math.sqrt(((0.5 * (stresses[i][0] - stresses[i][1])) ** 2) + stresses[i][2] ** 2)
             princ_2 = 0.5 * (stresses[i][0] + stresses[i][1]) - math.sqrt(((0.5 * (stresses[i][0] - stresses[i][1])) ** 2) + stresses[i][2] ** 2)
             tau_max = 0.5 * (princ_1 - princ_2)
@@ -361,10 +401,12 @@ class build():
                 theta_princ = 0
             else:
                 theta_princ = 0.5 * numpy.arctan((2 * stresses[i][2]) / (stresses[i][0] - stresses[i][1]))
-            principals_stress.append([princ_1, princ_2, tau_max, theta_princ])
+            principals_stress.append([princ_1, princ_2, tau_max, sig_z, 0, theta_princ])
 
         principals_strains = []
-        for i in range(len(self.eles)):        
+        for i in range(len(self.eles)):
+            zres = zdir(i)
+            eps_z, sig_z, eff_strain = zres[0], zres[1], zres[2]        
             princ_1 = 0.5 * (strains[i][0] + strains[i][1]) + math.sqrt(((0.5 * (strains[i][0] - strains[i][1])) ** 2) + strains[i][2] ** 2)
             princ_2 = 0.5 * (strains[i][0] + strains[i][1]) - math.sqrt(((0.5 * (strains[i][0] - strains[i][1])) ** 2) + strains[i][2] ** 2)
             tau_max = 0.5 * (princ_1 - princ_2)
@@ -372,7 +414,7 @@ class build():
                 theta_princ = 0
             else:
                 theta_princ = 0.5 * numpy.arctan((2 * strains[i][2]) / (strains[i][0] - strains[i][1]))
-            principals_strains.append([princ_1, princ_2, tau_max, theta_princ])
+            principals_strains.append([princ_1, princ_2, tau_max, eps_z, eff_strain, theta_princ])
         
         if msg == 1:
             print("Calculated strain and stress tensors (reduced 1-point integration)")  
