@@ -47,10 +47,10 @@ mat steel
 unit mm
 scale 1
 thickness 1
-load x 0 y -.4e3 magenta
+load x 0 y -.3e3 magenta
 solver direct
 probe black
 disp x y mag
 stress huber eps_x eps_y eff_strain eps_z tot_strain
 deformed 4
-plast yes 12
+plast yes 120

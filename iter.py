@@ -14,6 +14,13 @@ class prepare():
             E = self.eles[j + 1][8]
             v = self.eles[j + 1][9]
             self.pstrains[j][2] += stress.results(strains, "eff_strain", (j), E, v)[0]
+            
+    def out(self):
+        pstrains_eff = []
+        for j in range(len(self.strains[0])):
+            if pstrains_eff != 0:
+                pstrains_eff.append(self.pstrains[j][0])
+        return [self.disp, self.strains, pstrains_eff]
     def store(self, material, disp, strains, flags_list):
         #print("Store")
         self.disp += disp

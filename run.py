@@ -89,32 +89,43 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     "Nonlinear plasticity solver iteration [" + 
     str(1) + " of " + str(steps_num) + "]")
     sys.stdout.flush()
-    
+
+    allresiduals = []
+    #file = open("results" + os.sep + proj_name + os.sep + "plast.txt", "w")
     for i in range(steps_num):
         load_step += load_inc
-        
+        check_res = iter_res.out() 
         #RK2
         sol.plast_update([], load_inc / 2.0)
         disp = sol.direct_plast()
         strains = sol.strains_calc(disp, msg = 0)
         halfstep_strains = iter_res.halfstep(strains)
-        plast_res = plast.search(eles, halfstep_strains, m, flags_list)
+        
+        #allresiduals = plast.check(eles, halfstep_strains, m, flags_list, check_res[1], load_step-load_inc, load_inc, check_res[2], allresiduals, proj_name)
+        plast_res = plast.search(eles, halfstep_strains, m, flags_list, check_res[1], load_step-load_inc, load_inc, check_res[2])
+        
         eles_list = plast_res[0]
-        #eles = plast_res[0]
         flags_list = plast_res[1]
+        
         sys.stdout.write("\r" + 
         "Nonlinear plasticity solver iteration [" + 
         str(i + 1) + " of " + str(steps_num) + "]")
         sys.stdout.flush()
-        #print("plast" + str(load_step))
+        
         state = ksearch("problem")[0]
         sol.plast_update(eles_list, load_inc)
-        disp = sol.direct_plast()
         m.assignplast(eles_list)
+        
+        disp = sol.direct_plast()
         strains = sol.strains_calc(disp, msg = 0)
+        
         final_results = iter_res.store(m, disp, strains, flags_list)
         disp = final_results[0]
         strains = final_results[1]
+    
+    check_res = iter_res.out() 
+    #allresiduals = plast.check(eles, halfstep_strains, m, flags_list, check_res[1], load_step-load_inc, load_inc, check_res[2], allresiduals, proj_name)
+    #print(max(allresiduals), min(allresiduals), sum(allresiduals)/len(allresiduals))
     strains = iter_res.store_plstrain(strains)
     res_disp = iter_res.residual_disp(disp_el)
     res_strains = iter_res.residual_strains(strains_el)
@@ -203,5 +214,5 @@ print("Task finished in", t.check())
 if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     res_strains.append(strains[4])
 
-    post5 = postpro.prepare(eles, res_strains)
-    res_name = post5.save_sresults("huber", proj_name, m)
+    #post5 = postpro.prepare(eles, res_strains)
+    #res_name = post5.save_sresults("huber", proj_name, m)
