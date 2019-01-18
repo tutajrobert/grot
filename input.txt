@@ -27,17 +27,20 @@
 #                 That is displacement in X axis, Y axis and magnitude.
 # --- stress  --- Stress and strains results selection. 
 #                   Possible SETTINGS:
-#                   eps_x, eps_y, gamma_xy, sig_x, sig_y, tau_xy, huber, sign_huber.
-#                   eps_x, eps_y, gamma_xy - Strains in X direction, strains in Y direction, shear strains
-#                   sig_x, sig_y, tau_xy - Stress in X direction, stress in Y direction, shear stress
-#                   sig_1, sig_2, tau_max - First principal stress, second principal stress, maximum shear stress
-#                   eps_1, eps_2, gamma_max - First principal strain, second principal strain, maximum shear strain
+#                   eps_x, eps_y, eps_z, gamma_xy - Strains in X, Y, Z direction and engineering shear strains
+#                   sig_x, sig_y, sig_z, tau_xy - Stress in X, Y, Z direction and shear stress
+#                   sig_1, sig_2, tau_max - First and second principal stress, maximum shear stress
+#                   eps_1, eps_2, gamma_max - First and second principal strain, maximum engineering shear strain
 #                   huber, sign_huber, eff_strain - Huber equivalent stress, signed huber equivalent stress, effective strain
 #                   theta, inv_1, inv_2 - Principal stress orientation angle, first and second invariant of stress tensor
-#                   epl_x, epl_y, epl_xy - Plastic strains in X direction, Y direction and shear strains
+#                   epl_x, epl_y, epl_z, epl_xy - Plastic strains in X, Y, Z direction and engineering plastic shear strains
 # --- deformed -- Plot of deformed model. 
 #                 Number is deformation scale multiplier, where 1 is equal to standard nodal dimension between two nodes.
-#
+# --- plast   --- Nonlinear plasticity analysis. Possible SETTINGS: yes or no and number of iterations to compute.
+#                 Plasticity model is bilinear plasticity with strain hardening. Plasticity results will be:
+#                 pl_strain, res_huber, h_stress, res - Plastic effective strain, residual huber stress, hardening stress, residual displacement.
+#                 Check the "mlib.py" file for material parameters.
+# --- probe   --- Probe function. Results for elements of this color will be stored in "eres.txt" file in "resulsts/"
 # End of guide
 
 project barPLAST
@@ -47,10 +50,10 @@ mat steel
 unit mm
 scale 1
 thickness 1
-load x 0 y -.3e3 magenta
+load x 0 y -400 magenta
 solver direct
 probe black
 disp x y mag
-stress huber eps_x eps_y eff_strain eps_z tot_strain
+stress huber eps_x eps_y eff_strain sig_1 inv_2 theta tau_xy sign_huber
 deformed 4
-plast yes 120
+plast yes 12

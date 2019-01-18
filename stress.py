@@ -13,7 +13,6 @@ def results(res_matrix, res_name, counter, E, v):
         return [res_matrix[0][counter][1], "Normal YY component of strain tensor"]
 
     elif res_name == "eps_z":
-        #ezz = (res_matrix[1][counter][0] + res_matrix[1][counter][1]) * -v / E
         return [res_matrix[3][counter][3], "Normal ZZ component of strain tensor"]
 
     elif res_name == "gamma_xy":
@@ -91,23 +90,28 @@ def results(res_matrix, res_name, counter, E, v):
     elif res_name == "pl_strain":
         return [res_matrix[4][counter][0], "Plastic part of effective strain"]
  
-    elif res_name == "res_stress":
-        return [res_matrix[4][counter][1], "Residual Huber equivalent stress"]
-
-    elif res_name == "tot_strain":
-        return [res_matrix[4][counter][2], "Total effective strain"]
+    elif res_name == "h_stress":
+        return [res_matrix[4][counter][1], "Hardening Huber equivalent stress"]
  
-    elif res_name == "plex":
-        return [res_matrix[4][counter][3], "plex"]
+    elif res_name == "epl_x":
+        return [res_matrix[4][counter][3], "Plastic XX component of strain tensor"]
         
-    elif res_name == "pley":
-        return [res_matrix[4][counter][4], "pley"]
+    elif res_name == "epl_y":
+        return [res_matrix[4][counter][4], "Plastic YY component of strain tensor"]
 
-    elif res_name == "plexy":
-        return [res_matrix[4][counter][5], "plexy"]
+    elif res_name == "epl_xy":
+        return [res_matrix[4][counter][5], "Plastic XY component of strain tensor"]
         
-    elif res_name == "plez":
-        return [res_matrix[4][counter][6], "plez"]
- 
+    elif res_name == "epl_z":
+        return [res_matrix[4][counter][6], "Plastic ZZ component of strain tensor"]
+        
+    elif res_name == "res_huber":
+        sx = res_matrix[1][counter][0]
+        sy = res_matrix[1][counter][1]
+        sxy = res_matrix[1][counter][2]
+        sz = res_matrix[2][counter][3]
+        #huber = math.sqrt((res_matrix[2][counter][0] ** 2) + (res_matrix[2][counter][1] ** 2) - (res_matrix[2][counter][0] * res_matrix[2][counter][1]))
+        huber = math.sqrt(.5 * (((sx - sy)**2) + ((sy - sz)**2) + ((sz - sx)**2)) + (3 * (sxy**2)))
+        return [huber, "Residual Huber equivalent stress after unloading"] 
     else:
         pass

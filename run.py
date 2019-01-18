@@ -165,14 +165,6 @@ for i in range(0, len(res_d)):
 post = None
 print("")
 
-#brak komunikatu
-if (ksearch("plast")[0] == "yes") and (step_factor < 1):
-    post = postpro.prepare(eles, res_disp)
-    res_name = post.save_dresults("res", proj_name)
-    results_list.append("disp_res.png")
-    desc_list.append(res_name)
-post = None
-
 res_s = ksearch("stress")
 if res_s[0] is not None:
     post2 = postpro.prepare(eles, strains)
@@ -186,15 +178,6 @@ if res_s[0] is not None:
         results_list.append(res_s[i] + ".png")
         desc_list.append(res_name)
     print("")
-    if (ksearch("plast")[0] == "yes") and (step_factor < 1):
-        res_name = post2.save_sresults("pl_strain", proj_name, m)
-        results_list.append("pl_strain" + ".png")
-        desc_list.append(res_name)
-        res_name = post2.save_sresults("res_stress", proj_name, m)
-        results_list.append("res_stress" + ".png")
-        desc_list.append(res_name)
-post2 = None
-#strains = None
 
 def_scale = ksearch("deformed")[0]
 if def_scale is not None:
@@ -205,14 +188,29 @@ if def_scale is not None:
 post3 = None
 disp = None
 
+if (ksearch("plast")[0] == "yes") and (step_factor < 1):
+    post4 = postpro.prepare(eles, res_disp)
+    res_name = post4.save_dresults("res", proj_name)
+    results_list.append("disp_res.png")
+    desc_list.append(res_name)
+
+    res_name = post2.save_sresults("pl_strain", proj_name, m)
+    results_list.append("pl_strain" + ".png")
+    desc_list.append(res_name)
+    res_name = post2.save_sresults("h_stress", proj_name, m)
+    results_list.append("h_stress" + ".png")
+    desc_list.append(res_name)
+
+    res_strains.append(strains[4])
+
+    post5 = postpro.prepare(eles, res_strains)
+    res_name = post5.save_sresults("res_huber", proj_name, m)
+    results_list.append("res_huber.png")
+    desc_list.append(res_name)
+    print("Results of plastic analysis stored in " + "results" + os.sep + proj_name + os.sep + proj_name)
+
 gallery.save_gallery(proj_name, results_list, desc_list, gallery_input_file, version.get())	
 gallery_path = "results" + os.sep + proj_name + os.sep + proj_name + "_gallery.html"
 
 print("")
 print("Task finished in", t.check())
-
-if (ksearch("plast")[0] == "yes") and (step_factor < 1):
-    res_strains.append(strains[4])
-
-    #post5 = postpro.prepare(eles, res_strains)
-    #res_name = post5.save_sresults("huber", proj_name, m)
