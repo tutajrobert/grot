@@ -31,21 +31,21 @@ def results(res_matrix, res_name, counter, E, v):
         return [res_matrix[1][counter][2], "Shear XY component of stress tensor"]
 
     elif res_name == "huber":
-        sx = res_matrix[1][counter][0]
-        sy = res_matrix[1][counter][1]
-        sxy = res_matrix[1][counter][2]
-        sz = res_matrix[2][counter][3]
-        #huber = math.sqrt((res_matrix[2][counter][0] ** 2) + (res_matrix[2][counter][1] ** 2) - (res_matrix[2][counter][0] * res_matrix[2][counter][1]))
-        huber = math.sqrt(.5 * (((sx - sy)**2) + ((sy - sz)**2) + ((sz - sx)**2)) + (3 * (sxy**2)))
+        #sx = res_matrix[1][counter][0]
+        #sy = res_matrix[1][counter][1]
+        #sxy = res_matrix[1][counter][2]
+        #sz = res_matrix[2][counter][3]
+        huber = math.sqrt((res_matrix[2][counter][0] ** 2) + (res_matrix[2][counter][1] ** 2) - (res_matrix[2][counter][0] * res_matrix[2][counter][1]))
+        #huber = math.sqrt(.5 * (((sx - sy)**2) + ((sy - sz)**2) + ((sz - sx)**2)) + (3 * (sxy**2)))
         return [huber, "Huber equivalent stress"]
 
     elif res_name == "sign_huber":
-        sx = res_matrix[1][counter][0]
-        sy = res_matrix[1][counter][1]
-        sxy = res_matrix[1][counter][2]
-        sz = res_matrix[2][counter][3]
-        #huber = math.sqrt((res_matrix[2][counter][0] ** 2) + (res_matrix[2][counter][1] ** 2) - (res_matrix[2][counter][0] * res_matrix[2][counter][1]))
-        huber = math.sqrt(.5 * (((sx - sy)**2) + ((sy - sz)**2) + ((sz - sx)**2)) + (3 * (sxy**2)))
+        #sx = res_matrix[1][counter][0]
+        #sy = res_matrix[1][counter][1]
+        #sxy = res_matrix[1][counter][2]
+        #sz = res_matrix[2][counter][3]
+        huber = math.sqrt((res_matrix[2][counter][0] ** 2) + (res_matrix[2][counter][1] ** 2) - (res_matrix[2][counter][0] * res_matrix[2][counter][1]))
+        #huber = math.sqrt(.5 * (((sx - sy)**2) + ((sy - sz)**2) + ((sz - sx)**2)) + (3 * (sxy**2)))
         sign = numpy.sign(res_matrix[2][counter][0] + res_matrix[2][counter][1])    
         sign_huber = sign * huber           
         return [sign_huber, "Signed Huber equivalent stress"]
@@ -106,12 +106,12 @@ def results(res_matrix, res_name, counter, E, v):
         return [res_matrix[4][counter][6], "Plastic ZZ component of strain tensor"]
         
     elif res_name == "res_huber":
-        sx = res_matrix[1][counter][0]
-        sy = res_matrix[1][counter][1]
-        sxy = res_matrix[1][counter][2]
-        sz = res_matrix[2][counter][3]
-        #huber = math.sqrt((res_matrix[2][counter][0] ** 2) + (res_matrix[2][counter][1] ** 2) - (res_matrix[2][counter][0] * res_matrix[2][counter][1]))
-        huber = math.sqrt(.5 * (((sx - sy)**2) + ((sy - sz)**2) + ((sz - sx)**2)) + (3 * (sxy**2)))
+        #sx = res_matrix[1][counter][0]
+        #sy = res_matrix[1][counter][1]
+        #sxy = res_matrix[1][counter][2]
+        #sz = res_matrix[2][counter][3]
+        huber = math.sqrt((res_matrix[2][counter][0] ** 2) + (res_matrix[2][counter][1] ** 2) - (res_matrix[2][counter][0] * res_matrix[2][counter][1]))
+        #huber = math.sqrt(.5 * (((sx - sy)**2) + ((sy - sz)**2) + ((sz - sx)**2)) + (3 * (sxy**2)))
         return [huber, "Residual Huber equivalent stress after unloading"] 
     else:
         pass
