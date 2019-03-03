@@ -1,7 +1,10 @@
-import gc, bmp, prep, tools, solver, postpro, deformed, gallery, version, os, subprocess, sys, prob, plast, iter, copy
+import gc, bmp, prep, tools, solver, postpro, deformed, gallery, version, os, subprocess, sys, prob, plast, iter, copy, msg
 
 #start timer
 t = tools.timer()
+
+#welcome message
+msg.welcome()
 
 #read input file into list
 input_file = open("input.txt", "r")
@@ -23,7 +26,7 @@ def ksearch(keyword):
 
 proj_name = ksearch("project")[0]
             
-im = bmp.open(ksearch("bmp")[0])
+im = bmp.open_im(ksearch("bmp")[0])
 geom = bmp.create_geom(im)
 
 nodes = geom[0].store()

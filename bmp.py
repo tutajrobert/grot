@@ -1,62 +1,45 @@
-from PIL import Image, ImageCms
-import numpy
+"""BMP to FE model translation module"""
+
 import math
-import prep
-import solver
-import sys
 import os
-import version
+import sys
+import numpy
+from PIL import Image, ImageCms
+import prep
 
-vers = version.get()
-
-def open(im_name):
-    
-    #Welcome message
-    print("")
-    print("GRoT> ver. " + vers + ", [Graficzny Rozwiązywacz Tarcz]")
-    print("................................................")
-    
-    #Image opening
-    im = Image.open("projects" + os.sep + im_name)
+def open_im(im_name):
+    """Opens and crops BMP file"""
+    image = Image.open("projects" + os.sep + im_name)
 
     #Image cropping
-    pix = numpy.asarray(im)
-    pix = pix[:,:,0:3] #drop the alpha channel
-    idx = numpy.where(pix-255)[0:2] #drop the color when finding edges
-    box = list(map(min,idx))[::-1] + list(map(max,idx))[::-1]
+    pix = numpy.asarray(image)
+    pix = pix[:, :, 0:3] #drop the alpha channel
+    idx = numpy.where(pix - 255)[0:2] #drop the color when finding edges
+    box = list(map(min, idx))[::-1] + list(map(max, idx))[::-1]
     box[2] += 1
     box[3] += 1
-    im = im.crop(box)
+    image = image.crop(box)
 
     #Size check
-    width = im.size[0]
-    height = im.size[1]	
-    
+    width = image.size[0]
+    height = image.size[1]
+
     #RGB to Lab conversion
-
     srgb_profile = ImageCms.createProfile("sRGB")
-    lab_profile  = ImageCms.createProfile("LAB")
-
+    lab_profile = ImageCms.createProfile("LAB")
     rgb2lab_transform = ImageCms.buildTransformFromOpenProfiles(
         srgb_profile, lab_profile, "RGB", "LAB"
         )
-
-    im_lab = ImageCms.applyTransform(im, rgb2lab_transform)
-
+    im_lab = ImageCms.applyTransform(image, rgb2lab_transform)
     im_array = numpy.array(im_lab, dtype='int64')
-    im_lab = None
 
-    im.close()
-    im = None
-
+    image.close()
     return[im_array, width, height]
 
-"""
-Dictionary of reference Lab colors
-these below are hardcoded
-"""
+#Dictionary of reference Lab colors
+#these below are hardcoded
 
-lab_colors = {
+LAB_COLORS = {
     "white" : [255, 0, 0],
     "black" : [0, 0, 0],
     "red" : [138, 81, 70],
@@ -67,14 +50,16 @@ lab_colors = {
     "brown" : [89, 26, 45]
     }
 
+COLORS = ["white", "black", "red", "green", "blue", "cyan", "magenta", "brown"]
+
 def color_distance(color, ref_color):
-    #Euclidean distance in Lab color space
+    """Euclidean distance value in Lab color space"""
     return math.sqrt(((color[0] - ref_color[0]) ** 2) + \
                      ((color[1] - ref_color[1]) ** 2) + \
                      ((color[2] - ref_color[2]) ** 2))
 
 def color_check(color, lab_colors):
-    #Check which reference color in colors dictionary is the closest to given
+    """Checks which reference color in colors dictionary is the closest to given"""
     dist_list = []
     color_list = []
     for i in lab_colors:
@@ -82,159 +67,101 @@ def color_check(color, lab_colors):
         color_list.append(i)
     return color_list[dist_list.index(min(dist_list))]
 
-"""
-Colors used as boundary conditions
-Just need to know that "cyan" is used as model body
-and "white" is used for background
-"""
+#Colors used as boundary conditions
+#Just need to know that "cyan" is used as model body
+#and "white" is used for background
 
-bc_dict =   {
-    "black" : [],
-    "red" : [],
-    "green" : [],
-    "blue" : [],
-    "magenta" : [],
-    "brown" : []
-    }
+BC_DICT = {cname : [] for cname in COLORS}
+PROB_DICT = {cname : [] for cname in COLORS if cname not in ("white", "cyan")}
 
-eprobes_dict = {
-    "black" : [],
-    "red" : [],
-    "green" : [],
-    "blue" : [],
-    "magenta" : [],
-    "brown" : []
-    }
+#Starting BMP to FEM model translation
 
-#Starting BMP to fem model translation
-
-n = prep.nodes()
-e = prep.elements(n.store())
-c = prep.constraints()
+NODES = prep.nodes()
+ELES = prep.elements(NODES.store())
+CONS = prep.constraints()
 
 def node_check(coords, ndict):
-    #Check if node with x, y coordinates is already included in ndict
-    for n in ndict:
-        if ndict[n] == [coords[0], coords[1]]:
-            return n
+    """Checks if node with x, y coordinates is already included in ndict"""
+    for node in ndict:
+        if ndict[node] == [coords[0], coords[1]]:
+            return node
+    return None
 
 def create_geom(im_data):
-    print("")
-
+    """Creates FE model"""
+    elist = []
     nmerge_list = []
     im_array, width, height = im_data[0], im_data[1], im_data[2]
+
+    #Checking if node coordinates are already assigned to
+    #node number. If yes : use old number, if no create new one
+    #merged_dictionary = {**dict1, **dict2}
+
+    def node_proc(j, i, counter):
+        node = node_check([j, i], {**nmerge_list[counter], **nmerge_list[counter - 1]})
+        if node is None:
+            ele = NODES.add(j, i)
+            elist.append(ele)
+            nmerge_list[counter][ele] = [j, i]
+        else:
+            elist.append(node)
+            nmerge_list[counter][node] = [j, i]
 
     for i in range(height):
         nmerge_list.append({})
 
         #Progress text in percents
-        sys.stdout.write("\r" + 
-            "Bitmap to finite elements model translation [" + 
-            str(round(((i + 1) / height) * 100, 2)) + 
-            " %]")
+        sys.stdout.write("\r" +
+                         "Bitmap to finite elements model translation [" +
+                         str(round(((i + 1) / height) * 100, 2)) +
+                         " %]")
         sys.stdout.flush()
-              
+
         for j in range(width):
             elist = []
-            matched_color = color_check(im_array[i][j], lab_colors)
-            if matched_color is not "white":
+            match_color = color_check(im_array[i][j], LAB_COLORS)
+            if match_color != "white":
+                #node 1, 2, 3, 4
+                node_proc(j % width, i, i)
+                node_proc((j % width) + 1, i, i)
+                node_proc((j % width) + 1, i + 1, i)
+                node_proc(j % width, i + 1, i)
 
-                """
-                Checking if node coordinates are already assigned to
-                node number. If yes : use old number, if no create new one
-                merged_dictionary = {**dict1, **dict2}
-                """
-
-                #node 1
-                n1 = node_check([j % width, i], 
-                                {**nmerge_list[i], **nmerge_list[i - 1]})
-                if n1 == None:
-                    e1 = n.add(j % width, i)
-                    elist.append(e1)
-                    nmerge_list[i][e1] = [j % width, i]
-                else:
-                    elist.append(n1)
-                    nmerge_list[i][n1] = [j % width, i]
-
-                #node 2
-                n2 = node_check([(j % width) + 1, i], 
-                                {**nmerge_list[i], **nmerge_list[i - 1]})
-                if n2 == None:
-                    e2 = n.add((j % width) + 1, i)
-                    elist.append(e2)
-                    nmerge_list[i][e2] = [(j % width) + 1, i]
-                else:
-                    elist.append(n2)
-                    nmerge_list[i][n2] = [(j % width) + 1, i]
-
-                #node 3
-                n3 = node_check([(j % width) + 1, i + 1], 
-                                 {**nmerge_list[i], **nmerge_list[i - 1]})
-                if n3 == None:
-                    e3 = n.add((j % width) + 1, i + 1)
-                    elist.append(e3)
-                    nmerge_list[i][e3] = [(j % width) + 1, i + 1]
-                else:
-                    elist.append(n3)
-                    nmerge_list[i][n3] = [(j % width) + 1, i + 1]
-                
-                #node 4
-                n4 = node_check([j % width, i + 1], 
-                                {**nmerge_list[i], **nmerge_list[i - 1]})
-                if n4 == None:
-                    e4 = n.add(j % width, i + 1)
-                    elist.append(e4)
-                    nmerge_list[i][e4] = [j % width, i + 1]
-                else:
-                    elist.append(n4)
-                    nmerge_list[i][n4] = [j % width, i + 1]
-
-                e.update(n.store())
-                e.add(elist[3], elist[2], elist[1], elist[0])
+                ELES.update(NODES.store())
+                ELES.add(elist[3], elist[2], elist[1], elist[0])
 
                 #Checking which node should go to bc list
-                if (matched_color is not "white") and (matched_color is not "cyan"):
-                    bc_dict[matched_color].append(n.check(j % width, i))
-                    bc_dict[matched_color].append(n.check((j % width) + 1, i))
-                    bc_dict[matched_color].append(n.check((j % width) + 1, i + 1))
-                    bc_dict[matched_color].append(n.check(j % width, i + 1))
-                    eprobes_dict[matched_color].append(e.get(elist[3], elist[2], elist[1], elist[0]))
+                if match_color not in ["white", "cyan"]:
+                    BC_DICT[match_color].append(NODES.check(j % width, i))
+                    BC_DICT[match_color].append(NODES.check((j % width) + 1, i))
+                    BC_DICT[match_color].append(NODES.check((j % width) + 1, i + 1))
+                    BC_DICT[match_color].append(NODES.check(j % width, i + 1))
+                    PROB_DICT[match_color].append(ELES.get(elist[3], elist[2], elist[1], elist[0]))
 
-    im_array = None
+    #Image, nodes, elements, boundaries info text
+    print("\nCalculated object size: [{} x {}]".format(width, height))
+    NODES.short_info()
+    ELES.short_info()
+    im_data = None
 
-    #Rest of colors: black, magenta and brown can be used for different bc or property assignment
-    
-    #Nodes and elements info
-    print("")
-    print("Calculated object size: [{} x {}]".format(width, height))
-    n.short_info()
-    e.short_info()
-    
     print_list = ""
-    for color in bc_dict:
-        if len(bc_dict[color]) > 0:
-            print_list += "[" + str(color) + " : " + str(int(len(bc_dict[color]) / 4)) + "] "
+    for color in BC_DICT:
+        if BC_DICT[color]:
+            print_list += "[" + str(color) + " : " + str(int(len(BC_DICT[color]) / 4)) + "] "
     print("Prepared boundaries applied to eles: " + print_list)
-    
-    """
-    Hardcoded colors for supports
-    Red     support in X direction
-    Green   support in Y direction
-    Blue    support in Z (in-plane) direction
-    Nice and simple pattern, don't you think so?
-    """
-    
-    c.support(bc_dict["blue"])
-    if len(bc_dict["blue"]) > 0:
-        blue_n = len(list(set(bc_dict["blue"])))
-        print("Blue boundary [fixed support] applied to [" + str(blue_n) + "] nodes")
-    c.support(bc_dict["red"], 0, 1)
-    if len(bc_dict["red"]) > 0:
-        red_n = len(list(set(bc_dict["red"])))
-        print("Red boundary [in x-dir support] applied to [" + str(red_n) + "] nodes")
-    c.support(bc_dict["green"], 1, 0)    
-    if len(bc_dict["green"]) > 0:
-        green_n = len(list(set(bc_dict["green"])))
-        print("Green boundary [in y-dir support] applied to [" + str(green_n) + "] nodes")    
-    #Return nodes, eles, constraints and boundaries
-    return [n, e, c, bc_dict, eprobes_dict]
+
+    #Hardcoded colors for supports
+    #Red in X dir, green in Y dir, blue in X and Y dirs
+
+    support_colors = ["red", "green", "blue"]
+    support_types = {"red" : "X", "green" : "Y", "blue" : "X, Y"}
+    CONS.support(BC_DICT["blue"])
+    CONS.support(BC_DICT["red"], 0, 1)
+    CONS.support(BC_DICT["green"], 1, 0)
+    for color in support_colors:
+        if BC_DICT[color]:
+            color_len = len(list(set(BC_DICT[color])))
+            print(color.capitalize() + " boundary [" + support_types[color] + \
+                  " support] applied to [" + str(color_len) + "] nodes")
+
+    return [NODES, ELES, CONS, BC_DICT, PROB_DICT]
