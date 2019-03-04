@@ -8,14 +8,14 @@ from PIL import Image, ImageCms
 import prep
 
 def open_im(im_name):
-    """Opens and crops BMP file"""
-    image = Image.open("projects" + os.sep + im_name)
+    """Opens and crops BMP file. Returns image numpy array and image size"""
+    image = Image.open("projects" + os.sep + im_name) #BMP has to be in dir "projects"
 
     #Image cropping
     pix = numpy.asarray(image)
     pix = pix[:, :, 0:3] #drop the alpha channel
     idx = numpy.where(pix - 255)[0:2] #drop the color when finding edges
-    box = list(map(min, idx))[::-1] + list(map(max, idx))[::-1]
+    box = list(map(min, idx))[::-1] + list(map(max, idx))[::-1] #box of non-white pixels
     box[2] += 1
     box[3] += 1
     image = image.crop(box)
@@ -24,7 +24,7 @@ def open_im(im_name):
     width = image.size[0]
     height = image.size[1]
 
-    #RGB to Lab conversion
+    #RGB to Lab color profile conversion
     srgb_profile = ImageCms.createProfile("sRGB")
     lab_profile = ImageCms.createProfile("LAB")
     rgb2lab_transform = ImageCms.buildTransformFromOpenProfiles(
@@ -36,8 +36,7 @@ def open_im(im_name):
     image.close()
     return[im_array, width, height]
 
-#Dictionary of reference Lab colors
-#these below are hardcoded
+#Dictionary of hardcoded reference Lab colors
 
 LAB_COLORS = {
     "white" : [255, 0, 0],
@@ -53,13 +52,13 @@ LAB_COLORS = {
 COLORS = ["white", "black", "red", "green", "blue", "cyan", "magenta", "brown"]
 
 def color_distance(color, ref_color):
-    """Euclidean distance value in Lab color space"""
+    """Returns Euclidean distance value in Lab color space"""
     return math.sqrt(((color[0] - ref_color[0]) ** 2) + \
                      ((color[1] - ref_color[1]) ** 2) + \
                      ((color[2] - ref_color[2]) ** 2))
 
 def color_check(color, lab_colors):
-    """Checks which reference color in colors dictionary is the closest to given"""
+    """Checks and returns reference color closest to given"""
     dist_list = []
     color_list = []
     for i in lab_colors:
@@ -68,8 +67,7 @@ def color_check(color, lab_colors):
     return color_list[dist_list.index(min(dist_list))]
 
 #Colors used as boundary conditions
-#Just need to know that "cyan" is used as model body
-#and "white" is used for background
+#Just need to know that "cyan" is used as model body and "white" is used for background
 
 BC_DICT = {cname : [] for cname in COLORS}
 PROB_DICT = {cname : [] for cname in COLORS if cname not in ("white", "cyan")}
@@ -93,11 +91,9 @@ def create_geom(im_data):
     nmerge_list = []
     im_array, width, height = im_data[0], im_data[1], im_data[2]
 
-    #Checking if node coordinates are already assigned to
-    #node number. If yes : use old number, if no create new one
-    #merged_dictionary = {**dict1, **dict2}
-
     def node_proc(j, i, counter):
+        """Checking if node coordinates are already assigned to node number.
+        If yes : use old number, if no create new merged_dictionary = {**dict1, **dict2}"""
         node = node_check([j, i], {**nmerge_list[counter], **nmerge_list[counter - 1]})
         if node is None:
             ele = NODES.add(j, i)
@@ -111,17 +107,14 @@ def create_geom(im_data):
         nmerge_list.append({})
 
         #Progress text in percents
-        sys.stdout.write("\r" +
-                         "Bitmap to finite elements model translation [" +
-                         str(round(((i + 1) / height) * 100, 2)) +
-                         " %]")
+        sys.stdout.write("\r" + "Bitmap to finite elements model translation [" + \
+                         str(round(((i + 1) / height) * 100, 2)) + " %]")
         sys.stdout.flush()
 
         for j in range(width):
             elist = []
             match_color = color_check(im_array[i][j], LAB_COLORS)
             if match_color != "white":
-                #node 1, 2, 3, 4
                 node_proc(j % width, i, i)
                 node_proc((j % width) + 1, i, i)
                 node_proc((j % width) + 1, i + 1, i)
@@ -130,7 +123,7 @@ def create_geom(im_data):
                 ELES.update(NODES.store())
                 ELES.add(elist[3], elist[2], elist[1], elist[0])
 
-                #Checking which node should go to bc list
+                #Checking which node should go to bc dict
                 if match_color not in ["white", "cyan"]:
                     BC_DICT[match_color].append(NODES.check(j % width, i))
                     BC_DICT[match_color].append(NODES.check((j % width) + 1, i))
@@ -150,8 +143,7 @@ def create_geom(im_data):
             print_list += "[" + str(color) + " : " + str(int(len(BC_DICT[color]) / 4)) + "] "
     print("Prepared boundaries applied to eles: " + print_list)
 
-    #Hardcoded colors for supports
-    #Red in X dir, green in Y dir, blue in X and Y dirs
+    #Hardcoded colors for supports: red in X dir, green in Y dir, blue in X and Y dirs
 
     support_colors = ["red", "green", "blue"]
     support_types = {"red" : "X", "green" : "Y", "blue" : "X, Y"}

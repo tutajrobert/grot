@@ -56,4 +56,4 @@ probe black
 disp x y mag
 stress huber eps_x eps_y eff_strain sig_1 inv_2 theta tau_xy sign_huber
 deformed 4
-plast yes 12
+plast yes 4
