@@ -36,7 +36,7 @@ def discrete_cmap(ndiv, base_cmap=None):
     """Create an n-div discrete colormap from the specified input map"""
     base = plt.cm.get_cmap(base_cmap)
     color_list = base(numpy.linspace(1 - (1 / ndiv), 1 / ndiv, ndiv))
-    color_list[3] = [.906, .906, .906, 1.]
+    color_list[3] = [.918, .918, .918, 1.]
     #For edge colors retrieving: 0 is for max, 1 is for min, 2 is for min label
     down_up = [base(numpy.linspace(1 - (0.2 / ndiv), 0.2 / ndiv, ndiv))[0],
                base(numpy.linspace(1 - (0.2 / ndiv), 0.2 / ndiv, ndiv))[-1],

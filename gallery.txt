@@ -2,7 +2,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>GRoT> Graphical Resolver of T4s</title>
+    <title>GRoT> Graficzny Rozwiązywacz Tarcz</title>
     <link rel="stylesheet" href="main.css">
 <style>
 

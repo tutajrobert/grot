@@ -17,7 +17,7 @@ VERS = version.get()
 PATCH_LINE = 0.0
 ALPHA = 1.0
 plt.rcParams["font.family"] = "monospace"
-plt.rcParams["font.size"] = 10
+plt.rcParams["font.size"] = 9
 plt.rcParams["font.weight"] = 100
 plt.rcParams["text.hinting_factor"] = 1
 plt.rcParams["patch.linewidth"] = PATCH_LINE
@@ -49,7 +49,7 @@ def discrete_cmap(ndiv, base_cmap=None):
     """Create an n-bin discrete colormap from the specified input map"""
     base = plt.cm.get_cmap(base_cmap)
     color_list = base(numpy.linspace(1 - (1 / ndiv), 1 / ndiv, ndiv))
-    color_list[3] = [.906, .906, .906, 1.]
+    color_list[3] = [.918, .918, .918, 1.]
     #For edge colors retrieving: 0 is for max, 1 is for min, 2 is for min label
     down_up = [base(numpy.linspace(1 - (0.2 / ndiv), 0.2 / ndiv, ndiv))[0],
                base(numpy.linspace(1 - (0.2 / ndiv), 0.2 / ndiv, ndiv))[-1],

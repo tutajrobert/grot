@@ -19,10 +19,12 @@ def save_gallery(proj_name, images_list, desc_list, input_file, version):
         gallery_file.write(i)
         if i[0:6] == "<html>":
             gallery_file.write("<title>GRoT> project gallery: " + proj_name + "</title>")
-    gallery_file.write('<h2><span>Gallery page of GRoT> project: <i>' + proj_name + '</i></span></h2>')
+    gallery_file.write('<h2><span>Gallery page of project <i>' + proj_name + '</i></span></h2>')
     gallery_file.write('<p>Bitmap input file for this analysis: ' + proj_name + ".bmp")
     gallery_file.write("<br>Date of analysis (year/month/day): " + (time.strftime("%Y/%m/%d")) + " \
-    <br>GRoT> version: " + version + '<br>Visit website of this wonderful simulation package: <a href="https://tutajrobert.github.io/grot/">tutajrobert.github.io/grot</a>' +"</p><p>Input file for this analysis is shown below:<br>")
+    <br><tt>GRoT></tt> version: " + version + '<br>Visit website of this wonderful simulation package: <a href="https://github.com/tutajrobert">github.com/tutajrobert</a>' + \
+    "<p>If you prompted to probe the results in individual elements, you will find them in: eres.txt" +\
+    "</p><p>Input file for this analysis is shown below:<br>")
     gallery_file.write(input_file)
     gallery_file.write('<h2><span>Results images</span></h2>')
     gallery_file.write("\n")

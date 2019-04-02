@@ -14,13 +14,14 @@ import gallery
 import version
 import prob
 import plast
-import msg
 
 #start timer
 TIME = tools.timer()
 
 #welcome message
-msg.welcome()
+print("")
+print("GRoT> ver. " + version.get() + ", [Graficzny Rozwiązywacz Tarcz]")
+print("................................................\n")
 
 #read input file into list
 INP_FILE = open("input.txt", "r")
@@ -153,7 +154,7 @@ for i in INP_FILE_LINES:
         gallery_input_file += "<code>" + i + "</code><br>"
 
 probe_color = ksearch("probe")[0]
-prob.write(probe_color, BC_DICT, PROB_DICT, disp, strains, PROJ_NAME, MAT)
+prob.write(probe_color, PROB_DICT, strains, PROJ_NAME, MAT)
 
 results_list = []
 desc_list = []
