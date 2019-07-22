@@ -80,7 +80,11 @@ CONS, BC_DICT = None, None
 
 STATE = ksearch("problem")[0]
 SOL = solver.Build(NODES, ELES, constraints, STATE, load_inc=1.0, scale=SCALE)
+SOL2 = copy.deepcopy(SOL)
 NODES, constraints = None, None
+
+if not os.path.exists("results" + os.sep + PROJ_NAME):
+    os.makedirs("results" + os.sep + PROJ_NAME)
 
 if ksearch("plast")[0] != "yes":
     disp = SOL.direct()
@@ -105,7 +109,7 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
                      " of " + str(steps_num) + "]")
     sys.stdout.flush()
 
-    #file = open("results" + os.sep + PROJ_NAME + os.sep + "plast.txt", "w")
+    file = open("results" + os.sep + PROJ_NAME + os.sep + "plast.txt", "w+").close()
     for i in range(steps_num):
         load_step += load_inc
         check_res = iter_res.out()
@@ -119,6 +123,7 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
 
         eles_list = plast_res[0]
         flags_list = plast_res[1]
+        stress2plast_list = plast_res[2]
 
         sys.stdout.write("\r" + "Nonlinear plasticity solver iteration [" + \
                          str(i + 1) + " of " + str(steps_num) + "]")
@@ -134,11 +139,36 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
         final_results = iter_res.store(MAT, disp, strains, flags_list)
         disp = final_results[0]
         strains = final_results[1]
-
+        eff_pl_strains = final_results[2]
+        eff_pl_strains_rate = final_results[3]
+        
+        ###printing
+        file = open("results" + os.sep + PROJ_NAME + os.sep + "plast.txt", "a")
+        s2plast_corrected = []
+        for val in stress2plast_list:
+            val -= val * ((load_inc / 2.0) / (load_step - (load_inc / 2.0)))
+            s2plast_corrected.append(val)
+        if len(s2plast_corrected) == 0:
+            s2plast_corrected.append(0)
+        min_val = str(round(min(s2plast_corrected), 3))
+        max_val = str(round(max(s2plast_corrected), 3))
+        mean_val = str(round(sum(s2plast_corrected) / len(s2plast_corrected), 3))
+        new_eles = str(len(eles_list))
+        all_eles = str(len(flags_list))
+        file.write(mean_val + "," + min_val + "," + max_val + "," + new_eles  + "," + all_eles)
+        
+        file.write(" " + str(max(eff_pl_strains)) + "," + str(max(eff_pl_strains_rate)) + "\n")
+    file.close()
     check_res = iter_res.out()
-    strains = iter_res.store_plstrain(strains)
     res_disp = iter_res.residual_disp(disp_el)
-    res_strains = iter_res.residual_strains(strains_el)
+    ###SOL2 copy to remove
+    #strains = SOL.strains_calc(res_disp, msg=0)
+    ###    
+    ###
+    #strains = iter_res.residual_strains(strains_el)
+    ###
+    
+    strains = iter_res.store_plstrain(strains)    
     print("")
 #############
 
@@ -207,7 +237,7 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     results_list.append("h_stress" + ".png")
     desc_list.append(res_name)
 
-    res_strains.append(strains[4])
+    #res_strains.append(strains[4])
 
     print("Results of plastic analysis stored in " + \
           "results" + os.sep + PROJ_NAME + os.sep + PROJ_NAME)

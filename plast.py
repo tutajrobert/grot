@@ -8,6 +8,7 @@ def search(eles, strains, flags_list):
     """Checks if element in plastic"""
     criterium = "huber"
     elist = []
+    stress2plast_list = []
 
     for enum in range(1, len(eles)):
         plast_value = eles[enum][11]
@@ -17,7 +18,8 @@ def search(eles, strains, flags_list):
                 if value[0] >= plast_value:
                     elist.append(enum)
                     flags_list.append(enum)
-    return [elist, flags_list]
+                    stress2plast_list.append(value[0]/plast_value)
+    return [elist, flags_list, stress2plast_list]
 
 class Prepare():
     def __init__(self, disp, strains, eles):
@@ -47,17 +49,21 @@ class Prepare():
                         self.strains[i][j][k] += strains[i][j][k]
         for j in range(len(self.pstrains)):
             self.pstrains[j][2] += stress.results(strains, "eff_strain", (j))[0]
+        eff_pl_strains = []
+        eff_pl_strains_rate = []
         for j in range(len(self.pstrains)):
             if j + 1 in flags_list:
                 value = stress.results(strains, "eff_strain", (j))[0]
                 self.pstrains[j][0] += value
+                eff_pl_strains_rate.append(value)
+                eff_pl_strains.append(self.pstrains[j][0])
                 value *= material.get_prop(1)[3] * material.get_prop(1)[0]
                 self.pstrains[j][1] += value
                 self.pstrains[j][3] += strains[0][j][0]
                 self.pstrains[j][4] += strains[0][j][1]
                 self.pstrains[j][5] += strains[0][j][2]
                 self.pstrains[j][6] += stress.results(strains, "eps_z", (j))[0]
-        return [self.disp, self.strains]
+        return [self.disp, self.strains, eff_pl_strains, eff_pl_strains_rate]
 
     def residual_disp(self, disp_el):
         """Residual displacement equals to total disp minus elastic disp. Rather trick"""
