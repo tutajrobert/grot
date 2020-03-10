@@ -161,12 +161,23 @@ class Build():
     def strains_calc(self, disp_res, msg=1):
         """Reduced integration for strains"""
         sc = self.scale
+        #43
+        #12
+        #eta --++
+        #dzeta +--+
+        eta = 1 / math.sqrt(3)
+        dzeta = 1 / math.sqrt(3)
+        etas = [eta, -eta]
+        dzetas = [dzeta, -dzeta]
         #Shape function
-        blist = numpy.array([[.5/sc, -.5/sc, -.5/sc, .5/sc, 0, 0, 0, 0],
-                             [0, 0, 0, 0, -.5/sc, -.5/sc, .5/sc, .5/sc],
-                             [-.5/sc, -.5/sc, .5/sc, .5/sc, .5/sc, -.5/sc, -.5/sc, .5/sc]])
+        def shapefunc(eta, dzeta):
+            blist = numpy.array([[.5*(1-eta)/sc, -.5*(1-eta)/sc, -.5*(1+eta)/sc, .5*(1+eta)/sc, 0, 0, 0, 0],
+                                [0, 0, 0, 0, -.5*(1+dzeta)/sc, -.5*(1-dzeta)/sc, .5*(1-dzeta)/sc, .5*(1+dzeta)/sc],
+                                [-.5*(1+dzeta)/sc, -.5*(1-dzeta)/sc, .5*(1-dzeta)/sc, .5*(1+dzeta)/sc, 
+                                 .5*(1-eta)/sc, -.5*(1-eta)/sc, -.5*(1+eta)/sc, .5*(1+eta)/sc]])
+            return blist
+        
         strains = []
-
         #Displacement results storing reorganization
         for i in self.eles:
             dofs = self.dofs_org(self.eles[i])
@@ -176,7 +187,14 @@ class Build():
                                      disp_res[dofs[7]], disp_res[dofs[5]]])
 
             #Strains calculation
-            strains.append(numpy.dot(blist, numpy.matrix.transpose(disp_list)))
+            strains_gauss = [[], [], [], []]
+            gauss_counter = 0
+            for eta in etas:
+                for dzeta in dzetas:
+                    strains_gauss[gauss_counter].append(numpy.dot(shapefunc(eta, dzeta), numpy.matrix.transpose(disp_list)))
+                    gauss_counter += 1
+            #print(strains_gauss[0][0] + strains_gauss[1][0])
+            strains.append(.25*(strains_gauss[0][0] + strains_gauss[1][0] + strains_gauss[2][0] + strains_gauss[3][0]))
 
         #Reduced integration for stresses
         stresses = []

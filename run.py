@@ -80,7 +80,6 @@ CONS, BC_DICT = None, None
 
 STATE = ksearch("problem")[0]
 SOL = solver.Build(NODES, ELES, constraints, STATE, load_inc=1.0, scale=SCALE)
-SOL2 = copy.deepcopy(SOL)
 NODES, constraints = None, None
 
 if not os.path.exists("results" + os.sep + PROJ_NAME):
@@ -90,7 +89,6 @@ if ksearch("plast")[0] != "yes":
     disp = SOL.direct()
     strains = SOL.strains_calc(disp)
 
-##########
 if ksearch("plast")[0] == "yes":
     disp = SOL.direct_plast()
     disp_el = copy.copy(disp)
@@ -113,17 +111,16 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     for i in range(steps_num):
         load_step += load_inc
         check_res = iter_res.out()
-        #RK2
+        #Runge Kutta 2nd order procedure
         SOL.plast_update([], load_inc / 2.0)
         disp = SOL.direct_plast()
         strains = SOL.strains_calc(disp, msg=0)
         halfstep_strains = iter_res.halfstep(strains)
-
         plast_res = plast.search(ELES, halfstep_strains, flags_list)
 
         eles_list = plast_res[0]
         flags_list = plast_res[1]
-        stress2plast_list = plast_res[2]
+        stress2plast_list = plast_res[2] #for residuals check
 
         sys.stdout.write("\r" + "Nonlinear plasticity solver iteration [" + \
                          str(i + 1) + " of " + str(steps_num) + "]")
@@ -142,9 +139,9 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
         eff_pl_strains = final_results[2]
         eff_pl_strains_rate = final_results[3]
         
-        ###printing
+        #plast.txt file creation
         file = open("results" + os.sep + PROJ_NAME + os.sep + "plast.txt", "a")
-        s2plast_corrected = []
+        s2plast_corrected = [] #to calculate actual ratio, not ratio in hafstep
         for val in stress2plast_list:
             val -= val * ((load_inc / 2.0) / (load_step - (load_inc / 2.0)))
             s2plast_corrected.append(val)
@@ -155,24 +152,19 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
         mean_val = str(round(sum(s2plast_corrected) / len(s2plast_corrected), 3))
         new_eles = str(len(eles_list))
         all_eles = str(len(flags_list))
-        file.write(mean_val + "," + min_val + "," + max_val + "," + new_eles  + "," + all_eles)
-        
-        file.write(" " + str(max(eff_pl_strains)) + "," + str(max(eff_pl_strains_rate)) + "\n")
+        file.write(mean_val + "," + min_val + "," + max_val + "," + new_eles  + "," + all_eles)      
+        file.write(" " + str(round(max(eff_pl_strains), 3)) + "," + str(round(max(eff_pl_strains_rate), 3)) + "\n")
     file.close()
+    print("\nPlasticity analysis details [plast.txt] stored in results" + os.sep + PROJ_NAME)
+    
+    #results storing
     check_res = iter_res.out()
     res_disp = iter_res.residual_disp(disp_el)
-    ###SOL2 copy to remove
-    #strains = SOL.strains_calc(res_disp, msg=0)
-    ###    
-    ###
-    #strains = iter_res.residual_strains(strains_el)
-    ###
-    
+    res_strains = iter_res.residual_strains(strains_el)
     strains = iter_res.store_plstrain(strains)    
-    print("")
-#############
+    #print("")
 
-    disp_el, iter_res, plast = None, None, None
+    disp_el, strains_el, iter_res, plast = None, None, None, None
     halfstep_strains, plast_res, final_results = None, None, None
 gc.collect()
 
@@ -229,18 +221,23 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     res_name = post4.save_dresults("res", PROJ_NAME)
     results_list.append("disp_res.png")
     desc_list.append(res_name)
-
+    
+    post4 = None
+    post5 = postpro.Prepare(ELES, res_strains)
+    res_name = post5.save_sresults("res_huber", PROJ_NAME)
+    results_list.append("res_huber" + ".png")
+    desc_list.append(res_name)
+    post5 = None
     res_name = post2.save_sresults("pl_strain", PROJ_NAME)
     results_list.append("pl_strain" + ".png")
     desc_list.append(res_name)
     res_name = post2.save_sresults("h_stress", PROJ_NAME)
     results_list.append("h_stress" + ".png")
     desc_list.append(res_name)
-
-    #res_strains.append(strains[4])
-
+    post2 = None
+    
     print("Results of plastic analysis stored in " + \
-          "results" + os.sep + PROJ_NAME + os.sep + PROJ_NAME)
+          "results" + os.sep + PROJ_NAME)
 
 gallery.save_gallery(PROJ_NAME, results_list, desc_list, gallery_input_file, version.get())
 gallery_path = "results" + os.sep + PROJ_NAME + os.sep + PROJ_NAME + "_gallery.html"

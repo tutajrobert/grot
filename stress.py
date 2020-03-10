@@ -45,6 +45,12 @@ def results(res_matrix, res_name, counter):
         #huber = math.sqrt(.5 * (((sxx - syy)**2) + ((syy - szz)**2) + \
         #                  ((szz - sxx)**2)) + (3 * (sxy**2)))
         return [huber, "Huber equivalent stress"]
+        
+    if res_name == "res_huber":
+        huber = math.sqrt((res_matrix[2][counter][0] ** 2) + \
+                          (res_matrix[2][counter][1] ** 2) - \
+                          (res_matrix[2][counter][0] * res_matrix[2][counter][1]))
+        return [huber, "Residual Huber equivalent stress"]
 
     if res_name == "sign_huber":
         #sxx = res_matrix[1][counter][0]
