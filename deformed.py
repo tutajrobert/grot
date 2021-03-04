@@ -16,19 +16,19 @@ def minmax(colors, eles):
     max_value = max(colors)
     max_string = "%.3e" % max_value
     max_index = colors.index(max_value) + 1
-    xlist_max = [eles[max_index][i][0] for i in range(0, 4)]
-    ylist_max = [eles[max_index][i][1] for i in range(0, 4)]
-    x_pos_max = sum(xlist_max) / 4
-    y_pos_max = - sum(ylist_max) / 4
+    #xlist_max = [eles[max_index][i][0] for i in range(0, 4)]
+    #ylist_max = [eles[max_index][i][1] for i in range(0, 4)]
+    x_pos_max = eles[max_index][3][0] + .5
+    y_pos_max = - eles[max_index][3][1] - .5
 
     #Min
     min_value = min(colors)
     min_string = "%.3e" % min_value
     min_index = colors.index(min_value) + 1
-    xlist_min = [eles[min_index][i][0] for i in range(0, 4)]
-    ylist_min = [eles[min_index][i][1] for i in range(0, 4)]
-    x_pos_min = sum(xlist_min) / 4
-    y_pos_min = - sum(ylist_min) / 4
+    #xlist_min = [eles[min_index][i][0] for i in range(0, 4)]
+    #ylist_min = [eles[min_index][i][1] for i in range(0, 4)]
+    x_pos_min = eles[min_index][3][0] + .5
+    y_pos_min = - eles[min_index][3][1] - .5
 
     return(x_pos_max, y_pos_max, max_string, x_pos_min, y_pos_min, min_string)
 
@@ -66,8 +66,8 @@ class Prepare():
 
         #Nodes coordinates storing
         for i in self.eles:
-            xlist = [self.eles[i][j][0] for j in range(0, 4)]
-            ylist = [self.eles[i][j][1] for j in range(0, 4)]
+            xlist = [self.eles[i][3][0]]
+            ylist = [self.eles[i][3][1]]
 
             #Rectangle of vertex in (x, y) and given width and height
             center_points_x.append((min(xlist) + 0.5))

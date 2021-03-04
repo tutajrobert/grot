@@ -156,4 +156,4 @@ def create_geom(im_data):
             print(color.capitalize() + " boundary [" + support_types[color] + \
                   " support] applied to [" + str(color_len) + "] nodes")
 
-    return [NODES, ELES, CONS, BC_DICT, PROB_DICT]
+    return [NODES.number(), ELES, CONS, BC_DICT, PROB_DICT]

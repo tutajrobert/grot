@@ -18,8 +18,8 @@ class Build():
         all above lists are in form [rx, ry, rxz] or [r1, r2, r12max, rz, reff, rangle]
     in short: res[0][60][2] is strains, element number 60, xy value of strain"""
 
-    def __init__(self, nodes, elements, constraints, state, load_inc, scale):
-        self.nodes = nodes
+    def __init__(self, nnum, elements, constraints, state, load_inc, scale):
+        self.nnum = nnum
         self.eles = elements
         self.cons = constraints
         self.state = state
@@ -28,8 +28,8 @@ class Build():
         self.dlist = []
 
         #Preparing global stiffnes matrix initially filled with zeros
-        self.clist = numpy.zeros(len(self.nodes) * 2)
-        self.gklist = scipy.sparse.lil_matrix((len(self.nodes) * 2, len(self.nodes) * 2))
+        self.clist = numpy.zeros(self.nnum * 2)
+        self.gklist = scipy.sparse.lil_matrix((self.nnum * 2, self.nnum * 2))
 
         #For every element of model calculating: kirchhoff modulus G, ele stiffnes matrix klist
         print("")
@@ -58,7 +58,7 @@ class Build():
             for i in range(8):
                 for j in range(8):
                     self.gklist[dofs[i], dofs[j]] += klist[i][j]
-        size = str(2 * len(self.nodes))
+        size = str(2 * self.nnum)
         print("\nBuilt", "[" + size, "x", size + "]", "matrix")
         klist = None
         self.constraints_apply(load_inc)
@@ -116,46 +116,12 @@ class Build():
                 self.gklist[:, c] = 0
                 self.gklist[c, c] = 1
 
-    def plast_update(self, eles_list, load_inc):
-        """Plastic material parameters application and matrix update"""
-        for e in eles_list:
-            for z in range(2):
-                #Two iterations: first to remove elastic part from global matrix for ele in plastic
-                #Second to apply plastic parameters
-                ele = self.eles[e]
-                if z == 0:
-                    E = ele[8]
-                    v = ele[9]
-                else:
-                    E = -ele[8] * ele[12]
-                    v = 0.4999
-                h = ele[10]
-                #For plane strain
-                if self.state == "planestrain":
-                    E = E / (1 - (v**2))
-                    v = v / (1 - v)
-
-                dofs = self.dofs_org(ele)
-
-                klist = self.stiff_matrix(E, v, h)
-                #Aggregation of global stiffnes matrix gklist
-                for i in range(8):
-                    for j in range(8):
-                        self.gklist[dofs[i], dofs[j]] -= klist[i][j]
-            klist = None
-        self.constraints_apply(load_inc)
-
     def direct(self):
         """Solves linear equations system with direct method. Returns displacements"""
         print("\nSolving... (this may take a while)")
         self.dlist = scipy.sparse.linalg.spsolve(self.gklist.tocsr(), self.clist)
         self.gklist, self.clist = None, None
         print("Succesfully and directly solved system of linear equations")
-        return self.dlist
-
-    def direct_plast(self):
-        """Solve linear equations with direct method. Returns displacements. For plasticity"""
-        self.dlist = scipy.sparse.linalg.spsolve(self.gklist.tocsr(), self.clist)
         return self.dlist
 
     def strains_calc(self, disp_res, msg=1):

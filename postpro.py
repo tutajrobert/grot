@@ -29,19 +29,19 @@ def minmax(colors, eles):
     max_value = max(colors)
     max_string = "%.3e" % max_value
     max_index = colors.index(max_value) + 1
-    xlist_max = [eles[max_index][i][0] for i in range(0, 4)]
-    ylist_max = [eles[max_index][i][1] for i in range(0, 4)]
-    x_pos_max = sum(xlist_max) / 4
-    y_pos_max = - sum(ylist_max) / 4
+    #xlist_max = [eles[max_index][i][0] for i in range(0, 4)]
+    #ylist_max = [eles[max_index][i][1] for i in range(0, 4)]
+    x_pos_max = eles[max_index][3][0] + .5
+    y_pos_max = - eles[max_index][3][1] - .5
 
     #Min
     min_value = min(colors)
     min_string = "%.3e" % min_value
     min_index = colors.index(min_value) + 1
-    xlist_min = [eles[min_index][i][0] for i in range(0, 4)]
-    ylist_min = [eles[min_index][i][1] for i in range(0, 4)]
-    x_pos_min = sum(xlist_min) / 4
-    y_pos_min = - sum(ylist_min) / 4
+    #xlist_min = [eles[min_index][i][0] for i in range(0, 4)]
+    #ylist_min = [eles[min_index][i][1] for i in range(0, 4)]
+    x_pos_min = eles[min_index][3][0] + .5
+    y_pos_min = - eles[min_index][3][1] - .5
 
     return(x_pos_max, y_pos_max, max_string, x_pos_min, y_pos_min, min_string)
 
@@ -65,22 +65,22 @@ class Prepare():
         self.res = results
         self.ncol = 7
         self.init_cmap = "coolwarm_r"
-        self.min_x, self.min_y = self.eles[1][0][0], -self.eles[1][0][1]
+        self.min_x, self.min_y = self.eles[1][3][0], -self.eles[1][3][1]
         self.max_x, self.max_y = self.min_x, self.min_y
         self.elen = len(elements)
 
         self.patch_list = []
         for i in self.eles:
-            xlist = [self.eles[i][j][0] for j in range(0, 4)]
-            ylist = [self.eles[i][j][1] for j in range(0, 4)]
+            xlist = [self.eles[i][3][0]]
+            ylist = [self.eles[i][3][1]]
 
             #Rectangle of vertex in (x, y) and given width and height
             self.patch_list.append(patches.Rectangle((min(xlist), -min(ylist)), 1.0, -1.0))
 
             #Axes limits searching
             self.min_x = tools.min_search(min(xlist), self.min_x)
-            self.min_y = tools.min_search(-max(ylist), self.min_y)
-            self.max_x = tools.max_search(max(xlist), self.max_x)
+            self.min_y = tools.min_search(-max(ylist)-1, self.min_y)
+            self.max_x = tools.max_search(max(xlist)+1, self.max_x)
             self.max_y = tools.max_search(-min(ylist), self.max_y)
 
             #Axes range

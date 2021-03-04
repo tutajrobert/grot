@@ -36,12 +36,8 @@
 #                   epl_x, epl_y, epl_z, epl_xy - Plastic strains in X, Y, Z direction and engineering plastic shear strains
 # --- deformed -- Plot of deformed model. 
 #                 Number is deformation scale multiplier, where 1 is equal to standard nodal dimension between two nodes.
-# --- plast   --- Nonlinear plasticity analysis. Possible SETTINGS: yes or no and number of iterations to compute.
-#                 Plasticity model is bilinear plasticity with strain hardening. Plasticity results will be:
-#                 pl_strain, res_huber, h_stress, res - Plastic effective strain, residual huber stress, hardening stress, residual displacement.
-#                 Check the "mlib.py" file for material parameters.
 # --- probe   --- Probe function. Results for elements of this color will be stored in "eres.txt" file in "resulsts/"
-# End of guide
+# End of the guide
 
 project barPLAST
 problem planestress
@@ -56,4 +52,3 @@ probe black
 disp x y mag
 stress huber eps_x eps_y eff_strain sig_1 inv_2 theta tau_xy sign_huber
 deformed 4
-plast yes 4
