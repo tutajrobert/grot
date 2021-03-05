@@ -11,7 +11,7 @@ def search(eles, strains, flags_list):
     stress2plast_list = []
 
     for enum in range(1, len(eles)):
-        plast_value = eles[enum][11]
+        plast_value = eles[enum][8]
         if enum not in flags_list:
             value = stress.results(strains, criterium, enum - 1)
             if value is not None:

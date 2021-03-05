@@ -61,7 +61,7 @@ class elements():
         self.enum += 1
         self.edict[self.enum] = [self.ndict[n4],
                                  n1, n2, n3, n4,
-                                 0, 0, 0, 0]
+                                 0, 0, 0, 0, 0]
         return self.edict
 
     def get(self, n1, n2, n3, n4):
@@ -114,11 +114,21 @@ class materials():
         for e in self.edict:
             self.edict[e][5] = self.mat[mnum][0]
             self.edict[e][6] = self.mat[mnum][1]
-            self.edict[e][7] = self.mat[mnum][2]
+            self.edict[e][8] = self.mat[mnum][2]
+            self.edict[e][9] = self.mat[mnum][3]
         print("Property of all eles set to", "[" + str(self.mnames[mnum]) + "]", 
               "(" + str(self.mat[mnum][0] / 1e9) + " GPa,",
               str(self.mat[mnum][1]) + ")")
         return self.edict
+
+    def assignplast(self, elist):
+        #print("Assign plasticity")
+        #print(elist)
+        for i in range(len(elist)):
+            #pass
+            self.edict[elist[i]][5] *= self.edict[elist[i]][9]
+            self.edict[elist[i]][6] = .4999
+        #return self.edict
 
     def info(self):
     #Prints material list
@@ -147,7 +157,7 @@ class materials():
         return [self.unit, self.scale]
         
     def get_prop(self, mnum):
-        return [self.mat[mnum][0] * (units[self.unit] ** 2), self.mat[mnum][1], self.mat[mnum][2]]
+        return [self.mat[mnum][0] * (units[self.unit] ** 2), self.mat[mnum][1], self.mat[mnum][2], self.mat[mnum][3]]
 
 class thicks():
 #Class contains elements thicknesses
