@@ -6,6 +6,7 @@ import sys
 import numpy
 from PIL import Image, ImageCms
 import prep
+from functools import lru_cache
 
 def open_im(im_name):
     """Opens and crops BMP file. Returns image numpy array and image size"""
@@ -57,14 +58,17 @@ def color_distance(color, ref_color):
                      ((color[1] - ref_color[1]) ** 2) + \
                      ((color[2] - ref_color[2]) ** 2))
 
-def color_check(color, lab_colors):
+@lru_cache
+def color_check(color):
     """Checks and returns reference color closest to given"""
-    dist_list = []
-    color_list = []
-    for i in lab_colors:
-        dist_list.append(color_distance(color, lab_colors[i]))
-        color_list.append(i)
-    return color_list[dist_list.index(min(dist_list))]
+    min_distance = 100000000
+    matched_color = None
+    for color_name, values in LAB_COLORS.items():
+        cur_dist = color_distance(color, values)
+        if cur_dist < min_distance:
+            min_distance = cur_dist
+            matched_color = color_name
+    return matched_color
 
 #Colors used as boundary conditions
 #Just need to know that "cyan" is used as model body and "white" is used for background
@@ -78,33 +82,25 @@ NODES = prep.nodes()
 ELES = prep.elements(NODES.store())
 CONS = prep.constraints()
 
-def node_check(coords, ndict):
-    """Checks if node with x, y coordinates is already included in ndict"""
-    for node in ndict:
-        if ndict[node] == [coords[0], coords[1]]:
-            return node
-    return None
 
 def create_geom(im_data):
     """Creates FE model"""
     elist = []
-    nmerge_list = []
+    node_dict = {}
     im_array, width, height = im_data[0], im_data[1], im_data[2]
 
     def node_proc(j, i, counter):
         """Checking if node coordinates are already assigned to node number.
         If yes : use old number, if no create new merged_dictionary = {**dict1, **dict2}"""
-        node = node_check([j, i], {**nmerge_list[counter], **nmerge_list[counter - 1]})
+        node = node_dict.get((j,i))
         if node is None:
             ele = NODES.add(j, i)
             elist.append(ele)
-            nmerge_list[counter][ele] = [j, i]
+            node_dict[(j, i)] = ele
         else:
             elist.append(node)
-            nmerge_list[counter][node] = [j, i]
 
     for i in range(height):
-        nmerge_list.append({})
 
         #Progress text in percents
         sys.stdout.write("\r" + "Bitmap to finite elements model translation [" + \
@@ -113,7 +109,7 @@ def create_geom(im_data):
 
         for j in range(width):
             elist = []
-            match_color = color_check(im_array[i][j], LAB_COLORS)
+            match_color = color_check(tuple(im_array[i][j]))
             if match_color != "white":
                 node_proc(j % width, i, i)
                 node_proc((j % width) + 1, i, i)
