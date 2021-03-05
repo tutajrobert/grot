@@ -59,10 +59,7 @@ class elements():
     def add(self, n1, n2, n3, n4):
     #Adds four nodes rectangle element. Takes nodes dictionaries and nodes elements
         self.enum += 1
-        self.edict[self.enum] = [0,
-                                 0,
-                                 0,
-                                 self.ndict[n4],
+        self.edict[self.enum] = [self.ndict[n4],
                                  n1, n2, n3, n4,
                                  0, 0, 0, 0]
         return self.edict
@@ -70,7 +67,7 @@ class elements():
     def get(self, n1, n2, n3, n4):
     #Finds and returns element number given by four nodes
         for e in self.edict:
-            if self.edict[e][4:8] == [n1, n2, n3, n4]:
+            if self.edict[e][1:5] == [n1, n2, n3, n4]:
                 return e
 
     def info(self):
@@ -79,7 +76,7 @@ class elements():
         print("number of elements: " + str(self.enum))
         print("enum", ":", "[n1, n2, n3, n4]")
         for e in self.edict:
-            print("e" + str(e), ":", self.edict[e][4:8])
+            print("e" + str(e), ":", self.edict[e][1:5])
         print("")
 
     def update(self, ndict):
@@ -115,23 +112,14 @@ class materials():
     def assignall(self, mnum):
     #Assign added material to all elements
         for e in self.edict:
-            self.edict[e][8] = self.mat[mnum][0]
-            self.edict[e][9] = self.mat[mnum][1]
-            self.edict[e][11] = self.mat[mnum][2]
+            self.edict[e][5] = self.mat[mnum][0]
+            self.edict[e][6] = self.mat[mnum][1]
+            self.edict[e][7] = self.mat[mnum][2]
         print("Property of all eles set to", "[" + str(self.mnames[mnum]) + "]", 
               "(" + str(self.mat[mnum][0] / 1e9) + " GPa,",
               str(self.mat[mnum][1]) + ")")
         return self.edict
-    
-    def assignplast(self, elist):
-        #print("Assign plasticity")
-        #print(elist)
-        for i in range(len(elist)):
-            #pass
-            self.edict[elist[i]][8] *= self.edict[elist[i]][12]
-            self.edict[elist[i]][9] = .4999
-        #return self.edict
- 
+
     def info(self):
     #Prints material list
         print("# materials info")
@@ -144,7 +132,7 @@ class materials():
     def set_unit(self, unit):
     #Scaling nodal dimensions as Young Modulus E change (it is a trick rather)
         for e in self.edict:
-            self.edict[e][8] = self.edict[e][8] * (units[unit] ** 2)
+            self.edict[e][5] = self.edict[e][5] * (units[unit] ** 2)
         print("Unit system changed to", "[" + str(unit) + "]")
         self.unit = unit
 
@@ -177,7 +165,7 @@ class thicks():
     def assignall(self, hnum):
     #Assign prevoiusly added thickness property to all elements
         for e in self.edict:
-            self.edict[e][10] = self.hdict[hnum][0]# * self.scale
+            self.edict[e][7] = self.hdict[hnum][0]# * self.scale
         print("Thickness of all eles set to", 
               "[" + str(self.hdict[hnum][0]) + " " + self.unit + "]")
         return self.edict
@@ -185,7 +173,7 @@ class thicks():
     def assignlist(self, elist, hnum):
     #Assign prevoiusly added thickness property to list of elements
         for e in elist:
-            self.edict[e][10] = self.hdict[hnum][0]
+            self.edict[e][7] = self.hdict[hnum][0]
         return self.edict
 
     def info(self):

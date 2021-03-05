@@ -18,8 +18,8 @@ def minmax(colors, eles):
     max_index = colors.index(max_value) + 1
     #xlist_max = [eles[max_index][i][0] for i in range(0, 4)]
     #ylist_max = [eles[max_index][i][1] for i in range(0, 4)]
-    x_pos_max = eles[max_index][3][0] + .5
-    y_pos_max = - eles[max_index][3][1] - .5
+    x_pos_max = eles[max_index][0][0] + .5
+    y_pos_max = - eles[max_index][0][1] - .5
 
     #Min
     min_value = min(colors)
@@ -27,8 +27,8 @@ def minmax(colors, eles):
     min_index = colors.index(min_value) + 1
     #xlist_min = [eles[min_index][i][0] for i in range(0, 4)]
     #ylist_min = [eles[min_index][i][1] for i in range(0, 4)]
-    x_pos_min = eles[min_index][3][0] + .5
-    y_pos_min = - eles[min_index][3][1] - .5
+    x_pos_min = eles[min_index][0][0] + .5
+    y_pos_min = - eles[min_index][0][1] - .5
 
     return(x_pos_max, y_pos_max, max_string, x_pos_min, y_pos_min, min_string)
 
@@ -66,18 +66,18 @@ class Prepare():
 
         #Nodes coordinates storing
         for i in self.eles:
-            xlist = [self.eles[i][3][0]]
-            ylist = [self.eles[i][3][1]]
+            xlist = [self.eles[i][0][0]]
+            ylist = [self.eles[i][0][1]]
 
             #Rectangle of vertex in (x, y) and given width and height
             center_points_x.append((min(xlist) + 0.5))
             center_points_y.append((-1 * min(ylist) - 0.5))
 
             #Displacement results storing
-            dof1 = (self.eles[i][4] * 2) - 2
-            dof2 = (self.eles[i][5] * 2) - 2
-            dof3 = (self.eles[i][6] * 2) - 2
-            dof4 = (self.eles[i][7] * 2) - 2
+            dof1 = (self.eles[i][1] * 2) - 2
+            dof2 = (self.eles[i][2] * 2) - 2
+            dof3 = (self.eles[i][3] * 2) - 2
+            dof4 = (self.eles[i][4] * 2) - 2
             dofs = [dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1]
 
             #Results choosing and preparing

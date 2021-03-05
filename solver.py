@@ -43,9 +43,9 @@ class Build():
 
             #Element material parameters
             ele = self.eles[e]
-            E = ele[8]
-            v = ele[9]
-            h = ele[10]
+            E = ele[5]
+            v = ele[6]
+            h = ele[7]
             #For plane strain
             if self.state == "planestrain":
                 E = E / (1 - (v**2))
@@ -92,10 +92,10 @@ class Build():
     @staticmethod
     def dofs_org(ele):
         """Degree of freedoms are in unknown order, thus needed lines below"""
-        dof1 = (ele[4] * 2) - 2
-        dof2 = (ele[5] * 2) - 2
-        dof3 = (ele[6] * 2) - 2
-        dof4 = (ele[7] * 2) - 2
+        dof1 = (ele[1] * 2) - 2
+        dof2 = (ele[2] * 2) - 2
+        dof3 = (ele[3] * 2) - 2
+        dof4 = (ele[4] * 2) - 2
         dofs = numpy.array([dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1])
         return dofs
 
@@ -167,8 +167,8 @@ class Build():
         counter = -1 #counter for synchronize with strains
         for i in self.eles:
             counter += 1
-            E = self.eles[i][8]
-            v = self.eles[i][9]
+            E = self.eles[i][5]
+            v = self.eles[i][6]
             fc = E / (1 - (v ** 2))
             #Constitutive matrix
             slist = numpy.array([[fc, fc * v, 0],
