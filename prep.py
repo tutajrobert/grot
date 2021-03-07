@@ -13,19 +13,19 @@ class nodes():
 #Class contains total number of nodes in nnum and node properties dict ndict
     def __init__(self):
         self.ndict = {}
+        self.coord_dict = {}
         self.nnum = 0
 
     def add(self, x, y):
     #Adds a node of x, y coordinates as a dictionary item with key of node number
         self.nnum += 1
         self.ndict[self.nnum] = [x, y]
+        self.coord_dict[(x, y)] = self.nnum
         return self.nnum
 
     def check(self, x, y):
     #Check if node with x, y coordinates is already included in ndict
-        for n in self.ndict:
-            if self.ndict[n] == [x, y]:
-                return n
+        return self.coord_dict.get((x, y))
 
     def store(self):
     #Just returns dict of nodes
@@ -53,6 +53,7 @@ class elements():
 #Class contains total number of elements in enum and element properties dict edict
     def __init__(self, ndict):
             self.edict = {}
+            self.coord_dict = {}
             self.enum = 0
             self.ndict = ndict
 
@@ -62,13 +63,12 @@ class elements():
         self.edict[self.enum] = [self.ndict[n4],
                                  n1, n2, n3, n4,
                                  0, 0, 0, 0, 0]
+        self.coord_dict[(n1, n2, n3, n4)] = self.enum
         return self.edict
 
     def get(self, n1, n2, n3, n4):
     #Finds and returns element number given by four nodes
-        for e in self.edict:
-            if self.edict[e][1:5] == [n1, n2, n3, n4]:
-                return e
+        return self.coord_dict.get((n1, n2, n3, n4))
 
     def info(self):
     #Prints number of elements and elements list
