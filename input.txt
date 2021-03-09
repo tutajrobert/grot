@@ -50,7 +50,7 @@ mat steel
 unit mm
 scale 1
 thickness 1
-load x 0 y -400 magenta
+load x 0 y -800 magenta
 solver direct
 probe black
 disp x y mag

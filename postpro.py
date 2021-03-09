@@ -29,19 +29,19 @@ def minmax(colors, eles):
     max_value = max(colors)
     max_string = "%.3e" % max_value
     max_index = colors.index(max_value) + 1
-    xlist_max = [eles[max_index][i][0] for i in range(0, 4)]
-    ylist_max = [eles[max_index][i][1] for i in range(0, 4)]
-    x_pos_max = sum(xlist_max) / 4
-    y_pos_max = - sum(ylist_max) / 4
+    #xlist_max = [eles[max_index][i][0] for i in range(0, 4)]
+    #ylist_max = [eles[max_index][i][1] for i in range(0, 4)]
+    x_pos_max = eles[max_index][0][0] + .5
+    y_pos_max = - eles[max_index][0][1] - .5
 
     #Min
     min_value = min(colors)
     min_string = "%.3e" % min_value
     min_index = colors.index(min_value) + 1
-    xlist_min = [eles[min_index][i][0] for i in range(0, 4)]
-    ylist_min = [eles[min_index][i][1] for i in range(0, 4)]
-    x_pos_min = sum(xlist_min) / 4
-    y_pos_min = - sum(ylist_min) / 4
+    #xlist_min = [eles[min_index][i][0] for i in range(0, 4)]
+    #ylist_min = [eles[min_index][i][1] for i in range(0, 4)]
+    x_pos_min = eles[min_index][0][0] + .5
+    y_pos_min = - eles[min_index][0][1] - .5
 
     return(x_pos_max, y_pos_max, max_string, x_pos_min, y_pos_min, min_string)
 
@@ -71,16 +71,16 @@ class Prepare():
 
         self.patch_list = []
         for i in self.eles:
-            xlist = [self.eles[i][j][0] for j in range(0, 4)]
-            ylist = [self.eles[i][j][1] for j in range(0, 4)]
+            xlist = [self.eles[i][0][0]]
+            ylist = [self.eles[i][0][1]]
 
             #Rectangle of vertex in (x, y) and given width and height
             self.patch_list.append(patches.Rectangle((min(xlist), -min(ylist)), 1.0, -1.0))
 
             #Axes limits searching
             self.min_x = tools.min_search(min(xlist), self.min_x)
-            self.min_y = tools.min_search(-max(ylist), self.min_y)
-            self.max_x = tools.max_search(max(xlist), self.max_x)
+            self.min_y = tools.min_search(-max(ylist)-1, self.min_y)
+            self.max_x = tools.max_search(max(xlist)+1, self.max_x)
             self.max_y = tools.max_search(-min(ylist), self.max_y)
 
             #Axes range
@@ -108,10 +108,10 @@ class Prepare():
         for i in self.eles:
 
             #Displacement results storing
-            dof1 = (self.eles[i][4] * 2) - 2
-            dof2 = (self.eles[i][5] * 2) - 2
-            dof3 = (self.eles[i][6] * 2) - 2
-            dof4 = (self.eles[i][7] * 2) - 2
+            dof1 = (self.eles[i][1] * 2) - 2
+            dof2 = (self.eles[i][2] * 2) - 2
+            dof3 = (self.eles[i][3] * 2) - 2
+            dof4 = (self.eles[i][4] * 2) - 2
             dofs = [dof1, dof1 + 1, dof2, dof2 + 1, dof3, dof3 + 1, dof4, dof4 + 1]
 
             #Results choosing and preparing

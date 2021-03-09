@@ -1,7 +1,5 @@
 """Run"""
 
-import copy
-import gc
 import os
 import sys
 import bmp
@@ -13,7 +11,9 @@ import deformed
 import gallery
 import version
 import prob
+import copy
 import plast
+import gc
 
 #start timer
 TIME = tools.timer()
@@ -46,7 +46,7 @@ PROJ_NAME = ksearch("project")[0]
 IMAGE = bmp.open_im(ksearch("bmp")[0])
 GEOM = bmp.create_geom(IMAGE)
 
-NODES = GEOM[0].store()
+NODES = GEOM[0]
 ELES = GEOM[1].store()
 CONS = GEOM[2]
 BC_DICT = GEOM[3]
@@ -111,7 +111,7 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     for i in range(steps_num):
         load_step += load_inc
         check_res = iter_res.out()
-        #Runge Kutta 2nd order procedure
+        # Runge Kutta 2nd order procedure
         SOL.plast_update([], load_inc / 2.0)
         disp = SOL.direct_plast()
         strains = SOL.strains_calc(disp, msg=0)
@@ -120,7 +120,7 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
 
         eles_list = plast_res[0]
         flags_list = plast_res[1]
-        stress2plast_list = plast_res[2] #for residuals check
+        stress2plast_list = plast_res[2]  # for residuals check
 
         sys.stdout.write("\r" + "Nonlinear plasticity solver iteration [" + \
                          str(i + 1) + " of " + str(steps_num) + "]")
@@ -138,10 +138,10 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
         strains = final_results[1]
         eff_pl_strains = final_results[2]
         eff_pl_strains_rate = final_results[3]
-        
-        #plast.txt file creation
+
+        # plast.txt file creation
         file = open("results" + os.sep + PROJ_NAME + os.sep + "plast.txt", "a")
-        s2plast_corrected = [] #to calculate actual ratio, not ratio in hafstep
+        s2plast_corrected = []  # to calculate actual ratio, not ratio in hafstep
         for val in stress2plast_list:
             val -= val * ((load_inc / 2.0) / (load_step - (load_inc / 2.0)))
             s2plast_corrected.append(val)
@@ -152,17 +152,17 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
         mean_val = str(round(sum(s2plast_corrected) / len(s2plast_corrected), 3))
         new_eles = str(len(eles_list))
         all_eles = str(len(flags_list))
-        file.write(mean_val + "," + min_val + "," + max_val + "," + new_eles  + "," + all_eles)      
+        file.write(mean_val + "," + min_val + "," + max_val + "," + new_eles + "," + all_eles)
         file.write(" " + str(round(max(eff_pl_strains), 3)) + "," + str(round(max(eff_pl_strains_rate), 3)) + "\n")
     file.close()
     print("\nPlasticity analysis details [plast.txt] stored in results" + os.sep + PROJ_NAME)
-    
-    #results storing
+
+    # results storing
     check_res = iter_res.out()
     res_disp = iter_res.residual_disp(disp_el)
     res_strains = iter_res.residual_strains(strains_el)
-    strains = iter_res.store_plstrain(strains)    
-    #print("")
+    strains = iter_res.store_plstrain(strains)
+    # print("")
 
     disp_el, strains_el, iter_res, plast = None, None, None, None
     halfstep_strains, plast_res, final_results = None, None, None
@@ -221,7 +221,7 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     res_name = post4.save_dresults("res", PROJ_NAME)
     results_list.append("disp_res.png")
     desc_list.append(res_name)
-    
+
     post4 = None
     post5 = postpro.Prepare(ELES, res_strains)
     res_name = post5.save_sresults("res_huber", PROJ_NAME)
@@ -235,7 +235,7 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     results_list.append("h_stress" + ".png")
     desc_list.append(res_name)
     post2 = None
-    
+
     print("Results of plastic analysis stored in " + \
           "results" + os.sep + PROJ_NAME)
 

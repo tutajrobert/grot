@@ -13,19 +13,19 @@ class nodes():
 #Class contains total number of nodes in nnum and node properties dict ndict
     def __init__(self):
         self.ndict = {}
+        self.coord_dict = {}
         self.nnum = 0
 
     def add(self, x, y):
     #Adds a node of x, y coordinates as a dictionary item with key of node number
         self.nnum += 1
         self.ndict[self.nnum] = [x, y]
+        self.coord_dict[(x, y)] = self.nnum
         return self.nnum
 
     def check(self, x, y):
     #Check if node with x, y coordinates is already included in ndict
-        for n in self.ndict:
-            if self.ndict[n] == [x, y]:
-                return n
+        return self.coord_dict.get((x, y))
 
     def store(self):
     #Just returns dict of nodes
@@ -45,30 +45,30 @@ class nodes():
         #print("# nodes info")
         print("Created [" + str(self.nnum) + "] nodes")
         #print("")
+        
+    def number(self):
+        return self.nnum
 
 class elements():
 #Class contains total number of elements in enum and element properties dict edict
     def __init__(self, ndict):
             self.edict = {}
+            self.coord_dict = {}
             self.enum = 0
             self.ndict = ndict
 
     def add(self, n1, n2, n3, n4):
     #Adds four nodes rectangle element. Takes nodes dictionaries and nodes elements
         self.enum += 1
-        self.edict[self.enum] = [self.ndict[n1], 
-                                 self.ndict[n2], 
-                                 self.ndict[n3], 
-                                 self.ndict[n4], 
+        self.edict[self.enum] = [self.ndict[n4],
                                  n1, n2, n3, n4,
                                  0, 0, 0, 0, 0]
+        self.coord_dict[(n1, n2, n3, n4)] = self.enum
         return self.edict
 
     def get(self, n1, n2, n3, n4):
     #Finds and returns element number given by four nodes
-        for e in self.edict:
-            if self.edict[e][4:8] == [n1, n2, n3, n4]:
-                return e
+        return self.coord_dict.get((n1, n2, n3, n4))
 
     def info(self):
     #Prints number of elements and elements list
@@ -76,7 +76,7 @@ class elements():
         print("number of elements: " + str(self.enum))
         print("enum", ":", "[n1, n2, n3, n4]")
         for e in self.edict:
-            print("e" + str(e), ":", self.edict[e][4:8])
+            print("e" + str(e), ":", self.edict[e][1:5])
         print("")
 
     def update(self, ndict):
@@ -112,24 +112,24 @@ class materials():
     def assignall(self, mnum):
     #Assign added material to all elements
         for e in self.edict:
-            self.edict[e][8] = self.mat[mnum][0]
-            self.edict[e][9] = self.mat[mnum][1]
-            self.edict[e][11] = self.mat[mnum][2]
-            self.edict[e][12] = self.mat[mnum][3]
+            self.edict[e][5] = self.mat[mnum][0]
+            self.edict[e][6] = self.mat[mnum][1]
+            self.edict[e][8] = self.mat[mnum][2]
+            self.edict[e][9] = self.mat[mnum][3]
         print("Property of all eles set to", "[" + str(self.mnames[mnum]) + "]", 
               "(" + str(self.mat[mnum][0] / 1e9) + " GPa,",
               str(self.mat[mnum][1]) + ")")
         return self.edict
-    
+
     def assignplast(self, elist):
         #print("Assign plasticity")
         #print(elist)
         for i in range(len(elist)):
             #pass
-            self.edict[elist[i]][8] *= self.edict[elist[i]][12]
-            self.edict[elist[i]][9] = .4999
+            self.edict[elist[i]][5] *= self.edict[elist[i]][9]
+            self.edict[elist[i]][6] = .4999
         #return self.edict
- 
+
     def info(self):
     #Prints material list
         print("# materials info")
@@ -142,7 +142,7 @@ class materials():
     def set_unit(self, unit):
     #Scaling nodal dimensions as Young Modulus E change (it is a trick rather)
         for e in self.edict:
-            self.edict[e][8] = self.edict[e][8] * (units[unit] ** 2)
+            self.edict[e][5] = self.edict[e][5] * (units[unit] ** 2)
         print("Unit system changed to", "[" + str(unit) + "]")
         self.unit = unit
 
@@ -175,7 +175,7 @@ class thicks():
     def assignall(self, hnum):
     #Assign prevoiusly added thickness property to all elements
         for e in self.edict:
-            self.edict[e][10] = self.hdict[hnum][0]# * self.scale
+            self.edict[e][7] = self.hdict[hnum][0]# * self.scale
         print("Thickness of all eles set to", 
               "[" + str(self.hdict[hnum][0]) + " " + self.unit + "]")
         return self.edict
@@ -183,7 +183,7 @@ class thicks():
     def assignlist(self, elist, hnum):
     #Assign prevoiusly added thickness property to list of elements
         for e in elist:
-            self.edict[e][10] = self.hdict[hnum][0]
+            self.edict[e][7] = self.hdict[hnum][0]
         return self.edict
 
     def info(self):

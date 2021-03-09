@@ -5,7 +5,7 @@ def mdict():
                                         yield stress,
                                         tangent modulus / young modulus]
     """
-    
+
     m = {}
     m["steel"] = [205e9, 0.3, 235, .04]
     m["alu"] = [80e9, 0.26, 160, .09]
