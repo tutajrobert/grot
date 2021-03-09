@@ -156,7 +156,7 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
         file.write(" " + str(round(max(eff_pl_strains), 3)) + "," + str(round(max(eff_pl_strains_rate), 3)) + "\n")
     file.close()
     print("\nPlasticity analysis details [plast.txt] stored in results" + os.sep + PROJ_NAME)
-
+    print("")
     # results storing
     check_res = iter_res.out()
     res_disp = iter_res.residual_disp(disp_el)
@@ -168,7 +168,6 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     halfstep_strains, plast_res, final_results = None, None, None
 gc.collect()
 
-print("")
 gallery_input_file = ""
 
 for i in INP_FILE_LINES:
@@ -176,24 +175,25 @@ for i in INP_FILE_LINES:
         gallery_input_file += "<code>" + i + "</code><br>"
 
 probe_color = ksearch("probe")[0]
-prob.write(probe_color, PROB_DICT, strains, PROJ_NAME, MAT)
+if probe_color is not None:
+    prob.write(probe_color, PROB_DICT, strains, PROJ_NAME, MAT)
 
 results_list = []
 desc_list = []
 
 res_d = ksearch("disp")
-if res_d is not None:
+if res_d[0] is not None:
     post = postpro.Prepare(ELES, disp)
 
-for i in range(0, len(res_d)):
-    sys.stdout.write("\r" + "Plotted displacements results [" + str(i + 1) + \
-                     " of " + str(len(res_d)) + "] to results" + os.sep + PROJ_NAME + os.sep)
-    sys.stdout.flush()
-    res_name = post.save_dresults(res_d[i], PROJ_NAME)
-    results_list.append("disp_" + res_d[i] + ".png")
-    desc_list.append(res_name)
-post = None
-print("")
+    for i in range(0, len(res_d)):
+        sys.stdout.write("\r" + "Plotted displacements results [" + str(i + 1) + \
+                         " of " + str(len(res_d)) + "] to results" + os.sep + PROJ_NAME + os.sep)
+        sys.stdout.flush()
+        res_name = post.save_dresults(res_d[i], PROJ_NAME)
+        results_list.append("disp_" + res_d[i] + ".png")
+        desc_list.append(res_name)
+    post = None
+    print("")
 
 res_s = ksearch("stress")
 if res_s[0] is not None:
