@@ -29,7 +29,10 @@ class Build():
 
         #Preparing global stiffnes matrix initially filled with zeros
         self.clist = numpy.zeros(self.nnum * 2)
-        self.gklist = scipy.sparse.lil_matrix((self.nnum * 2, self.nnum * 2))
+        self.gklist = []
+        row = []
+        col = []
+        data = []
 
         #For every element of model calculating: kirchhoff modulus G, ele stiffnes matrix klist
         print("")
@@ -57,7 +60,12 @@ class Build():
             #Aggregation of global stiffnes matrix gklist
             for i in range(8):
                 for j in range(8):
-                    self.gklist[dofs[i], dofs[j]] += klist[i][j]
+                    row.append(dofs[i])
+                    col.append(dofs[j])
+                    data.append(klist[i][j])
+                    #self.gklist[dofs[i], dofs[j]] += klist[i][j]
+        self.gklist = scipy.sparse.coo_matrix((data, (row, col)), shape=(self.nnum * 2, self.nnum * 2))
+        self.gklist = self.gklist.tolil()
         size = str(2 * self.nnum)
         print("\nBuilt", "[" + size, "x", size + "]", "matrix")
         klist = None
