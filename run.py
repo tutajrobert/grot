@@ -37,7 +37,7 @@ INP_FILE.close()
 
 def ksearch(keyword):
     for i in range(len(INP_LINES)):
-        if (keyword in INP_LINES[i][0]) and ("#" not in INP_LINES[i]):
+        if (keyword in INP_LINES[i][0]) and ("#" not in INP_LINES[i][0]):
             return INP_LINES[i][1:]
     return [None]
 
