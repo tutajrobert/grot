@@ -20,18 +20,18 @@ What's new in 1.4.0:
 - Bug fixes, element tweaking, efficiency improved
 
 
-Check the example of gallery file:
-https://tutajrobert.github.io/grot/gallery.html
+Check the example of gallery file:</br>
+https://tutajrobert.github.io/grot/gallery.html</br>
 
 
-Check old examples:
-https://tutajrobert.github.io/grot/galeria.html
-https://tutajrobert.github.io/grot-site/examples.html
+Check old examples:</br>
+https://tutajrobert.github.io/grot/galeria.html</br>
+https://tutajrobert.github.io/grot-site/examples.html</br>
 
 
-And you can check old websites for first release of GRoT>
-[PL]: https://tutajrobert.github.io/grot/
-[ENG]: https://tutajrobert.github.io/grot-site/main.html
+And you can check old websites for first release of GRoT></br>
+[PL]: https://tutajrobert.github.io/grot/</br>
+[ENG]: https://tutajrobert.github.io/grot-site/main.html</br>
 
 
 But first of all write an email to me if you have any questions or just wanna talk about finite elements. I spent three years working with this software and gain some knowledge about finite elements.
