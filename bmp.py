@@ -8,9 +8,12 @@ from PIL import Image, ImageCms
 import prep
 from functools import lru_cache
 
-def open_im(im_name):
+def open_im(im_name, im_path):
     """Opens and crops BMP file. Returns image numpy array and image size"""
-    image = Image.open("projects" + os.sep + im_name) #BMP has to be in dir "projects"
+    path = "projects" + os.sep + im_name #default path for image is "projects" directory
+    if im_path != False:
+        path = im_path + os.sep + im_name
+    image = Image.open(path)
 
     #Image cropping
     pix = numpy.asarray(image)

@@ -96,7 +96,7 @@ class Prepare():
                 self.max_x = (sum_x / 2) + (diff_y / 2)
                 self.min_x = (sum_x / 2) - (diff_y / 2)
 
-    def save_dresults(self, results, proj_name):
+    def save_dresults(self, results, proj_name, output_path):
         """Matplotlib script for results viewing
         One element == one colour, so element solution
         Reduced integration (so there are no other possibilities)"""
@@ -187,14 +187,14 @@ class Prepare():
 
         frame = legend.get_frame()
         frame.set_edgecolor("white")
-        if not os.path.exists("results" + os.sep + proj_name):
-            os.makedirs("results" + os.sep + proj_name)
-        plt.savefig("results" + os.sep + proj_name + os.sep + "disp_" + results + ".png", DPI=300)
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+        plt.savefig(output_path + os.sep + "disp_" + results + ".png", DPI=300)
         plt.close()
         fig, axes = None, None
         return title
 
-    def save_sresults(self, results, proj_name):
+    def save_sresults(self, results, proj_name, output_path):
         """Matplotlib script for results viewing
         One element == one colour, so element solution"""
 
@@ -296,9 +296,9 @@ class Prepare():
         frame = legend.get_frame()
         frame.set_edgecolor("white")
 
-        if not os.path.exists("results" + os.sep + proj_name):
-            os.makedirs("results" + os.sep + proj_name)
-        plt.savefig("results" + os.sep + proj_name + os.sep + results + ".png", DPI=300)
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+        plt.savefig(output_path + os.sep + results + ".png", DPI=300)
         plt.close()
         fig, axes = None, None
         return title

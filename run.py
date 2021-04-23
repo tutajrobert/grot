@@ -23,8 +23,21 @@ print("")
 print("GRoT> ver. " + version.get() + ", [Graficzny Rozwiązywacz Tarcz]")
 print("................................................\n")
 
+#read optional command line arguments for input and output path folder
+PROJECT_PATH = False #project will contain input bmp image and input.txt with parameters
+RESULT_PATH = False #result will contain output of grot
+args = sys.argv
+if len(args) > 1:
+    for i in range(len(args)):
+        if args[i] == "-i":
+            PROJECT_PATH = args[i + 1]
+        elif args[i] == "-o":
+            RESULT_PATH = args[i + 1]
+
 #read input file into list
 INP_FILE = open("input.txt", "r")
+if PROJECT_PATH != False:
+    INP_FILE = open(PROJECT_PATH + os.sep + "input.txt", "r")
 INP_FILE_LINES = INP_FILE.readlines()
 
 INP_LINES = []
@@ -42,8 +55,10 @@ def ksearch(keyword):
     return [None]
 
 PROJ_NAME = ksearch("project")[0]
-
-IMAGE = bmp.open_im(ksearch("bmp")[0])
+print(PROJ_NAME)
+IMAGE = bmp.open_im(ksearch("bmp")[0], False)
+if PROJECT_PATH != False:
+    IMAGE = bmp.open_im(ksearch("bmp")[0], PROJECT_PATH)
 GEOM = bmp.create_geom(IMAGE)
 
 NODES = GEOM[0]
@@ -106,8 +121,9 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     sys.stdout.write("\r" + "Nonlinear plasticity solver iteration [" + str(1) + \
                      " of " + str(steps_num) + "]")
     sys.stdout.flush()
-
-    file = open("results" + os.sep + PROJ_NAME + os.sep + "plast.txt", "w+").close()
+    if not os.path.exists(RESULT_PATH):
+        os.makedirs(RESULT_PATH)
+    file = open(RESULT_PATH + os.sep + "plast.txt", "w+").close()
     for i in range(steps_num):
         load_step += load_inc
         check_res = iter_res.out()
@@ -140,7 +156,7 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
         eff_pl_strains_rate = final_results[3]
 
         # plast.txt file creation
-        file = open("results" + os.sep + PROJ_NAME + os.sep + "plast.txt", "a")
+        file = open(RESULT_PATH + os.sep + "plast.txt", "a")
         s2plast_corrected = []  # to calculate actual ratio, not ratio in hafstep
         for val in stress2plast_list:
             val -= val * ((load_inc / 2.0) / (load_step - (load_inc / 2.0)))
@@ -155,7 +171,7 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
         file.write(mean_val + "," + min_val + "," + max_val + "," + new_eles + "," + all_eles)
         file.write(" " + str(round(max(eff_pl_strains), 3)) + "," + str(round(max(eff_pl_strains_rate), 3)) + "\n")
     file.close()
-    print("\nPlasticity analysis details [plast.txt] stored in results" + os.sep + PROJ_NAME)
+    print("\nPlasticity analysis details [plast.txt] stored in results" + RESULT_PATH)
     print("")
     # results storing
     check_res = iter_res.out()
@@ -187,9 +203,9 @@ if res_d[0] is not None:
 
     for i in range(0, len(res_d)):
         sys.stdout.write("\r" + "Plotted displacements results [" + str(i + 1) + \
-                         " of " + str(len(res_d)) + "] to results" + os.sep + PROJ_NAME + os.sep)
+                         " of " + str(len(res_d)) + "] to results" + RESULT_PATH)
         sys.stdout.flush()
-        res_name = post.save_dresults(res_d[i], PROJ_NAME)
+        res_name = post.save_dresults(res_d[i], PROJ_NAME, RESULT_PATH)
         results_list.append("disp_" + res_d[i] + ".png")
         desc_list.append(res_name)
     post = None
@@ -200,9 +216,9 @@ if res_s[0] is not None:
     post2 = postpro.Prepare(ELES, strains)
     for i in range(0, len(res_s)):
         sys.stdout.write("\r" + "Plotted stress and strains results [" + str(i + 1) + " of " + \
-                         str(len(res_s)) + "] to results" + os.sep + PROJ_NAME + os.sep)
+                         str(len(res_s)) + "] to results" + RESULT_PATH)
         sys.stdout.flush()
-        res_name = post2.save_sresults(res_s[i], PROJ_NAME)
+        res_name = post2.save_sresults(res_s[i], PROJ_NAME, RESULT_PATH)
         results_list.append(res_s[i] + ".png")
         desc_list.append(res_name)
     print("")
@@ -210,7 +226,7 @@ if res_s[0] is not None:
 def_scale = ksearch("deformed")[0]
 if def_scale is not None:
     post3 = deformed.Prepare(ELES, disp, float(def_scale))
-    res_name = post3.save_deformed("deformed", PROJ_NAME)
+    res_name = post3.save_deformed("deformed", PROJ_NAME, RESULT_PATH)
     results_list.append("deformed" + ".png")
     desc_list.append(res_name)
 post3 = None
@@ -218,29 +234,35 @@ disp = None
 
 if (ksearch("plast")[0] == "yes") and (step_factor < 1):
     post4 = postpro.Prepare(ELES, res_disp)
-    res_name = post4.save_dresults("res", PROJ_NAME)
+    res_name = post4.save_dresults("res", PROJ_NAME, RESULT_PATH)
     results_list.append("disp_res.png")
     desc_list.append(res_name)
 
     post4 = None
     post5 = postpro.Prepare(ELES, res_strains)
-    res_name = post5.save_sresults("res_huber", PROJ_NAME)
+    res_name = post5.save_sresults("res_huber", PROJ_NAME, RESULT_PATH)
     results_list.append("res_huber" + ".png")
     desc_list.append(res_name)
     post5 = None
-    res_name = post2.save_sresults("pl_strain", PROJ_NAME)
+    res_name = post2.save_sresults("pl_strain", PROJ_NAME, RESULT_PATH)
     results_list.append("pl_strain" + ".png")
     desc_list.append(res_name)
-    res_name = post2.save_sresults("h_stress", PROJ_NAME)
+    res_name = post2.save_sresults("h_stress", PROJ_NAME, RESULT_PATH)
     results_list.append("h_stress" + ".png")
     desc_list.append(res_name)
     post2 = None
-
+    
+    output_path = "results"
+    if RESULT_PATH != False:
+        output_path = RESULT_PATH
     print("Results of plastic analysis stored in " + \
-          "results" + os.sep + PROJ_NAME)
+          output_path + os.sep + PROJ_NAME)
 
-gallery.save_gallery(PROJ_NAME, results_list, desc_list, gallery_input_file, version.get())
-gallery_path = "results" + os.sep + PROJ_NAME + os.sep + PROJ_NAME + "_gallery.html"
+output_path = False
+if RESULT_PATH != False:
+    output_path = RESULT_PATH
+gallery.save_gallery(PROJ_NAME, results_list, desc_list, gallery_input_file, version.get(), output_path)
+#gallery_path = RESULT_PATH + os.sep + "results" + os.sep + PROJ_NAME + os.sep + PROJ_NAME + "_gallery.html"
 
 print("")
 print("Task finished in", TIME.check())

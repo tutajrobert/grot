@@ -54,7 +54,7 @@ class Prepare():
         self.init_cmap = "coolwarm_r"
         self.scale = scale
 
-    def save_deformed(self, results, proj_name):
+    def save_deformed(self, results, proj_name, output_path):
         """Matplotlib script for results viewing
         One element == one colour, so element solution"""
 
@@ -162,10 +162,10 @@ class Prepare():
 
         frame = legend.get_frame()
         frame.set_edgecolor("white")
-        if not os.path.exists("results" + os.sep + proj_name):
-            os.makedirs("results" + os.sep + proj_name)
-        plt.savefig("results" + os.sep + proj_name + os.sep + results + ".png", DPI=300)
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+        plt.savefig(output_path + os.sep + results + ".png", DPI=300)
 
         print("Plotted deformed view",
-              "[" + results + ".png] to results" + os.sep + proj_name + os.sep)
+              "[" + results + ".png] to results" + output_path)
         return title
