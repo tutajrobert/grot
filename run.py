@@ -27,6 +27,7 @@ print("................................................\n")
 PROJECT_PATH = False #project will contain input bmp image and input.txt with parameters
 RESULT_PATH = False #result will contain output of grot
 args = sys.argv
+
 if len(args) > 1:
     for i in range(len(args)):
         if args[i] == "-i":
@@ -35,9 +36,11 @@ if len(args) > 1:
             RESULT_PATH = args[i + 1]
 
 #read input file into list
-INP_FILE = open("input.txt", "r")
+
 if PROJECT_PATH != False:
     INP_FILE = open(PROJECT_PATH + os.sep + "input.txt", "r")
+else:
+    INP_FILE = open("input.txt", "r")
 INP_FILE_LINES = INP_FILE.readlines()
 
 INP_LINES = []
@@ -56,9 +59,11 @@ def ksearch(keyword):
 
 PROJ_NAME = ksearch("project")[0]
 print(PROJ_NAME)
-IMAGE = bmp.open_im(ksearch("bmp")[0], False)
+
 if PROJECT_PATH != False:
     IMAGE = bmp.open_im(ksearch("bmp")[0], PROJECT_PATH)
+else:
+    IMAGE = bmp.open_im(ksearch("bmp")[0], False)
 GEOM = bmp.create_geom(IMAGE)
 
 NODES = GEOM[0]

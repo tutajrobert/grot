@@ -6,7 +6,6 @@ import sys
 import numpy
 from PIL import Image, ImageCms
 import prep
-from functools import lru_cache
 
 def open_im(im_name, im_path):
     """Opens and crops BMP file. Returns image numpy array and image size"""
@@ -61,7 +60,6 @@ def color_distance(color, ref_color):
                      ((color[1] - ref_color[1]) ** 2) + \
                      ((color[2] - ref_color[2]) ** 2))
 
-@lru_cache
 def color_check(color):
     """Checks and returns reference color closest to given"""
     min_distance = 100000000
