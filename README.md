@@ -19,6 +19,7 @@ What's new in 1.4.0:
 - Nice gallery html file with all of the results
 - Bug fixes, element tweaking, efficiency improved
 
+![Plastic strains](https://tutajrobert.github.io/grot/pl_strain.png "Plastic strains plot")
 
 Check the example of gallery file:</br>
 https://tutajrobert.github.io/grot/gallery.html</br>
