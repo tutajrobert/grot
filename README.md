@@ -1,5 +1,5 @@
 # GRoT> Graficzny Rozwiązywacz Tarcz
-GRot> is the linear Finite Element Method solver, pre and postprocessor with nonlinear plasticity. Use for strength analysis of simple geometries built of 4-noded quadrilateral plane stress and strain elements. Its most unique function is the easy input of geometry of models, which is taken directly from an image saved as a bitmap file.
+GRoT> is the linear Finite Element Method solver, pre and postprocessor with nonlinear plasticity. Use for strength analysis of simple geometries built of 4-noded quadrilateral plane stress and strain elements. Its most unique function is the easy input of geometry of models, which is taken directly from an image saved as a bitmap file.
 
 ![Plastic strains](https://tutajrobert.github.io/grot/pl_strain.png "Plastic strains plot")
 
