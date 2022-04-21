@@ -107,7 +107,10 @@ if (ksearch("plast")[0] == "yes") and (step_factor < 1):
                      " of " + str(steps_num) + "]")
     sys.stdout.flush()
 
-    file = open("results" + os.sep + PROJ_NAME + os.sep + "plast.txt", "w+").close()
+    file = open("results" + os.sep + PROJ_NAME + os.sep + "plast.txt", "w+")
+    file.write("meanRatio,"+"minRatio,"+"maxRatio,"+"newPLASTeles,"+"allPLASTeles,"+"plstrainACCUM,"+"plstrainSTEP\n")
+    file.write("The ratio is a ratio of the calculated Huber stress to the yield stress for elements which have entered into plasticity\n")
+    file.close()
     for i in range(steps_num):
         load_step += load_inc
         check_res = iter_res.out()
