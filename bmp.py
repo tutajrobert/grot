@@ -3,15 +3,26 @@
 import math
 import os
 import sys
+import io
 import numpy
 from PIL import Image, ImageCms
-import prep
+from .prep import constraints, elements, nodes
 from functools import lru_cache
 
-def open_im(im_name):
-    """Opens and crops BMP file. Returns image numpy array and image size"""
-    image = Image.open("projects" + os.sep + im_name) #BMP has to be in dir "projects"
+def load_im(im_string):
+    imgObject = io.BytesIO(im_string)
+    image = Image.open(imgObject)
+    return process_im(image)
 
+def open_im(im_name, im_path):
+    """Opens and crops BMP file. Returns image numpy array and image size"""
+    path = "projects" + os.sep + im_name #default path for image is "projects" directory
+    if im_path != False:
+        path = im_path + os.sep + im_name
+    image = Image.open(path)
+    return process_im(image)
+
+def process_im(image):
     #Image cropping
     pix = numpy.asarray(image)
     pix = pix[:, :, 0:3] #drop the alpha channel
@@ -58,7 +69,7 @@ def color_distance(color, ref_color):
                      ((color[1] - ref_color[1]) ** 2) + \
                      ((color[2] - ref_color[2]) ** 2))
 
-@lru_cache
+lru_cache(None, False)
 def color_check(color):
     """Checks and returns reference color closest to given"""
     min_distance = 100000000
@@ -78,9 +89,9 @@ PROB_DICT = {cname : [] for cname in COLORS if cname not in ("white", "cyan")}
 
 #Starting BMP to FEM model translation
 
-NODES = prep.nodes()
-ELES = prep.elements(NODES.store())
-CONS = prep.constraints()
+NODES = nodes()
+ELES = elements(NODES.store())
+CONS = constraints()
 
 
 def create_geom(im_data):

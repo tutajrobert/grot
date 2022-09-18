@@ -13,8 +13,11 @@ dis_res = "Displacement results"
 strain_res = "Strain results"
 stress_res = "Stress results"
 
-def save_gallery(proj_name, images_list, desc_list, input_file, version):
-    gallery_file = open("results" + os.sep + proj_name + os.sep + proj_name + "_gallery.html", "w+")
+def save_gallery(proj_name, images_list, desc_list, input_file, version, output_path):
+    path = "results" + os.sep + proj_name + os.sep + proj_name + "_gallery.html"
+    if output_path == False:
+        path = output_path + os.sep + proj_name + "_gallery.html"
+    gallery_file = open(path, "w+")
     for i in html_head:
         gallery_file.write(i)
         if i[0:6] == "<html>":
@@ -33,4 +36,4 @@ def save_gallery(proj_name, images_list, desc_list, input_file, version):
         gallery_file.write(html_image)
     gallery_file.write("\n</body>\n</html>")
     gallery_file.close()
-    print("\nCreated results gallery [{}_gallery.html] in {}".format(proj_name ,"results" + os.sep + proj_name + os.sep))
+    print("\nCreated results gallery [{}_gallery.html] in {}".format(proj_name , output_path))
