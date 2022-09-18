@@ -1,4 +1,4 @@
-import mlib
+from .mlib import mdict
 
 #Units for further use
 units = {"nm" : 1e-9,
@@ -106,7 +106,7 @@ class materials():
     def add(self, name):
     #Adds material by name to prep from mlib.py
         self.mnum += 1
-        self.mat[self.mnum] = mlib.mdict()[name]
+        self.mat[self.mnum] = mdict()[name]
         self.mnames[self.mnum] = name
 
     def assignall(self, mnum):

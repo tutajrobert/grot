@@ -3,10 +3,16 @@
 import math
 import os
 import sys
+import io
 import numpy
 from PIL import Image, ImageCms
-import prep
+from .prep import constraints, elements, nodes
 from functools import lru_cache
+
+def load_im(im_string):
+    imgObject = io.BytesIO(im_string)
+    image = Image.open(imgObject)
+    return process_im(image)
 
 def open_im(im_name, im_path):
     """Opens and crops BMP file. Returns image numpy array and image size"""
@@ -14,7 +20,9 @@ def open_im(im_name, im_path):
     if im_path != False:
         path = im_path + os.sep + im_name
     image = Image.open(path)
+    return process_im(image)
 
+def process_im(image):
     #Image cropping
     pix = numpy.asarray(image)
     pix = pix[:, :, 0:3] #drop the alpha channel
@@ -81,9 +89,9 @@ PROB_DICT = {cname : [] for cname in COLORS if cname not in ("white", "cyan")}
 
 #Starting BMP to FEM model translation
 
-NODES = prep.nodes()
-ELES = prep.elements(NODES.store())
-CONS = prep.constraints()
+NODES = nodes()
+ELES = elements(NODES.store())
+CONS = constraints()
 
 
 def create_geom(im_data):
